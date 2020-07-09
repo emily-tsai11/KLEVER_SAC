@@ -2,7 +2,7 @@
 // --------------------------------------------------------------
 // History:
 //
-// Created by Emily Tsai (emily.tsai11@gmail.com) 2020-7-8
+// Created by Emily Tsai (emily.tsai11@gmail.com) 2020-7-7
 // --------------------------------------------------------------
 
 #include "G4RunManager.hh"
@@ -16,7 +16,7 @@
 #include "EventAction.hh"
 #include "PhysicsList.hh"
 #include "PrimaryGeneratorAction.hh"
-#include "RootIOManager.hh"
+// #include "RootIOManager.hh"
 #include "RunAction.hh"
 #include "SteppingAction.hh"
 
@@ -76,7 +76,7 @@ int main(int argc, char** argv)
 	delete ui;
 
 	// close latest root file
-    RootIOManager::GetInstance()->Close();
+    // RootIOManager::GetInstance()->Close();
 
 	// job termination
 	delete visManager;
