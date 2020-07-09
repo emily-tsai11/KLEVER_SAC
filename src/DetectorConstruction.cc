@@ -34,10 +34,13 @@ DetectorConstruction::DetectorConstruction() : solidWorld(0), logicalWorld(0), p
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
 DetectorConstruction::~DetectorConstruction()
 {
 	delete fSAC;
 }
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 G4VPhysicalVolume* DetectorConstruction::Construct()
 {
@@ -53,6 +56,8 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 	fWorldXLength = 10.0 * m;
 	fWorldYLength = 10.0 * m;
 	fWorldZLength = 600.0 * m;
+
+	DefineMaterials();
 
 	solidWorld = new G4Box("World", 0.5 * fWorldXLength, 0.5 * fWorldYLength, 0.5 * fWorldZLength);
 
@@ -83,4 +88,37 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 
 	// return physical world
 	return physicalWorld;
+}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+void DetectorConstruction::DefineMaterials()
+{
+	// don't call DefineMaterials() again
+	static G4bool already_called = kFALSE;
+	if(already_called) return;
+	already_called = kTRUE;
+
+	// create custom vacuum material
+	G4String name;
+	G4double density = universe_mean_density;	// from PhysicalConstants.h
+	G4double pressure = 1.0e-19 * pascal;
+	G4double temperature = 0.1 * kelvin;
+	G4double a, z;								// a = mass of a mole; z = mean number of protons
+
+	G4Material* TubeVacuum = new G4Material(name = "TubeVacuum", z = 1.0, a = 1.01 * g/mole, density, kStateGas, temperature, pressure);
+
+	// standard materials
+	G4NistManager* nistMgr = G4NistManager::Instance();
+	nistMgr->FindOrBuildMaterial("G4_Galactic");
+	nistMgr->FindOrBuildMaterial("TubeVacuum");
+    nistMgr->FindOrBuildMaterial("G4_AIR");
+
+	// for extensive output about material definition
+	nistMgr->SetVerbose(0);
+	// nistMgr->PrintElement("all");
+	// nistMgr->ListMaterials("all");
+
+	// "black hole" material: all particles entering it are suppressed
+	new G4Material("KLBlackHole", 1.0, 1.0 * g/mole, 1.0 * g/cm3);
 }

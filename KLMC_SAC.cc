@@ -10,6 +10,7 @@
 #include "G4VisManager.hh"
 #include "G4UIExecutive.hh"
 #include "G4UImanager.hh"
+#include "Randomize.hh"
 
 #include "DetectorConstruction.hh"
 #include "EventAction.hh"
