@@ -25,14 +25,14 @@
 SACDetector::SACDetector(G4Material* material, G4LogicalVolume* motherVolume) : fMotherVolume(motherVolume) // something to do with material too
 {
 	// connect to SACMessenger to enable datacard configuration
-	fSACMessenger = new SACMessenger(this);
+	// fSACMessenger = new SACMessenger(this);
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 SACDetector::~SACDetector()
 {
-	delete fSACMessenger;
+	// delete fSACMessenger;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -79,7 +79,7 @@ void SACDetector::CreateGeometry()
 	fCrystalVolume->SetVisAttributes(G4VisAttributes(G4Colour::Magenta()));
 
 	// make crystal a sensitive detector
-	G4SDManager* sdMan = G4SDManager::GetSDMpointer();
+	// G4SDManager* sdMan = G4SDManager::GetSDMpointer();
 	G4String sacSDName = geo->GetSACSensitiveDetectorName();
 	printf("Registering SAC SD %s\n", sacSDName.data());
 	SACSD* sacSD = new SACSD(sacSDName);
