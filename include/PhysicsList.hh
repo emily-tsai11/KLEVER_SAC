@@ -9,8 +9,8 @@
 // Adapted from KLMC by Emily Tsai (emily.tsai11@gmail.com) 2020-7-9
 // --------------------------------------------------------------
 
-#ifndef PhysicsList_h
-#define PhysicsList_h 1
+#ifndef PhysicsList_H
+#define PhysicsList_H 1
 
 #include "G4VModularPhysicsList.hh"
 #include "globals.hh"

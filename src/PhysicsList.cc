@@ -168,7 +168,7 @@ PhysicsList::PhysicsList() : G4VModularPhysicsList(), fEmPhysicsList(0), fPartic
 
 PhysicsList::~PhysicsList()
 {
-	delete fMessenger;
+	// delete fMessenger;
 	delete fParticleList;
 	delete fExoticParticle;
 	delete fEmPhysicsList;
@@ -219,7 +219,7 @@ void PhysicsList::SetExoticParticleMass(G4double ExoticParticleMass, G4int iPart
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-void PhysicsList::SetExoticParticleLifetime (G4double Lifetime, G4int iParticleNumber)
+void PhysicsList::SetExoticParticleLifetime(G4double Lifetime, G4int iParticleNumber)
 {
 	if(Lifetime < 0.0)
 	{
@@ -231,7 +231,7 @@ void PhysicsList::SetExoticParticleLifetime (G4double Lifetime, G4int iParticleN
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-void PhysicsList::SetExoticParticleDecayMode (G4int ExoticParticleDecayMode, G4int iParticleNumber)
+void PhysicsList::SetExoticParticleDecayMode(G4int ExoticParticleDecayMode, G4int iParticleNumber)
 {
 	fExoticParticleDecayMode = ExoticParticleDecayMode;
 	if(!ExoticParticleDecayMode) // mode = 0: stable particle
