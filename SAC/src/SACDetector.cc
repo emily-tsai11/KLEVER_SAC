@@ -22,7 +22,7 @@
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-SACDetector::SACDetector(G4LogicalVolume* motherVolume) : fMotherVolume(motherVolume)
+SACDetector::SACDetector(G4Material* material, G4LogicalVolume* motherVolume) : fMotherVolume(motherVolume) // something to do with material too
 {
 	// connect to SACMessenger to enable datacard configuration
 	fSACMessenger = new SACMessenger(this);

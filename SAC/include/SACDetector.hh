@@ -22,9 +22,10 @@ class SACDetector
 {
 	public:
 
-		SACDetector(G4LogicalVolume*);
+		SACDetector(G4Material*, G4LogicalVolume*);
 		~SACDetector();
 
+		void SetMaterial(G4Material* v) {fMaterial = v};
 		void SetMotherVolume(G4LogicalVolume* v) { fMotherVolume = v; }
 		void CreateGeometry();
 

@@ -34,17 +34,17 @@ class DetectorConstruction : public G4VUserDetectorConstruction
 	    // G4LogicalVolume* GetLogicalWorld() { return logicalWorld; };
 	    // G4VPhysicalVolume* GetPhysicalWorld() { return physicalWorld; };
 
-		// void SetSolidWorld(G4VSolid* value) { solidWorld = value; };
-		// void SetLogicalWorld(G4LogicalVolume* value) { logicalWorld = value; };
-	    // void SetPhysicalWorld(G4VPhysicalVolume* value) { physicalWorld = value; };
+		// void SetSolidWorld(G4VSolid* v) { solidWorld = v; };
+		// void SetLogicalWorld(G4LogicalVolume* v) { logicalWorld = v; };
+	    // void SetPhysicalWorld(G4VPhysicalVolume* v) { physicalWorld = v; };
 
 	    G4double GetWorldXLength() { return fWorldXLength; };
 	    G4double GetWorldYLength() { return fWorldYLength; };
 		G4double GetWorldZLength() { return fWorldZLength; };
 
-		// void SetWorldXLength(G4double value) { fWorldXLength = value; };
-		// void SetWorldYLength(G4double value) { fWorldYLength = value; };
-		// void SetWorldZLength(G4double value) { fWorldZLength = value; };
+		// void SetWorldXLength(G4double v) { fWorldXLength = v; };
+		// void SetWorldYLength(G4double v) { fWorldYLength = v; };
+		// void SetWorldZLength(G4double v) { fWorldZLength = v; };
 
 	private:
 
