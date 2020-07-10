@@ -9,13 +9,15 @@
 #ifndef SACGeometry_H
 #define SACGeometry_H 1
 
+#define SACGEOMETRY_N_ROWS_MAX 10
+#define SACGEOMETRY_N_COLS_MAX 10
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
 #include "globals.hh"
 #include "G4SystemOfUnits.hh"
 
 #include <vector>
-
-#define SACGEOMETRY_N_ROWS_MAX 10
-#define SACGEOMETRY_N_COLS_MAX 10
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -76,9 +78,9 @@ class SACGeometry
 		G4double GetCrystalSizeZ() { return fCrystalSizeZ; }
 
 		// set size of BGO crystal
-		void SetCrystalSizeX(G4double s) { fCrystalSizeX = s; }
-		void SetCrystalSizeY(G4double s) { fCrystalSizeY = s; }
-		void SetCrystalSizeZ(G4double s) { fCrystalSizeZ = s; }
+		void SetCrystalSizeX(G4double SizeX) { fCrystalSizeX = SizeX; }
+		void SetCrystalSizeY(G4double SizeY) { fCrystalSizeY = SizeY; }
+		void SetCrystalSizeZ(G4double SizeZ) { fCrystalSizeZ = SizeZ; }
 
 		// size of SAC cell (crystal + coating)
 		G4double GetCellSizeX() { return fCrystalSizeX + 2.0 * fCrystalCoating; }
@@ -87,7 +89,7 @@ class SACGeometry
 
 		// size of gap between crystals
 		G4double GetCrystalGap() { return fCrystalGap; }
-		void SetCrystalGap(G4double g) { fCrystalGap = g; }
+		void SetCrystalGap(G4double gap) { fCrystalGap = gap; }
 
 		// thickness of paint coating around each crystal
 		G4double GetCrystalCoating() { return fCrystalCoating; }

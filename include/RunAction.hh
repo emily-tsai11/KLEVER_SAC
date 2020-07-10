@@ -8,6 +8,8 @@
 #ifndef RunAction_H
 #define RunAction_H 1
 
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
 #include "G4UserRunAction.hh"
 #include "globals.hh"
 
@@ -31,7 +33,7 @@ class RunAction : public G4UserRunAction
 	private:
 
 		G4Timer* fTimer;
-}
+};
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 

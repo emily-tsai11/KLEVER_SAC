@@ -8,6 +8,8 @@
 #ifndef SACSD_H
 #define SACSD_H 1
 
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
 #include "G4VSensitiveDetector.hh"
 #include "SACHit.hh"
 

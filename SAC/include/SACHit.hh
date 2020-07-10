@@ -9,6 +9,8 @@
 #ifndef SACHit_H
 #define SACHit_H 1
 
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
 #include "G4VHit.hh"
 #include "G4THitsCollection.hh"
 #include "G4Allocator.hh"

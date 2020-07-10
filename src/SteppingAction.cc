@@ -14,6 +14,8 @@
 #include "G4TrackVector.hh"
 #include "G4VProcess.hh"
 
+#include <stdio.h>
+
 #include "EventAction.hh"
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -58,7 +60,7 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
 
 	// save all steps [NOT SURE WHAT TO DO WITH THIS BUT I'LL FIGURE IT OUT LATER]
 	fFinalMomentum = G4LorentzVector(Track->GetMomentum(), Track->GetTotalEnergy());
-	fInitialMomentum = fFinalMomentum - G4LorentzVector(aStep->GetMomentum(), aStep->GetDeltaEnergy());
+	fInitialMomentum = fFinalMomentum - G4LorentzVector(aStep->GetDeltaMomentum(), aStep->GetDeltaEnergy());
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -67,11 +69,11 @@ void SteppingAction::PrintStep(const G4Step* aStep, G4String ParticleName)
 {
 	G4Track *Track = aStep->GetTrack();
 
-	if(!ParticleName.length() || (Track->GetParticleDefinition()->GetParticleName == ParticleName))
+	if(!ParticleName.length() || (Track->GetParticleDefinition()->GetParticleName() == ParticleName))
 	{
 		if(aStep->GetPreStepPoint()->GetPhysicalVolume())
 		{
-			G4cout << Form("PreStep: %7.1f %7.1f %8.1f | %f %f %f %f | %s %s\n",
+			printf("PreStep: %7.1f %7.1f %8.1f | %f %f %f %f | %s %s\n",
 				aStep->GetPreStepPoint()->GetPosition().x(),
 				aStep->GetPreStepPoint()->GetPosition().y(),
 				aStep->GetPreStepPoint()->GetPosition().z(),
@@ -84,7 +86,7 @@ void SteppingAction::PrintStep(const G4Step* aStep, G4String ParticleName)
 		}
 		if(aStep->GetPostStepPoint()->GetPhysicalVolume())
 		{
-			G4cout << Form("PostStep: %7.1f %7.1f %8.1f | %f %f %f %f | %s %s\n",
+			printf("PostStep: %7.1f %7.1f %8.1f | %f %f %f %f | %s %s\n",
 				aStep->GetPostStepPoint()->GetPosition().x(),
 				aStep->GetPostStepPoint()->GetPosition().y(),
 				aStep->GetPostStepPoint()->GetPosition().z(),

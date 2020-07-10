@@ -9,6 +9,9 @@
 #ifndef SACDetector_H
 #define SACDetector_H 1
 
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+#include "G4Material.hh"
 #include "globals.hh"
 
 #include "SACGeometry.hh"
@@ -16,7 +19,7 @@
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 class G4LogicalVolume;
-class SACMessenger;
+// class SACMessenger;
 
 class SACDetector
 {
@@ -25,7 +28,7 @@ class SACDetector
 		SACDetector(G4Material*, G4LogicalVolume*);
 		~SACDetector();
 
-		void SetMaterial(G4Material* v) {fMaterial = v};
+		void SetMaterial(G4Material* v) { fMaterial = v; };
 		void SetMotherVolume(G4LogicalVolume* v) { fMotherVolume = v; }
 		void CreateGeometry();
 
@@ -37,12 +40,13 @@ class SACDetector
 
 	private:
 
+		G4Material* fMaterial;
 		G4LogicalVolume* fMotherVolume;
 		G4LogicalVolume* fSACVolume;
 		G4LogicalVolume* fCrystalVolume;
 		G4LogicalVolume* fCellVolume;
 
-		SACMessenger* fSACMessenger;
+		// SACMessenger* fSACMessenger;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

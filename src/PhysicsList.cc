@@ -9,47 +9,47 @@
 // Roberto Piandani (roberto.piandani@cern.ch) 30-05-2013
 // Michal Koval (michal.koval@cern.ch) 21-08-2013
 // Karim Massri (karim.massri@cern.ch) 27-03-2014
-//	Updated physics list for Geant 4 10 compatibility (from Hadr01 example)
-//	- deprecated lists removed:
-//		- G4HadronDElasticPhysics
-//		- G4HadronQElasticPhysics
-//		- G4HadronHElasticPhysics
-//		- G4QStoppingPhysics
-//		- G4LHEPStoppingPhysics
-//		- HadronPhysicsLHEP
-//		- HadronPhysicsQGSC_BERT
-//		- HadronPhysicsQGSC_CHIPS
-//		- HadronPhysicsFTFP_BERT_TRV
-//		- HadronPhysicsLHEP
-//		- HadronPhysicsLHEP_EMV
-//		- HadronPhysicsQGSP
-//	- change of names:
-//		- HadronPhysicsFTFP_BERT -> G4HadronPhysicsFTFP_BERT
-//		- HadronPhysicsFTF_BIC -> G4HadronPhysicsFTF_BIC
-//		- HadronPhysicsQGSP_BERT -> G4HadronPhysicsQGSP_BERT
-//		- HadronPhysicsQGSP_BERT_HP -> G4HadronPhysicsQGSP_BERT_HP
-//		- HadronPhysicsQGSP_BIC -> G4HadronPhysicsQGSP_BIC
-//		- HadronPhysicsQGSP_BIC_HP -> G4HadronPhysicsQGSP_BIC_HP
-//		- HadronPhysicsQGSP_FTFP_BERT -> G4HadronPhysicsQGSP_FTFP_BERT
-//		- HadronPhysicsQGS_BIC -> G4HadronPhysicsQGS_BIC
-//	- new lists added:
-//		- G4EmStandardPhysics_option4
-//		- G4HadronElasticPhysicsXS
-//		- G4HadronElasticPhysicsHP
-//		- G4NeutronCrossSectionXS
-//		- G4StoppingPhysics
-//		- G4HadronPhysicsFTFP_BERT_HP
+//		Updated physics list for Geant 4 10 compatibility (from Hadr01 example)
+//		- deprecated lists removed:
+//			- G4HadronDElasticPhysics
+//			- G4HadronQElasticPhysics
+//			- G4HadronHElasticPhysics
+//			- G4QStoppingPhysics
+//			- G4LHEPStoppingPhysics
+//			- HadronPhysicsLHEP
+//			- HadronPhysicsQGSC_BERT
+//			- HadronPhysicsQGSC_CHIPS
+//			- HadronPhysicsFTFP_BERT_TRV
+//			- HadronPhysicsLHEP
+//			- HadronPhysicsLHEP_EMV
+//			- HadronPhysicsQGSP
+//		- change of names:
+//			- HadronPhysicsFTFP_BERT -> G4HadronPhysicsFTFP_BERT
+//			- HadronPhysicsFTF_BIC -> G4HadronPhysicsFTF_BIC
+//			- HadronPhysicsQGSP_BERT -> G4HadronPhysicsQGSP_BERT
+//			- HadronPhysicsQGSP_BERT_HP -> G4HadronPhysicsQGSP_BERT_HP
+//			- HadronPhysicsQGSP_BIC -> G4HadronPhysicsQGSP_BIC
+//			- HadronPhysicsQGSP_BIC_HP -> G4HadronPhysicsQGSP_BIC_HP
+//			- HadronPhysicsQGSP_FTFP_BERT -> G4HadronPhysicsQGSP_FTFP_BERT
+//			- HadronPhysicsQGS_BIC -> G4HadronPhysicsQGS_BIC
+//		- new lists added:
+//			- G4EmStandardPhysics_option4
+//			- G4HadronElasticPhysicsXS
+//			- G4HadronElasticPhysicsHP
+//			- G4NeutronCrossSectionXS
+//			- G4StoppingPhysics
+//			- G4HadronPhysicsFTFP_BERT_HP
 // Evgueni Goudzovski (eg@hep.ph.bham.ac.uk) Autumn 2015
-// 	exotic particle and pion decays
+// 		exotic particle and pion decays
 // Viacheslav Duk (Viacheslav.Duk@cern.ch) August 2017
-//	exotic particle update
+//		exotic particle update
 // Karim Massri (karim.massri@cern.ch) 09-10-2017
-//	Custom muon decay class introduced
+//		Custom muon decay class introduced
 // Adapted from KLMC by Emily Tsai (emily.tsai11@gmail.com) 2020-7-9
 // --------------------------------------------------------------
 
 #include "PhysicsList.hh"
-#include "PhysicsListMessenger.hh"
+// #include "PhysicsListMessenger.hh"
 #include "G4DecayPhysics.hh"
 #include "G4EmStandardPhysics.hh"
 #include "G4EmStandardPhysics_option1.hh"
@@ -110,8 +110,9 @@
 #include "G4PhaseSpaceDecayChannel.hh"
 #include "G4ParticlePropertyTable.hh"
 #include "G4PhysicalConstants.hh"
-#include "ExoticParticle.hh"
-#include "ExoticParticlePhysics.hh"
+#include "G4SystemOfUnits.hh"
+// #include "ExoticParticle.hh"
+// #include "ExoticParticlePhysics.hh"
 
 // optical processes
 #include "G4Cerenkov.hh"
@@ -130,7 +131,7 @@
 
 PhysicsList* PhysicsList::fgInstance = 0;
 int PhysicsList::fNumberOfGeneratedParticles = 0;
-double PhysicsList::fExoticParticleMassStep = 0.0;
+// double PhysicsList::fExoticParticleMassStep = 0.0;
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -143,7 +144,7 @@ PhysicsList* PhysicsList::GetInstance()
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-PhysicsList::PhysicsList() : G4VModularPhysicsList(), fEmPhysicsList(0), fParticleList(0), fMessenger(0)
+PhysicsList::PhysicsList() : G4VModularPhysicsList(), fEmPhysicsList(0), fParticleList(0)
 {
 	G4LossTableManager::Instance();
 	defaultCutValue = 0.7 * mm;
@@ -158,7 +159,7 @@ PhysicsList::PhysicsList() : G4VModularPhysicsList(), fEmPhysicsList(0), fPartic
 
 	// particles
 	fParticleList = new G4DecayPhysics("decays");
-	fExoticParticle = new ExoticParticlePhysics("decays");
+	// fExoticParticle = new ExoticParticlePhysics("decays");
 
 	// EM physics
 	fEmPhysicsList = new G4EmStandardPhysics();
@@ -170,7 +171,7 @@ PhysicsList::~PhysicsList()
 {
 	// delete fMessenger;
 	delete fParticleList;
-	delete fExoticParticle;
+	// delete fExoticParticle;
 	delete fEmPhysicsList;
 	for (size_t i = 0; i < fHadronPhys.size(); i++) delete fHadronPhys[i];
 }
@@ -209,153 +210,153 @@ void PhysicsList::SetLambdaDecaySpecial(G4bool LambdaDecaySpecial)
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 // set the properties of the exotic particle (can be heavy neutrino, axion, etc)
-void PhysicsList::SetExoticParticleMass(G4double ExoticParticleMass, G4int iParticleNumber)
-{
-	G4ParticlePropertyTable* PropTable = G4ParticlePropertyTable::GetParticlePropertyTable();
-	G4ParticlePropertyData* ExoticParticleData = PropTable->GetParticleProperty(ExoticParticle::Definition(iParticleNumber));
-	ExoticParticleData->SetPDGMass(ExoticParticleMass);
-	PropTable->SetParticleProperty(*ExoticParticleData);
-}
+// void PhysicsList::SetExoticParticleMass(G4double ExoticParticleMass, G4int iParticleNumber)
+// {
+// 	G4ParticlePropertyTable* PropTable = G4ParticlePropertyTable::GetParticlePropertyTable();
+// 	G4ParticlePropertyData* ExoticParticleData = PropTable->GetParticleProperty(ExoticParticle::Definition(iParticleNumber));
+// 	ExoticParticleData->SetPDGMass(ExoticParticleMass);
+// 	PropTable->SetParticleProperty(*ExoticParticleData);
+// }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-void PhysicsList::SetExoticParticleLifetime(G4double Lifetime, G4int iParticleNumber)
-{
-	if(Lifetime < 0.0)
-	{
-		G4cout << "[PhysicsList] Error: negative exotic particle lifetime " << G4endl;
-		exit(0);
-	}
-	ExoticParticle::Definition(iParticleNumber)->SetPDGLifeTime(Lifetime*nanosecond);
-}
+// void PhysicsList::SetExoticParticleLifetime(G4double Lifetime, G4int iParticleNumber)
+// {
+// 	if(Lifetime < 0.0)
+// 	{
+// 		G4cout << "[PhysicsList] Error: negative exotic particle lifetime " << G4endl;
+// 		exit(0);
+// 	}
+// 	ExoticParticle::Definition(iParticleNumber)->SetPDGLifeTime(Lifetime*nanosecond);
+// }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-void PhysicsList::SetExoticParticleDecayMode(G4int ExoticParticleDecayMode, G4int iParticleNumber)
-{
-	fExoticParticleDecayMode = ExoticParticleDecayMode;
-	if(!ExoticParticleDecayMode) // mode = 0: stable particle
-	{
-		ExoticParticle::Definition(iParticleNumber)->SetPDGLifeTime(-999);
-		ExoticParticle::Definition(iParticleNumber)->SetPDGStable(kTRUE);
-		return;
-	}
-	G4int Ndaughters = 0;
-	G4String daughters[3];
-	daughters[0] = daughters[1] = daughters[2] = "";
-	switch(ExoticParticleDecayMode)
-	{
-	    // two-body decays of heavy neutral leptons
-		case 1:
-			Ndaughters = 2; daughters[0] = "pi+"; daughters[1] = "e-";
-			break;
-		case 2:
-			Ndaughters = 2; daughters[0] = "pi-"; daughters[1] = "e+";
-			break;
-		case 3:
-			Ndaughters = 2; daughters[0] = "pi+"; daughters[1] = "mu-";
-			break;
-		case 4:
-			Ndaughters = 2; daughters[0] = "pi-"; daughters[1] = "mu+";
-			break;
-		case 5:
-			Ndaughters = 2; daughters[0] = "pi0"; daughters[1] = "nu_e";
-			break;
-		case 11:
-			Ndaughters = 2; daughters[0] = "rho+"; daughters[1] = "e-";
-			break;
-		case 12:
-			Ndaughters = 2; daughters[0] = "rho-"; daughters[1] = "e+";
-			break;
-		case 13:
-			Ndaughters = 2; daughters[0] = "rho+"; daughters[1] = "mu-";
-			break;
-		case 14:
-			Ndaughters = 2; daughters[0] = "rho-"; daughters[1] = "mu+";
-			break;
-
-		// three-body decays of heavy neutral leptons
-		case 51:
-			Ndaughters = 3; daughters[0] = "e+"; daughters[1] = "e-"; daughters[2] = "nu_e";
-			break;
-		case 52:
-			Ndaughters = 3; daughters[0] = "mu+"; daughters[1] = "mu-"; daughters[2] = "nu_e";
-			break;
-		case 53:
-			Ndaughters = 3; daughters[0] = "e+"; daughters[1] = "mu-"; daughters[2] = "nu_e";
-			break;
-		case 54:
-			Ndaughters = 3; daughters[0] = "e-"; daughters[1] = "mu+"; daughters[2] = "nu_e";
-			break;
-
-		// decays of non-leptonic exotic particles
-		case 101:
-			Ndaughters = 2; daughters[0] = "e+"; daughters[1] = "e-";
-			break;
-		case 102:
-			Ndaughters = 2; daughters[0] = "mu+"; daughters[1] = "mu-";
-			break;
-		case 103:
-			Ndaughters = 2; daughters[0] = "pi+"; daughters[1] = "pi-";
-			break;
-		case 104:
-			Ndaughters = 2; daughters[0] = "gamma"; daughters[1] = "gamma";
-			break;
-	}
-
-	if(!Ndaughters)
-	{
-		G4cout << "[PhysicsList] Error: invalid exotic particle decay mode: " << ExoticParticleDecayMode << G4endl;
-		exit(0);
-	}
-
-	// check validity of daughters
-	for(G4int i = 0; i < Ndaughters; i++)
-	{
-		if(!G4ParticleTable::GetParticleTable()->FindParticle(daughters[i]))
-		{
-			G4cout << "[PhysicsList] Error: exotic particle daughter (" << daughters[i] << ") not known" << G4endl;
-			exit(0);
-		}
-	}
-
-	// check the parent mass exceeds the sum of daughter masses
-	G4double TotalDaughterMass = 0.0;
-	for(G4int i = 0; i < Ndaughters; i++)
-	{
-		TotalDaughterMass += G4ParticleTable::GetParticleTable()->FindParticle(daughters[i])->GetPDGMass();
-	}
-	if(TotalDaughterMass >= ExoticParticle::Definition(iParticleNumber)->GetPDGMass())
-	{
-		G4cout << "[PhysicsList] Error: exotic particle mass (" << ExoticParticle::Definition(iParticleNumber)->GetPDGMass() << " MeV) too small for the decay mode (";
-		for(G4int i = 0; i < Ndaughters; i++)
-		{
-			if(i) G4cout << " ";
-			G4cout << daughters[i];
-		}
-		G4cout << ")" << G4endl;
-		exit(0);
-	}
-
-	// G4PhaseSpaceDecayChannel format: parent, BR, number of daughters, daughter names
-	G4DecayTable* table = new G4DecayTable();
-	table->Insert(new G4PhaseSpaceDecayChannel(Form("Exotic%d", iParticleNumber), 1.0, Ndaughters, daughters[0], daughters[1], daughters[2]));
-	ExoticParticle::Definition(iParticleNumber)->SetDecayTable(table);
-}
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
-void PhysicsList::SetExoticParticleNumberOfGeneratedParticles(G4int Number)
-{
-	fNumberOfGeneratedParticles = Number;
-}
+// void PhysicsList::SetExoticParticleDecayMode(G4int ExoticParticleDecayMode, G4int iParticleNumber)
+// {
+// 	fExoticParticleDecayMode = ExoticParticleDecayMode;
+// 	if(!ExoticParticleDecayMode) // mode = 0: stable particle
+// 	{
+// 		ExoticParticle::Definition(iParticleNumber)->SetPDGLifeTime(-999);
+// 		ExoticParticle::Definition(iParticleNumber)->SetPDGStable(kTRUE);
+// 		return;
+// 	}
+// 	G4int Ndaughters = 0;
+// 	G4String daughters[3];
+// 	daughters[0] = daughters[1] = daughters[2] = "";
+// 	switch(ExoticParticleDecayMode)
+// 	{
+// 	    // two-body decays of heavy neutral leptons
+// 		case 1:
+// 			Ndaughters = 2; daughters[0] = "pi+"; daughters[1] = "e-";
+// 			break;
+// 		case 2:
+// 			Ndaughters = 2; daughters[0] = "pi-"; daughters[1] = "e+";
+// 			break;
+// 		case 3:
+// 			Ndaughters = 2; daughters[0] = "pi+"; daughters[1] = "mu-";
+// 			break;
+// 		case 4:
+// 			Ndaughters = 2; daughters[0] = "pi-"; daughters[1] = "mu+";
+// 			break;
+// 		case 5:
+// 			Ndaughters = 2; daughters[0] = "pi0"; daughters[1] = "nu_e";
+// 			break;
+// 		case 11:
+// 			Ndaughters = 2; daughters[0] = "rho+"; daughters[1] = "e-";
+// 			break;
+// 		case 12:
+// 			Ndaughters = 2; daughters[0] = "rho-"; daughters[1] = "e+";
+// 			break;
+// 		case 13:
+// 			Ndaughters = 2; daughters[0] = "rho+"; daughters[1] = "mu-";
+// 			break;
+// 		case 14:
+// 			Ndaughters = 2; daughters[0] = "rho-"; daughters[1] = "mu+";
+// 			break;
+//
+// 		// three-body decays of heavy neutral leptons
+// 		case 51:
+// 			Ndaughters = 3; daughters[0] = "e+"; daughters[1] = "e-"; daughters[2] = "nu_e";
+// 			break;
+// 		case 52:
+// 			Ndaughters = 3; daughters[0] = "mu+"; daughters[1] = "mu-"; daughters[2] = "nu_e";
+// 			break;
+// 		case 53:
+// 			Ndaughters = 3; daughters[0] = "e+"; daughters[1] = "mu-"; daughters[2] = "nu_e";
+// 			break;
+// 		case 54:
+// 			Ndaughters = 3; daughters[0] = "e-"; daughters[1] = "mu+"; daughters[2] = "nu_e";
+// 			break;
+//
+// 		// decays of non-leptonic exotic particles
+// 		case 101:
+// 			Ndaughters = 2; daughters[0] = "e+"; daughters[1] = "e-";
+// 			break;
+// 		case 102:
+// 			Ndaughters = 2; daughters[0] = "mu+"; daughters[1] = "mu-";
+// 			break;
+// 		case 103:
+// 			Ndaughters = 2; daughters[0] = "pi+"; daughters[1] = "pi-";
+// 			break;
+// 		case 104:
+// 			Ndaughters = 2; daughters[0] = "gamma"; daughters[1] = "gamma";
+// 			break;
+// 	}
+//
+// 	if(!Ndaughters)
+// 	{
+// 		G4cout << "[PhysicsList] Error: invalid exotic particle decay mode: " << ExoticParticleDecayMode << G4endl;
+// 		exit(0);
+// 	}
+//
+// 	// check validity of daughters
+// 	for(G4int i = 0; i < Ndaughters; i++)
+// 	{
+// 		if(!G4ParticleTable::GetParticleTable()->FindParticle(daughters[i]))
+// 		{
+// 			G4cout << "[PhysicsList] Error: exotic particle daughter (" << daughters[i] << ") not known" << G4endl;
+// 			exit(0);
+// 		}
+// 	}
+//
+// 	// check the parent mass exceeds the sum of daughter masses
+// 	G4double TotalDaughterMass = 0.0;
+// 	for(G4int i = 0; i < Ndaughters; i++)
+// 	{
+// 		TotalDaughterMass += G4ParticleTable::GetParticleTable()->FindParticle(daughters[i])->GetPDGMass();
+// 	}
+// 	if(TotalDaughterMass >= ExoticParticle::Definition(iParticleNumber)->GetPDGMass())
+// 	{
+// 		G4cout << "[PhysicsList] Error: exotic particle mass (" << ExoticParticle::Definition(iParticleNumber)->GetPDGMass() << " MeV) too small for the decay mode (";
+// 		for(G4int i = 0; i < Ndaughters; i++)
+// 		{
+// 			if(i) G4cout << " ";
+// 			G4cout << daughters[i];
+// 		}
+// 		G4cout << ")" << G4endl;
+// 		exit(0);
+// 	}
+//
+// 	// G4PhaseSpaceDecayChannel format: parent, BR, number of daughters, daughter names
+// 	G4DecayTable* table = new G4DecayTable();
+// 	table->Insert(new G4PhaseSpaceDecayChannel(Form("Exotic%d", iParticleNumber), 1.0, Ndaughters, daughters[0], daughters[1], daughters[2]));
+// 	ExoticParticle::Definition(iParticleNumber)->SetDecayTable(table);
+// }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-void PhysicsList::SetExoticParticleMassStep(G4double Number)
-{
-	fExoticParticleMassStep = Number;
-}
+// void PhysicsList::SetExoticParticleNumberOfGeneratedParticles(G4int Number)
+// {
+// 	fNumberOfGeneratedParticles = Number;
+// }
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+// void PhysicsList::SetExoticParticleMassStep(G4double Number)
+// {
+// 	fExoticParticleMassStep = Number;
+// }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -365,7 +366,7 @@ void PhysicsList::ConstructParticle()
 	fParticleList->ConstructParticle();
 
 	// the exotic particle
-	fExoticParticle->ConstructParticle();
+	// fExoticParticle->ConstructParticle();
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -439,7 +440,7 @@ void PhysicsList::ConstructProcess()
 	fEmPhysicsList->ConstructProcess();
 	OpticalPhysics();
 	fParticleList->ConstructProcess();
-	fExoticParticle->ConstructProcess();
+	// fExoticParticle->ConstructProcess();
 	for(size_t i = 0; i < fHadronPhys.size(); i++) fHadronPhys[i]->ConstructProcess();
 
 	G4HadronicProcessStore::Instance()->SetVerbose(0);

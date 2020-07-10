@@ -12,17 +12,17 @@
 #include "G4ThreeVector.hh"
 #include "G4RotationMatrix.hh"
 #include "G4Box.hh"
-#include "G4SDManager.hh"
+// #include "G4SDManager.hh"
 #include "G4Material.hh"
 #include "G4VisAttributes.hh"
 
-#include "SACMessenger.hh"
+// #include "SACMessenger.hh"
 #include "SACGeometry.hh"
 #include "SACSD.hh"
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-SACDetector::SACDetector(G4Material* material, G4LogicalVolume* motherVolume) : fMotherVolume(motherVolume) // something to do with material too
+SACDetector::SACDetector(G4Material* material, G4LogicalVolume* motherVolume) : fMaterial(material), fMotherVolume(motherVolume)
 {
 	// connect to SACMessenger to enable datacard configuration
 	// fSACMessenger = new SACMessenger(this);
@@ -42,9 +42,9 @@ void SACDetector::CreateGeometry()
 	SACGeometry* geo = SACGeometry::GetInstance();
 
 	// create main SAC box
-	G4double sacPosX = geo->GetSACPosX()
-	G4double sacPosY = geo->GetSACPosY()
-	G4double sacPosZ = geo->GetSACPosZ()
+	G4double sacPosX = geo->GetSACPosX();
+	G4double sacPosY = geo->GetSACPosY();
+	G4double sacPosZ = geo->GetSACPosZ();
 	G4ThreeVector sacPos = G4ThreeVector(sacPosX, sacPosY, sacPosZ);
 	printf("SAC will be placed at %f %f %f\n", sacPosX, sacPosY, sacPosZ);
 
@@ -83,7 +83,7 @@ void SACDetector::CreateGeometry()
 	G4String sacSDName = geo->GetSACSensitiveDetectorName();
 	printf("Registering SAC SD %s\n", sacSDName.data());
 	SACSD* sacSD = new SACSD(sacSDName);
-	sdMan->AddNewDetector(sacSD);
+	// sdMan->AddNewDetector(sacSD);
 
 	// 20-05-2020 ADD to track cerenkov photons
 	// sacSD->GetOptTrack()->UseOpticalTracking();

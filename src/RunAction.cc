@@ -7,7 +7,7 @@
 
 #include "RunAction.hh"
 
-#include "G4RunManager"
+#include "G4RunManager.hh"
 // #include "RootIOManager.hh"
 
 #include "G4Run.hh"

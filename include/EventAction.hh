@@ -8,6 +8,8 @@
 #ifndef EventAction_H
 #define EventAction_H 1
 
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
 #include "G4UserEventAction.hh"
 #include "globals.hh"
 
@@ -32,10 +34,10 @@ class EventAction : public G4UserEventAction
 
 	private:
 
-		G4Timer* timer;
+		G4Timer* fTimer;
 		G4long fEventID;
 		long fCurrentEventCount;
-}
+};
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 

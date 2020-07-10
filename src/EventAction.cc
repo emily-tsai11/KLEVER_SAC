@@ -26,7 +26,7 @@
 
 EventAction::EventAction(int seedNum)
 {
-	timer = new G4Timer;
+	fTimer = new G4Timer;
 	fCurrentEventCount = 0;
 	CLHEP::HepRandom::setTheSeed(seedNum);
 }
@@ -35,30 +35,30 @@ EventAction::EventAction(int seedNum)
 
 EventAction::~EventAction()
 {
-	delete timer;
+	delete fTimer;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 void EventAction::BeginOfEventAction(const G4Event* evt)
 {
-	timer->Start();
+	fTimer->Start();
 	fEventID = evt->GetEventID();
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-void EndOfEventAction(const G4Event* evt)
+void EventAction::EndOfEventAction(const G4Event* evt)
 {
 	// SAVE EVENT TO ROOT FILE
 
 
 	// stop event timer
-	timer->Stop();
+	fTimer->Stop();
 
 	// get number of stored trajectories
 	G4TrajectoryContainer* trajectoryContainer = evt->GetTrajectoryContainer();
-	G4int nTrajectories = 0; nOptical = 0;
+	G4int nTrajectories = 0, nOptical = 0;
 	if(trajectoryContainer) nTrajectories = trajectoryContainer->entries();
 
 	G4bool vis = false;
@@ -72,7 +72,7 @@ void EndOfEventAction(const G4Event* evt)
 		G4cout << "EventAction::EndOfEventAction -> particle is a " << name << G4endl;
 
 		// draw all trajectories
-		if(vis) trj->DrawTrajectory(0);
+		if(vis) trj->DrawTrajectory();
 
 		// save count of optical photons
 		if(name == "opticalphoton") nOptical++;

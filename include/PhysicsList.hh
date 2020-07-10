@@ -12,7 +12,10 @@
 #ifndef PhysicsList_H
 #define PhysicsList_H 1
 
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
 #include "G4VModularPhysicsList.hh"
+#include "G4SystemOfUnits.hh"
 #include "globals.hh"
 
 // optical processes
@@ -54,14 +57,14 @@ class PhysicsList : public G4VModularPhysicsList
 
 		void SetLambdaDecaySpecial(G4bool);
 
-		void SetExoticParticleMass(G4double, G4int);
-		void SetExoticParticleDecayMode(G4int, G4int);
-		void SetExoticParticleLifetime(G4double, G4int);
-		G4int GetExoticParticleDecayMode() const { return fExoticParticleDecayMode; }
-		void SetExoticParticleNumberOfGeneratedParticles(G4int);
-		G4int GetExoticParticleNumberOfGeneratedParticles() { return fNumberOfGeneratedParticles; }
-		void SetExoticParticleMassStep(G4double);
-		G4double GetExoticParticleMassStep() { return fExoticParticleMassStep; }
+		// void SetExoticParticleMass(G4double, G4int);
+		// void SetExoticParticleDecayMode(G4int, G4int);
+		// void SetExoticParticleLifetime(G4double, G4int);
+		// G4int GetExoticParticleDecayMode() const { return fExoticParticleDecayMode; }
+		// void SetExoticParticleNumberOfGeneratedParticles(G4int);
+		// G4int GetExoticParticleNumberOfGeneratedParticles() { return fNumberOfGeneratedParticles; }
+		// void SetExoticParticleMassStep(G4double);
+		// G4double GetExoticParticleMassStep() { return fExoticParticleMassStep; }
 		void SetBrPie2(G4double); // set the branching ratio of the pi+- --> e+- nu decay
 		void SetMuonDecay(G4int); // set muon decay mode
 
@@ -73,7 +76,7 @@ class PhysicsList : public G4VModularPhysicsList
 
 		static PhysicsList* fgInstance;
 		static int fNumberOfGeneratedParticles;
-		static double fExoticParticleMassStep;
+		// static double fExoticParticleMassStep;
 
 		G4double fCutForGamma;
 		G4double fCutForElectron;
@@ -84,14 +87,14 @@ class PhysicsList : public G4VModularPhysicsList
 		G4Cerenkov* fCerenkovProcess;
 		G4Scintillation* fScintillationProcess;
 		G4OpAbsorption* fAbsorptionProcess;
-		G4OpRayleigh* RayleighScatteringProcess;
+		G4OpRayleigh* fRayleighScatteringProcess;
 		G4OpBoundaryProcess* fBoundaryProcess;
 		G4OpWLS* fWLSProcess;
 
 		G4VPhysicsConstructor* fEmPhysicsList;
 		G4VPhysicsConstructor* fParticleList;
-		G4VPhysicsConstructor* fExoticParticle;
-		G4int fExoticParticleDecayMode;
+		// G4VPhysicsConstructor* fExoticParticle;
+		// G4int fExoticParticleDecayMode;
 		std::vector<G4VPhysicsConstructor*> fHadronPhys;
 
 		// PhysicsListMessenger* fMessenger;

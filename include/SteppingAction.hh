@@ -8,6 +8,8 @@
 #ifndef SteppingAction_H
 #define SteppingAction_H 1
 
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
 #include "G4UserSteppingAction.hh"
 #include "G4LorentzVector.hh"
 #include "globals.hh"
@@ -31,7 +33,7 @@ class SteppingAction : public G4UserSteppingAction
 		EventAction* fEventAction;
 		G4LorentzVector fInitialMomentum;
 		G4LorentzVector fFinalMomentum;
-}
+};
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 

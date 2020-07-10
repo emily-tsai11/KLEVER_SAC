@@ -20,6 +20,7 @@
 
 #include "G4Material.hh"
 #include "G4LogicalVolume.hh"
+#include "G4Box.hh"
 #include "G4ThreeVector.hh"
 #include "G4PVPlacement.hh"
 #include "G4VisAttributes.hh"
@@ -80,11 +81,11 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 
 	// create SAC detector
 	fSAC->SetMaterial(G4Material::GetMaterial("TubeVacuum"));
-	fSAC->SetMotherVolume(logicWorld);
+	fSAC->SetMotherVolume(logicalWorld);
 	fSAC->CreateGeometry();
 
 	// make world invisible
-	logicWorld->SetVisAttributes(G4VisAttributes::Invisible);
+	logicalWorld->SetVisAttributes(G4VisAttributes::Invisible);
 
 	// return physical world
 	return physicalWorld;
@@ -95,16 +96,16 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 void DetectorConstruction::DefineMaterials()
 {
 	// don't call DefineMaterials() again
-	static G4bool already_called = kFALSE;
+	static G4bool already_called = false;
 	if(already_called) return;
-	already_called = kTRUE;
+	already_called = true;
 
 	// create custom vacuum material
 	G4String name;
-	G4double density = universe_mean_density;	// from PhysicalConstants.h
+	G4double density = CLHEP::universe_mean_density;	// from PhysicalConstants.h
 	G4double pressure = 1.0e-19 * pascal;
 	G4double temperature = 0.1 * kelvin;
-	G4double a, z;								// a = mass of a mole; z = mean number of protons
+	G4double a, z;										// a = mass of a mole; z = mean number of protons
 
 	G4Material* TubeVacuum = new G4Material(name = "TubeVacuum", z = 1.0, a = 1.01 * g/mole, density, kStateGas, temperature, pressure);
 

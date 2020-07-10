@@ -8,7 +8,10 @@
 #ifndef PrimaryGeneratorAction_H
 #define PrimaryGeneratorAction_H 1
 
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
 #include "G4VUserPrimaryGeneratorAction.hh"
+#include "G4ParticleTable.hh"
 #include "G4LorentzVector.hh"
 #include "G4Event.hh"
 #include "globals.hh"
@@ -44,7 +47,7 @@ class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
 
 		DetectorConstruction* fDetector;
 		EventAction* fEventAction;
-}
+};
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 

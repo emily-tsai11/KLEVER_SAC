@@ -16,7 +16,7 @@
 #include "G4DecayTable.hh"
 #include "G4ParticleTable.hh"
 #include "G4ParticleDefinition.hh"
-#include "G4PhysicalConst
+#include "G4PhysicalConstants.hh"
 
 #include "PhysicsList.hh"
 

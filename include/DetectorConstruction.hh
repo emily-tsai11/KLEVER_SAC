@@ -8,6 +8,8 @@
 #ifndef DetectorConstruction_H
 #define DetectorConstruction_H 1
 
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
 #include "G4VUserDetectorConstruction.hh"
 #include "globals.hh"
 
@@ -16,6 +18,7 @@
 class G4LogicalVolume;
 class G4VPhysicalVolume;
 class G4VSolid;
+class G4Box;
 
 class SACDetector;
 
@@ -56,7 +59,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction
 	    G4double fWorldXLength;
 	    G4double fWorldYLength;
 
-		SACDetector* SAC;
+		SACDetector* fSAC;
 
 		void DefineMaterials();
 };
