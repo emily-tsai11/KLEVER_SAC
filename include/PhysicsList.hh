@@ -6,7 +6,7 @@
 //
 // Antonino Sergi (Antonino.Sergi@cern.ch)
 // Sergey Podolsky (siarhei.padolski@cern.ch) 03-09-2012
-// Adapted from KLMC by Emily Tsai (emily.tsai11@gmail.com) 2020-7-9
+// Adapted from Padme by Emily Tsai (emily.tsai11@gmail.com) 2020-7-13
 // --------------------------------------------------------------
 
 #ifndef PhysicsList_H
@@ -15,7 +15,6 @@
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 #include "G4VModularPhysicsList.hh"
-#include "G4SystemOfUnits.hh"
 #include "globals.hh"
 
 // optical processes
@@ -39,11 +38,12 @@ class PhysicsList : public G4VModularPhysicsList
 
 		PhysicsList();
 		virtual ~PhysicsList();
-		static PhysicsList *GetInstance();
+
+		static PhysicsList* GetInstance();
 
 		void ConstructParticle();
 		void ConstructProcess();
-
+		void SetMessengerParam();
 		void SetCuts();
 		void SetCutForGamma(G4double);
 		void SetCutForElectron(G4double);
@@ -52,31 +52,20 @@ class PhysicsList : public G4VModularPhysicsList
 
 		void AddPhysicsList(const G4String& name);
 		void OpticalPhysics();
-		void List();
+		void List() {}
 		void AddParameterisation();
 
-		void SetLambdaDecaySpecial(G4bool);
-
-		// void SetExoticParticleMass(G4double, G4int);
-		// void SetExoticParticleDecayMode(G4int, G4int);
-		// void SetExoticParticleLifetime(G4double, G4int);
-		// G4int GetExoticParticleDecayMode() const { return fExoticParticleDecayMode; }
-		// void SetExoticParticleNumberOfGeneratedParticles(G4int);
-		// G4int GetExoticParticleNumberOfGeneratedParticles() { return fNumberOfGeneratedParticles; }
-		// void SetExoticParticleMassStep(G4double);
-		// G4double GetExoticParticleMassStep() { return fExoticParticleMassStep; }
 		void SetBrPie2(G4double); // set the branching ratio of the pi+- --> e+- nu decay
+		G4double GetBrPie2() { return fBrPie2; }
 		void SetMuonDecay(G4int); // set muon decay mode
+		G4String GetPhysicsListName() { return fPhysicsListName; }
 
 	private:
 
-		void SetBuilderList0(G4bool flagHP = false);
 		void SetBuilderList1(G4bool flagHP = false);
 		void SetBuilderList2();
 
 		static PhysicsList* fgInstance;
-		static int fNumberOfGeneratedParticles;
-		// static double fExoticParticleMassStep;
 
 		G4double fCutForGamma;
 		G4double fCutForElectron;
@@ -93,12 +82,14 @@ class PhysicsList : public G4VModularPhysicsList
 
 		G4VPhysicsConstructor* fEmPhysicsList;
 		G4VPhysicsConstructor* fParticleList;
-		// G4VPhysicsConstructor* fExoticParticle;
-		// G4int fExoticParticleDecayMode;
+
 		std::vector<G4VPhysicsConstructor*> fHadronPhys;
 
-		// PhysicsListMessenger* fMessenger;
-		G4bool dump;
+		PhysicsListMessenger* fMessenger;
+
+		G4double fBrPie2; // branching ratio of the pi+- --> e+- nu decay
+		G4double fMDS; // needed for hnl mode from D mesons
+		G4String fPhysicsListName;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

@@ -30,8 +30,8 @@ PrimaryGeneratorAction::PrimaryGeneratorAction(DetectorConstruction* detector, E
 	// default settings
 	fParticleGun = new G4GeneralParticleSource();
 	fParticleGun->SetParticleDefinition(fParticleTable->FindParticle("opticalphoton"));
-	fParticleGun->SetParticleTime(0.0 * ns);
-	fParticleGun->SetParticlePosition(G4ThreeVector(0.0 * m, 0.0 * m, 0.0 * m));
+	fParticleGun->SetParticleTime(0.0 * CLHEP::ns);
+	fParticleGun->SetParticlePosition(G4ThreeVector(0.0 * CLHEP::m, 0.0 * CLHEP::m, 0.0 * CLHEP::m));
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

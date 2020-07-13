@@ -5,4 +5,17 @@
 # Created by Emily Tsai (emily.tsai11@gmail.com) 2020-7-8
 # --------------------------------------------------------------
 
+/control/verbose 1
+/run/verbose 1
+/tracking/verbose 0
+
+/Simulation/Physics QGSP_FTFP_BERT
+
 /run/initialize
+
+/beam/particle 1
+
+/vis/open OGL 600x600-0+0
+/vis/viewer/set/autoRefresh false
+/vis/verbose errors
+/vis/drawVolume
