@@ -54,9 +54,9 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 	G4LogicalSkinSurface::CleanSurfaceTable();
 
 	// define world
-	fWorldXLength = 10.0 * m;
-	fWorldYLength = 10.0 * m;
-	fWorldZLength = 600.0 * m;
+	fWorldXLength = 1.0 * m;
+	fWorldYLength = 1.0 * m;
+	fWorldZLength = 1.0 * m;
 
 	DefineMaterials();
 
@@ -85,7 +85,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 	fSAC->CreateGeometry();
 
 	// make world invisible
-	logicalWorld->SetVisAttributes(G4VisAttributes::Invisible);
+	// logicalWorld->SetVisAttributes(G4VisAttributes::Invisible);
 
 	// return physical world
 	return physicalWorld;
@@ -107,13 +107,20 @@ void DetectorConstruction::DefineMaterials()
 	G4double temperature = 0.1 * kelvin;
 	G4double a, z;										// a = mass of a mole; z = mean number of protons
 
-	G4Material* TubeVacuum = new G4Material(name = "TubeVacuum", z = 1.0, a = 1.01 * g/mole, density, kStateGas, temperature, pressure);
+	G4Material* TubeVacuum = new G4Material(name = "TubeVacuum", z = 1.0, a = 1.01 * g / mole, density, kStateGas, temperature, pressure);
 
 	// standard materials
 	G4NistManager* nistMgr = G4NistManager::Instance();
 	nistMgr->FindOrBuildMaterial("G4_Galactic");
 	nistMgr->FindOrBuildMaterial("TubeVacuum");
-    nistMgr->FindOrBuildMaterial("G4_AIR");
+	nistMgr->FindOrBuildMaterial("G4_AIR");
+	nistMgr->FindOrBuildElement("N");
+	nistMgr->FindOrBuildElement("O");
+	nistMgr->FindOrBuildElement("Pb");
+	nistMgr->FindOrBuildElement("F");
+	nistMgr->FindOrBuildElement("Ti");
+	nistMgr->FindOrBuildElement("C");
+	nistMgr->FindOrBuildElement("H");
 
 	// for extensive output about material definition
 	nistMgr->SetVerbose(0);
@@ -121,5 +128,22 @@ void DetectorConstruction::DefineMaterials()
 	// nistMgr->ListMaterials("all");
 
 	// "black hole" material: all particles entering it are suppressed
-	new G4Material("KLBlackHole", 1.0, 1.0 * g/mole, 1.0 * g/cm3);
+	new G4Material("KLBlackHole", 1.0, 1.0 * g / mole, 1.0 * g / cm3);
+
+	// vacuum: leave some residual air with low density (chamber, world)
+	G4Material* Vacuum = new G4Material("Vacuum", (1.290 * 1E-10) * mg / cm3, 2); // 1mbar
+	Vacuum->AddElement(G4Element::GetElement("N"), 70.0 * perCent);
+	Vacuum->AddElement(G4Element::GetElement("O"), 30.0 * perCent);
+
+	// lead fluoride PbF2 (SAC)
+	G4Material* PbF2 = new G4Material("PbF2", 7.77 * g / cm3, 2);
+	PbF2->AddElement(G4Element::GetElement("Pb"), 1.0 / 3.0);
+	PbF2->AddElement(G4Element::GetElement("F"), 2.0 / 3.0);
+
+	// EJ510 reflective paint (SAC)
+	G4Material* EJ510Paint = new G4Material("EJ510Paint", 1.182 * g / cm3, 4);
+	EJ510Paint->AddElement(G4Element::GetElement("Ti"), 41.053 * perCent);
+	EJ510Paint->AddElement(G4Element::GetElement("C"), 17.194 * perCent);
+	EJ510Paint->AddElement(G4Element::GetElement("H"), 2.899 * perCent);
+	EJ510Paint->AddElement(G4Element::GetElement("O"), 38.854 * perCent);
 }

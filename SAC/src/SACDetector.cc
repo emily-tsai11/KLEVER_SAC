@@ -119,16 +119,19 @@ void SACDetector::CreateGeometry()
 				if(geo->ExistsCrystalAt(row, col))
 				{
 					G4ThreeVector positionCry = G4ThreeVector(geo->GetCrystalPosX(row, col), geo->GetCrystalPosY(row, col), geo->GetCrystalPosZ(row, col) + Zoffset);
-					// printf("cristal position %f %f %f\n", geo->GetCrystalPosX(row, col), geo->GetCrystalPosY(row, col), geo->GetCrystalPosZ(row, col) + Zoffset);
-					// G4int idxCell = row * SACGEOMETRY_N_COLS_MAX + col + layer * nRow * nCol;
-					// printf("*******idxCell %d\n", idxCell);
-					// G4PVPlacement* daughter = new G4PVPlacement(0, positionCry, fCellVolume, "SACCell", fSACVolume, false, idxCell, false);
-					// G4LogicalVolume* daughter_log = daughter->GetLogicalVolume();
-					// if(daughter->CheckOverlaps(1000, false))
-					// {
-					// 	printf("WARNING - overlaps found in %s\n", daughter_log->GetName().data());
-					// 	return;
-					// }
+					G4int idxCell = row * SACGEOMETRY_N_COLS_MAX + col + layer * nRow * nCol;
+					if(idxCell % 100 == 0)
+					{
+						printf("Crystal position %f %f %f\n", geo->GetCrystalPosX(row, col), geo->GetCrystalPosY(row, col), geo->GetCrystalPosZ(row, col) + Zoffset);
+						printf("*******idxCell %d\n", idxCell);
+					}
+					G4PVPlacement* daughter = new G4PVPlacement(0, positionCry, fCellVolume, "SACCell", fSACVolume, false, idxCell, false);
+					G4LogicalVolume* daughter_log = daughter->GetLogicalVolume();
+					if(daughter->CheckOverlaps(1000, false))
+					{
+						printf("WARNING - overlaps found in %s\n", daughter_log->GetName().data());
+						return;
+					}
 				}
 			}
 		}

@@ -48,7 +48,8 @@ class SACGeometry
 		// position of center of SAC box
 		G4double GetSACPosX() { return 0.0 * cm; }
 		G4double GetSACPosY() { return 0.0 * cm; }
-		G4double GetSACPosZ() { return fSACFrontFacePosZ + (GetCellSizeZ() * fSACNLayers) * 0.5; }
+		// G4double GetSACPosZ() { return fSACFrontFacePosZ + (GetCellSizeZ() * fSACNLayers) * 0.5 * cm; }
+		G4double GetSACPosZ() { return 0.0 * cm; } // debug
 
 		// size of SAC box
 		G4double GetSACSizeX() { return (GetCellSizeX() + fCrystalGap) * fSACNCols; }
@@ -60,9 +61,9 @@ class SACGeometry
 		G4int GetSACNCols() { return fSACNCols; }
 		G4int GetSACNLayers() { return fSACNLayers; }
 
-		void  SetSACNRows(G4int r) { fSACNRows = r; }
-		void  SetSACNCols(G4int c) { fSACNCols = c; }
-		void  SetSACNLayers(G4int l) { fSACNLayers = l; }
+		void SetSACNRows(G4int r) { fSACNRows = r; }
+		void SetSACNCols(G4int c) { fSACNCols = c; }
+		void SetSACNLayers(G4int l) { fSACNLayers = l; }
 
 		// check if crystal exists at given row/column
 		G4int ExistsCrystalAt(G4int, G4int);
@@ -106,7 +107,7 @@ class SACGeometry
 
 		std::vector<G4double> GetDigiPECollectionMap() { return fDigiPECollectionMap; }
 		G4int GetDigiPECollectionMapNBins() { return fDigiPECollectionMap.size(); }
-		G4double  GetDigiPECollectionMapBinLength() { return fCrystalSizeZ / fDigiPECollectionMap.size(); }
+		G4double GetDigiPECollectionMapBinLength() { return fCrystalSizeZ / fDigiPECollectionMap.size(); }
 
 		G4double GetDigiPMTTransitTime() { return fDigiPMTTransitTime; }
 		G4double GetDigiPMTCableDelay() { return fDigiPMTCableDelay; }
