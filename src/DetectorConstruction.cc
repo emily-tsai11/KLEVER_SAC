@@ -9,7 +9,7 @@
 
 #include "G4NistManager.hh"
 #include "G4RunManager.hh"
-#include "G4SDManager.hh"
+// #include "G4SDManager.hh"
 #include "G4GeometryManager.hh"
 
 #include "G4PhysicalVolumeStore.hh"

@@ -243,7 +243,7 @@ void PhysicsList::SetMuonDecay(G4int MuonDecayMode)
 		MuonPlusDecayTable->Insert(new G4MuonDecayChannelWithSpin("mu+", 1.0));
 		MuonMinusDecayTable->Insert(new G4MuonDecayChannelWithSpin("mu-", 1.0));
 	}
-	else if (MuonDecayMode==1) // Geant4 mu decay (polarization + 1st order radiative corrections + radiative mu->enunug decay, Eg > 0.5 MeV)
+	else if(MuonDecayMode == 1) // Geant4 mu decay (polarization + 1st order radiative corrections + radiative mu->enunug decay, Eg > 0.5 MeV)
 	{
 		// the weights are such that the ratio of radiative muon decays with Eg > 10 MeV is 0.014, in agreement with the experimental results
 		MuonPlusDecayTable->Insert(new G4MuonDecayChannelWithSpin("mu+", 0.932));

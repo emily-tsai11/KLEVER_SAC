@@ -1,10 +1,3 @@
-# CMakeLists.txt
-# --------------------------------------------------------------
-# History:
-#
-# Created by Emily Tsai (emily.tsai11@gmail.com) 2020-7-10
-# --------------------------------------------------------------
-
 # require minimum cmake version
 cmake_minimum_required(VERSION 3.8 FATAL_ERROR)
 project(KLMC_SAC)
@@ -31,9 +24,9 @@ add_executable(KLMC_SAC KLMC_SAC.cc ${headers} ${sources})
 target_link_libraries(KLMC_SAC ${Geant4_LIBRARIES})
 
 # add Physics to build
-# add_subdirectory(${PROJECT_SOURCE_DIR}/Physics) # add Physics subdirectory to build
-# include_directories(${PROJECT_SOURCE_DIR}/Physics/include) # specify Physics include directory
-# target_link_libraries(KLMC_SAC Physics) # link with KLMC_SAC libraries
+add_subdirectory(${PROJECT_SOURCE_DIR}/Physics) # add Physics subdirectory to build
+include_directories(${PROJECT_SOURCE_DIR}/Physics/include) # specify Physics include directory
+target_link_libraries(KLMC_SAC Physics) # link with KLMC_SAC libraries
 
 # add SAC to build
 add_subdirectory(${PROJECT_SOURCE_DIR}/SAC) # add SAC subdirectory to build

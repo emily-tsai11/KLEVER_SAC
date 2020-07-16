@@ -12,11 +12,11 @@
 #include "G4ThreeVector.hh"
 #include "G4RotationMatrix.hh"
 #include "G4Box.hh"
-// #include "G4SDManager.hh"
+#include "G4SDManager.hh"
 #include "G4Material.hh"
 #include "G4VisAttributes.hh"
 
-// #include "SACMessenger.hh"
+#include "SACMessenger.hh"
 #include "SACGeometry.hh"
 #include "SACSD.hh"
 
@@ -25,14 +25,14 @@
 SACDetector::SACDetector(G4Material* material, G4LogicalVolume* motherVolume) : fMaterial(material), fMotherVolume(motherVolume)
 {
 	// connect to SACMessenger to enable datacard configuration
-	// fSACMessenger = new SACMessenger(this);
+	fSACMessenger = new SACMessenger(this);
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 SACDetector::~SACDetector()
 {
-	// delete fSACMessenger;
+	delete fSACMessenger;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -79,11 +79,11 @@ void SACDetector::CreateGeometry()
 	fCrystalVolume->SetVisAttributes(G4VisAttributes(G4Colour::Magenta()));
 
 	// make crystal a sensitive detector
-	// G4SDManager* sdMan = G4SDManager::GetSDMpointer();
+	G4SDManager* sdMan = G4SDManager::GetSDMpointer();
 	G4String sacSDName = geo->GetSACSensitiveDetectorName();
 	printf("Registering SAC SD %s\n", sacSDName.data());
 	SACSD* sacSD = new SACSD(sacSDName);
-	// sdMan->AddNewDetector(sacSD);
+	sdMan->AddNewDetector(sacSD);
 
 	// 20-05-2020 ADD to track cerenkov photons
 	// sacSD->GetOptTrack()->UseOpticalTracking();

@@ -5,10 +5,11 @@
 // --------------------------------------------------------------
 // History:
 //
-// Created by V. Ivanchenko 31.01.2006
-// V. Ivanchenko (Adaptation of hadr01) 04.06.2006
+// Created by V.Ivanchenko 31.01.2006
+// Modified by V.Ivanchenko 04.06.2006
+//		Adaptation of hadr01
 // Sergey Podolsky (siarhei.padolski@cern.ch) 03-09-2012
-// Adapted from Padme by Emily Tsai (emily.tsai11@gmail.com) 2020-7-13
+// Adapted from Padme by Emily Tsai (emily.tsai11@gmail.com) 2020-7-15
 // --------------------------------------------------------------
 
 #ifndef PhysicsListMessenger_H
@@ -21,13 +22,14 @@
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-class PhysicsList;
+class G4UIdirectory;
 class G4UIcmdWithADouble;
 class G4UIcmdWithAnInteger;
 class G4UIcmdWithADoubleAndUnit;
 class G4UIcmdWithAString;
 class G4UIcmdWithoutParameter;
 class G4UIcmdWithABool;
+class PhysicsList;
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -69,6 +71,8 @@ class PhysicsListMessenger : public G4UImessenger
 
 		static PhysicsListMessenger* fInstance;
 
+		G4UIdirectory* fSimulationDir;
+
 		G4UIcmdWithADoubleAndUnit* fGammaCutCmd;
 		G4UIcmdWithADoubleAndUnit* fElectCutCmd;
 		G4UIcmdWithADoubleAndUnit* fPosCutCmd;
@@ -77,6 +81,8 @@ class PhysicsListMessenger : public G4UImessenger
 		G4UIcmdWithAString* fPListCmd;
 		G4UIcmdWithoutParameter* fListCmd;
 		G4UIcmdWithoutParameter* fFastCmd;
+
+		G4UIdirectory* fDecayDir;
 
 		G4UIcmdWithADouble* fDecayPiplusDecayCmd;
 		G4UIcmdWithAnInteger* fMuonDecayCmd;

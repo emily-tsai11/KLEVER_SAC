@@ -88,10 +88,10 @@ void SACHit::Print()
 {
 	G4cout
 	<< "- channel: " << fChannelId
-	<< " time: " << G4BestUnit(fTime,"Time")
-	<< " energy deposit: " << G4BestUnit(fEnergy,"Energy")
-	<< " global position: " << G4BestUnit(fPosition,"Length")
-	<< " local position: " << G4BestUnit(fLocalPosition,"Length")
+	<< " time: " << G4BestUnit(fTime, "Time")
+	<< " energy deposit: " << G4BestUnit(fEnergy, "Energy")
+	<< " global position: " << G4BestUnit(fPosition, "Length")
+	<< " local position: " << G4BestUnit(fLocalPosition, "Length")
 	<< " track type: " << fTrackType
 	<< G4endl;
 }

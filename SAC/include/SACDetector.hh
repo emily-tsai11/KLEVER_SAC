@@ -19,7 +19,7 @@
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 class G4LogicalVolume;
-// class SACMessenger;
+class SACMessenger;
 
 class SACDetector
 {
@@ -46,7 +46,7 @@ class SACDetector
 		G4LogicalVolume* fCrystalVolume;
 		G4LogicalVolume* fCellVolume;
 
-		// SACMessenger* fSACMessenger;
+		SACMessenger* fSACMessenger;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

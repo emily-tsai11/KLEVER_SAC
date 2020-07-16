@@ -5,10 +5,11 @@
 // --------------------------------------------------------------
 // History:
 //
-// Created by V. Ivanchenko 31.01.2006
-// V. Ivanchenko (Adaptation of hadr01) 04.06.2006
+// Created by V.Ivanchenko 31.01.2006
+// Modified by V.Ivanchenko 04.06.2006
+//		Adaptation of hadr01
 // Sergey Podolsky (siarhei.padolski@cern.ch) 03-09-2012
-// Adapted from Padme by Emily Tsai (emily.tsai11@gmail.com) 2020-7-13
+// Adapted from Padme by Emily Tsai (emily.tsai11@gmail.com) 2020-7-15
 // --------------------------------------------------------------
 
 #include "PhysicsListMessenger.hh"
@@ -34,6 +35,9 @@ PhysicsListMessenger::PhysicsListMessenger() : G4UImessenger(), fGammaCutCmd(0),
 	fElectCutCmd(0), fPosCutCmd(0), fCutCmd(0), fAllCutCmd(0), fPListCmd(0),
 	fListCmd(0), fFastCmd(0), fDecayPiplusDecayCmd(0), fMuonDecayCmd(0)
 {
+	fSimulationDir = new G4UIdirectory("/Simulation/");
+	fSimulationDir->SetGuidance("UI commands to control Simulation");
+
 	fGammaCutCmd = new G4UIcmdWithADoubleAndUnit("/Simulation/CutGamma", this);
 	fGammaCutCmd->SetGuidance("Set gamma cut.");
 	fGammaCutCmd->SetParameterName("Gcut", false);
@@ -82,6 +86,9 @@ PhysicsListMessenger::PhysicsListMessenger() : G4UImessenger(), fGammaCutCmd(0),
 	fFastCmd->SetGuidance("Switch on fast LKr Simulation");
 	fFastCmd->AvailableForStates(G4State_PreInit, G4State_Idle);
 
+	fDecayDir = new G4UIdirectory("/decay/");
+	fDecayDir->SetGuidance("UI commands to control decay");
+
 	fDecayPiplusDecayCmd = new G4UIcmdWithADouble("/decay/BrPie2", this);
 	fDecayPiplusDecayCmd->AvailableForStates(G4State_PreInit, G4State_Idle);
 
@@ -110,7 +117,12 @@ PhysicsListMessenger::~PhysicsListMessenger()
 	delete fPListCmd;
 	delete fListCmd;
 	delete fFastCmd;
+
 	delete fDecayPiplusDecayCmd;
+	delete fMuonDecayCmd;
+
+	delete fSimulationDir;
+	delete fDecayDir;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
