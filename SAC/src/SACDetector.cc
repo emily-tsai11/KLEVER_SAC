@@ -53,9 +53,9 @@ void SACDetector::CreateGeometry()
 	G4double sacSizeZ = geo->GetSACSizeZ();
 	printf("SAC size is %f %f %f\n", sacSizeX, sacSizeY, sacSizeZ);
 
-	G4Box* solidSAC = new G4Box("SAC", 0.5 * sacSizeX, 0.5 * sacSizeY, sacSizeZ);
+	G4Box* solidSAC = new G4Box("SAC", 0.5 * sacSizeX, 0.5 * sacSizeY, 0.5 * sacSizeZ);
 	fSACVolume = new G4LogicalVolume(solidSAC, G4Material::GetMaterial("Vacuum"), "SAC", 0, 0, 0);
-	fSACVolume->SetVisAttributes(G4VisAttributes::Invisible);
+	// fSACVolume->SetVisAttributes(G4VisAttributes::Invisible);
 
 	G4RotationMatrix* Rot = new G4RotationMatrix;
 	Rot->rotateY(0.1 * rad);
@@ -97,7 +97,7 @@ void SACDetector::CreateGeometry()
 	printf("SAC cell size is %f %f %f\n", cellSizeX, cellSizeY, cellSizeZ);
 	G4Box* solidCell = new G4Box("SACCell", 0.5 * cellSizeX, 0.5 * cellSizeY, 0.5 * cellSizeZ);
 	fCellVolume = new G4LogicalVolume(solidCell, G4Material::GetMaterial("EJ510Paint"), "SACCell", 0, 0, 0);
-	fCellVolume->SetVisAttributes(G4VisAttributes(G4Colour::Magenta()));
+	fCellVolume->SetVisAttributes(G4VisAttributes(G4Colour::Cyan()));
 
 	// position SAC crystal inside cell
 	new G4PVPlacement(0, G4ThreeVector(0.0, 0.0, 0.0), fCrystalVolume, "SACCry", fCellVolume, false, 0, false);
@@ -107,7 +107,7 @@ void SACDetector::CreateGeometry()
 	G4int nCol = geo->GetSACNCols();
 	G4int nLayers = geo->GetSACNLayers();
 
-	G4double Zoffset = 0.0;
+	G4double Zoffset = -1.5 * geo->GetCellSizeZ();
 
 	// i should repeat the structure for different layers
 	for(G4int layer = 0; layer < nLayers; layer++)

@@ -27,16 +27,11 @@ PrimaryGeneratorAction::PrimaryGeneratorAction(DetectorConstruction* detector, E
 	fEventAction = &eventAction;
 	fParticleTable = G4ParticleTable::GetParticleTable();
 
-	// default settings
-	// fParticleGun = new G4GeneralParticleSource();
-	// fParticleGun->SetParticleDefinition(fParticleTable->FindParticle("opticalphoton"));
-	// fParticleGun->SetParticleTime(0.0 * CLHEP::ns);
-	// fParticleGun->SetParticlePosition(G4ThreeVector(0.0 * CLHEP::m, 0.0 * CLHEP::m, 0.7 * CLHEP::m));
-
 	G4int n_particle = 1;
 	fParticleGun = new G4ParticleGun(n_particle);
 	fParticleGun->SetParticleDefinition(fParticleTable->FindParticle("opticalphoton"));
-	fParticleGun->SetParticleEnergy(511.0 * CLHEP::keV);
+	fParticleGun->SetParticleEnergy(500.0 * CLHEP::MeV);
+	// fParticleGun->SetParticlePolarization();
 	fParticleGun->SetParticlePosition(G4ThreeVector(0.0 * CLHEP::m, 0.0 * CLHEP::m, 0.7 * CLHEP::m));
 	fParticleGun->SetParticleMomentumDirection(G4ThreeVector(0.0, 0.0, -1.0));
 }

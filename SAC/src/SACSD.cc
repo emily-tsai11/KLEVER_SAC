@@ -95,7 +95,6 @@ G4bool SACSD::ProcessHits(G4Step* aStep, G4TouchableHistory*)
 	newHit->SetPosition(worldPosPre);
 	newHit->SetLocalPosition(localPosPre);
 	newHit->SetPType(ClassifyTrack(aStep->GetTrack()));
-	newHit->Print();
 	fSACCollection->insert(newHit);
 
 	return true;

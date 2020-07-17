@@ -64,8 +64,6 @@ void EventAction::EndOfEventAction(const G4Event* evt)
 	G4bool vis = false;
 	if(G4VVisManager::GetConcreteInstance()) vis = true;
 
-	G4cout << "vis: " << vis << G4endl;
-
 	for(G4int i = 0; i < nTrajectories; i++)
 	{
 		// get name of particle being drawn

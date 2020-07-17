@@ -53,12 +53,12 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 	G4LogicalBorderSurface::CleanSurfaceTable();
 	G4LogicalSkinSurface::CleanSurfaceTable();
 
+	DefineMaterials();
+
 	// define world
 	fWorldXLength = 1.0 * m;
 	fWorldYLength = 1.0 * m;
 	fWorldZLength = 1.0 * m;
-
-	DefineMaterials();
 
 	solidWorld = new G4Box("World", 0.5 * fWorldXLength, 0.5 * fWorldYLength, 0.5 * fWorldZLength);
 
@@ -137,8 +137,54 @@ void DetectorConstruction::DefineMaterials()
 
 	// lead fluoride PbF2 (SAC)
 	G4Material* PbF2 = new G4Material("PbF2", 7.77 * g / cm3, 2);
-	PbF2->AddElement(G4Element::GetElement("Pb"), 1.0 / 3.0);
-	PbF2->AddElement(G4Element::GetElement("F"), 2.0 / 3.0);
+	PbF2->AddElement(G4Element::GetElement("Pb"), 1);
+	PbF2->AddElement(G4Element::GetElement("F"), 2);
+
+	// material properties table of PbF2
+	G4MaterialPropertiesTable* MPTPbF2 = new G4MaterialPropertiesTable();
+
+	const G4int nEntries = 30;
+
+	// optical properties of PbF2
+	G4double PhotonEnergy[nEntries] =
+	  { 10.0 * GeV,  20.0 * GeV,  30.0 * GeV,  40.0 * GeV,  50.0 * GeV,
+		60.0 * GeV,  70.0 * GeV,  80.0 * GeV,  90.0 * GeV,  100.0 * GeV,
+		110.0 * GeV, 120.0 * GeV, 130.0 * GeV, 140.0 * GeV, 150.0 * GeV,
+		160.0 * GeV, 170.0 * GeV, 180.0 * GeV, 190.0 * GeV, 200.0 * GeV,
+		210.0 * GeV, 220.0 * GeV, 230.0 * GeV, 240.0 * GeV, 250.0 * GeV,
+		260.0 * GeV, 270.0 * GeV, 280.0 * GeV, 290.0 * GeV, 300.0 * GeV };
+	G4double RefractiveIndexPbF2[nEntries] =
+	  { 1.82, 1.82, 1.82, 1.82, 1.82, 1.82, 1.82, 1.82, 1.82, 1.82,
+		1.82, 1.82, 1.82, 1.82, 1.82, 1.82, 1.82, 1.82, 1.82, 1.82,
+		1.82, 1.82, 1.82, 1.82, 1.82, 1.82, 1.82, 1.82, 1.82, 1.82 };
+	G4double AbsorptionLengthPbF2[nEntries] =
+	  { 0.11 * cm,  0.1 * cm,  0.09 * cm,  0.08 * cm,  0.07 * cm,  0.06 * cm,  0.05 * cm,  0.04 * cm,  0.03 * cm,  0.02 * cm,
+		0.11 * mm,  0.1 * mm,  0.09 * mm,  0.08 * mm,  0.07 * mm,  0.06 * mm,  0.05 * mm,  0.04 * mm,  0.03 * mm,  0.02 * mm,
+		0.011 * mm, 0.01 * mm, 0.009 * mm, 0.008 * mm, 0.007 * mm, 0.006 * mm, 0.005 * mm, 0.004 * mm, 0.003 * mm, 0.002 * mm };
+
+	MPTPbF2->AddProperty("RINDEX", PhotonEnergy, RefractiveIndexPbF2, nEntries);
+	MPTPbF2->AddProperty("ABSLENGTH", PhotonEnergy, AbsorptionLengthPbF2, nEntries);
+
+	// scintillation properties of PbF2
+	G4double ScintillationEnergy[nEntries] =
+	  { 10.0 * GeV,  20.0 * GeV,  30.0 * GeV,  40.0 * GeV,  50.0 * GeV,
+		60.0 * GeV,  70.0 * GeV,  80.0 * GeV,  90.0 * GeV,  100.0 * GeV,
+		110.0 * GeV, 120.0 * GeV, 130.0 * GeV, 140.0 * GeV, 150.0 * GeV,
+		160.0 * GeV, 170.0 * GeV, 180.0 * GeV, 190.0 * GeV, 200.0 * GeV,
+		210.0 * GeV, 220.0 * GeV, 230.0 * GeV, 240.0 * GeV, 250.0 * GeV,
+		260.0 * GeV, 270.0 * GeV, 280.0 * GeV, 290.0 * GeV, 300.0 * GeV };
+	G4double ScintillationFast[nEntries] =
+	  { 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
+		1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
+		1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0 };
+
+	MPTPbF2->AddProperty("FASTCOMPONENT", ScintillationEnergy, ScintillationFast, nEntries);
+	MPTPbF2->AddConstProperty("SCINTILLATIONYIELD", 40.0 / keV);
+	MPTPbF2->AddConstProperty("RESOLUTIONSCALE", 1.0);
+	MPTPbF2->AddConstProperty("FASTTIMECONSTANT", 20.0 * ns);
+	MPTPbF2->AddConstProperty("YIELDRATIO", 1.0);
+
+	PbF2->SetMaterialPropertiesTable(MPTPbF2);
 
 	// EJ510 reflective paint (SAC)
 	G4Material* EJ510Paint = new G4Material("EJ510Paint", 1.182 * g / cm3, 4);
@@ -146,4 +192,7 @@ void DetectorConstruction::DefineMaterials()
 	EJ510Paint->AddElement(G4Element::GetElement("C"), 17.194 * perCent);
 	EJ510Paint->AddElement(G4Element::GetElement("H"), 2.899 * perCent);
 	EJ510Paint->AddElement(G4Element::GetElement("O"), 38.854 * perCent);
+
+	// scintillator surface
+	
 }
