@@ -91,6 +91,7 @@
 #include "PhysicsListMessenger.hh"
 
 // optical processes
+#include "G4OpticalPhysics.hh"
 #include "G4Cerenkov.hh"
 #include "G4Scintillation.hh"
 #include "G4OpAbsorption.hh"
@@ -168,10 +169,10 @@ void PhysicsList::SetMessengerParam()
 
 	if(fMessenger->GetListPhysList()) this->List();
 
-	if(fMessenger->GetCutForGamma() > 0.0)		fCutForGamma = fMessenger->GetCutForGamma();
-	if(fMessenger->GetCutForElectron() > 0.0)	fCutForElectron = fMessenger->GetCutForElectron();
-	if(fMessenger->GetCutForPositron() > 0.0)	fCutForPositron = fMessenger->GetCutForPositron();
-	if(fMessenger->GetCutForProton() > 0.0)		fCutForProton = fMessenger->GetCutForProton();
+	if(fMessenger->GetCutForGamma() > 0.0) fCutForGamma = fMessenger->GetCutForGamma();
+	if(fMessenger->GetCutForElectron() > 0.0) fCutForElectron = fMessenger->GetCutForElectron();
+	if(fMessenger->GetCutForPositron() > 0.0) fCutForPositron = fMessenger->GetCutForPositron();
+	if(fMessenger->GetCutForProton() > 0.0) fCutForProton = fMessenger->GetCutForProton();
 
 	verboseLevel = 1;
 	fBrPie2 = fMessenger->GetBrPie2();

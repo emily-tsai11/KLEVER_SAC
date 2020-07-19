@@ -85,7 +85,6 @@ G4double SACGeometry::GetCrystalPosX(G4int row, G4int col)
 		printf("SACGeometry::GetCrystalPosX - ERROR - Requested crystal at row %d col %d\n", row, col);
 		return 0.0;
 	}
-
 	// return X position of center of crystal
 	return (GetCellSizeX() + fCrystalGap) * (-fSACNCols * 0.5 + col + 0.5);
 }
@@ -100,7 +99,6 @@ G4double SACGeometry::GetCrystalPosY(G4int row, G4int col)
 		printf("SACGeometry::GetCrystalPosY - ERROR - Requested crystal at row %d col %d\n", row, col);
 		return 0.0;
 	}
-
 	// return Y position of center of crystal
 	return (GetCellSizeY() + fCrystalGap) * (-fSACNRows * 0.5 + row + 0.5);
 }
@@ -115,7 +113,6 @@ G4double SACGeometry::GetCrystalPosZ(G4int row, G4int col)
 		printf("SACGeometry::GetCrystalPosZ - ERROR - Requested crystal at row %d col %d\n", row, col);
 		return 0.0;
 	}
-
 	// return Z position of center of crystal in local SAC coordinate system
 	return 0.0 * cm;
 }

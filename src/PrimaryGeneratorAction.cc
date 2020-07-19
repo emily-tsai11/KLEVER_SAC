@@ -30,7 +30,7 @@ PrimaryGeneratorAction::PrimaryGeneratorAction(DetectorConstruction* detector, E
 	G4int n_particle = 1;
 	fParticleGun = new G4ParticleGun(n_particle);
 	fParticleGun->SetParticleDefinition(fParticleTable->FindParticle("opticalphoton"));
-	fParticleGun->SetParticleEnergy(500.0 * CLHEP::MeV);
+	fParticleGun->SetParticleEnergy(50.0 * CLHEP::eV);
 	// fParticleGun->SetParticlePolarization();
 	fParticleGun->SetParticlePosition(G4ThreeVector(0.0 * CLHEP::m, 0.0 * CLHEP::m, 0.7 * CLHEP::m));
 	fParticleGun->SetParticleMomentumDirection(G4ThreeVector(0.0, 0.0, -1.0));

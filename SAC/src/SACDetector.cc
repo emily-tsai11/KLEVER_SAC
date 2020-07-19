@@ -54,7 +54,8 @@ void SACDetector::CreateGeometry()
 	printf("SAC size is %f %f %f\n", sacSizeX, sacSizeY, sacSizeZ);
 
 	G4Box* solidSAC = new G4Box("SAC", 0.5 * sacSizeX, 0.5 * sacSizeY, 0.5 * sacSizeZ);
-	fSACVolume = new G4LogicalVolume(solidSAC, G4Material::GetMaterial("Vacuum"), "SAC", 0, 0, 0);
+	// fSACVolume = new G4LogicalVolume(solidSAC, G4Material::GetMaterial("TubeVacuum"), "SAC", 0, 0, 0);
+	fSACVolume = new G4LogicalVolume(solidSAC, fMaterial, "SAC", 0, 0, 0);
 	// fSACVolume->SetVisAttributes(G4VisAttributes::Invisible);
 
 	G4RotationMatrix* Rot = new G4RotationMatrix;
@@ -95,9 +96,12 @@ void SACDetector::CreateGeometry()
 	G4double cellSizeY = geo->GetCellSizeY();
 	G4double cellSizeZ = geo->GetCellSizeZ();
 	printf("SAC cell size is %f %f %f\n", cellSizeX, cellSizeY, cellSizeZ);
+
 	G4Box* solidCell = new G4Box("SACCell", 0.5 * cellSizeX, 0.5 * cellSizeY, 0.5 * cellSizeZ);
 	fCellVolume = new G4LogicalVolume(solidCell, G4Material::GetMaterial("EJ510Paint"), "SACCell", 0, 0, 0);
 	fCellVolume->SetVisAttributes(G4VisAttributes(G4Colour::Cyan()));
+
+	// DEFINE A REFLECTIVE SURFACE FOR THE SAC CELL?
 
 	// position SAC crystal inside cell
 	new G4PVPlacement(0, G4ThreeVector(0.0, 0.0, 0.0), fCrystalVolume, "SACCry", fCellVolume, false, 0, false);
