@@ -126,13 +126,14 @@ void SACDetector::CreateGeometry()
 						printf("Crystal position %f %f %f\n", geo->GetCrystalPosX(row, col), geo->GetCrystalPosY(row, col), geo->GetCrystalPosZ(row, col) + Zoffset);
 						printf("*******idxCell %d\n", idxCell);
 					}
-					G4PVPlacement* daughter = new G4PVPlacement(0, positionCry, fCellVolume, "SACCell", fSACVolume, false, idxCell, false);
-					G4LogicalVolume* daughter_log = daughter->GetLogicalVolume();
-					if(daughter->CheckOverlaps(1000, false))
-					{
-						printf("WARNING - overlaps found in %s\n", daughter_log->GetName().data());
-						return;
-					}
+					new G4PVPlacement(0, positionCry, fCellVolume, "SACCell", fSACVolume, false, idxCell, false);
+					// G4PVPlacement* daughter = new G4PVPlacement(0, positionCry, fCellVolume, "SACCell", fSACVolume, false, idxCell, false);
+					// G4LogicalVolume* daughter_log = daughter->GetLogicalVolume();
+					// if(daughter->CheckOverlaps(1000, false))
+					// {
+					// 	printf("WARNING - overlaps found in %s\n", daughter_log->GetName().data());
+					// 	return;
+					// }
 				}
 			}
 		}

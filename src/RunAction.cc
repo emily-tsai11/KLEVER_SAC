@@ -33,11 +33,10 @@ RunAction::~RunAction()
 
 void RunAction::BeginOfRunAction(const G4Run* aRun)
 {
-	G4cout << "RunAction::BeginOfRunAction: Run " << aRun->GetRunID() << " start!" << G4endl;
+	G4cout << "RunAction::BeginOfRunAction(): Run " << aRun->GetRunID() << " start!" << G4endl;
 	fTimer->Start();
 
 	G4RunManager::GetRunManager()->SetRandomNumberStore(false);
-	CLHEP::HepRandom::showEngineStatus();
 
 	// get analysis manager
 	fAnalysisManager = G4AnalysisManager::Instance();
@@ -62,7 +61,7 @@ void RunAction::BeginOfRunAction(const G4Run* aRun)
 void RunAction::EndOfRunAction(const G4Run* aRun)
 {
 	fTimer->Stop();
-	G4cout << "RunAction::EndOfRunAction: Total events = " << aRun->GetNumberOfEvent() << " | Timer: " << *fTimer << G4endl;
+	G4cout << "RunAction::EndOfRunAction(): Run " << aRun->GetRunID() << " completed!" << G4endl;
 
 	// save histograms
 	fAnalysisManager = G4AnalysisManager::Instance();

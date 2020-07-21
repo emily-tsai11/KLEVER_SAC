@@ -20,23 +20,23 @@
 #include "SteppingAction.hh"
 
 #include <stdlib.h>
+#include <time.h>
 
 int main(int argc, char** argv)
 {
 	// get macro file and seed number
 	G4String fileName;
-	G4int seedNum;
+	srand(time(0));
+	G4int seedNum = rand();
 	if(argc == 1)
 	{
 		fileName = "vis.mac"; // default interactive mode
-		seedNum = rand();
 		G4cout << "No macro specified, using " << fileName << G4endl;
 		G4cout << "No seed number specified, using " << seedNum << G4endl;
 	}
 	else if(argc == 2)
 	{
 		fileName = argv[1];
-		seedNum = rand();
 		G4cout << "Using macro " << fileName << G4endl;
 		G4cout << "No seed number specified, using " << seedNum << G4endl;
 	}
@@ -64,25 +64,32 @@ int main(int argc, char** argv)
 	runManager->SetUserAction(eventAction);
 	runManager->SetUserAction(new SteppingAction(eventAction));
 
-	// define and initialize visualization session
-	G4VisManager* visManager = new G4VisExecutive;
-	visManager->Initialize();
-
 	// define and start UI session
 	G4UImanager* UImanager = G4UImanager::GetUIpointer();
 	G4String command = "/control/execute ";
-	UImanager->ApplyCommand(command + fileName);
 
-	// default interactive mode, if no macro specified
 	if(argc == 1)
 	{
+		// define and initialize visualization session
+		G4VisManager* visManager = new G4VisExecutive;
+		visManager->Initialize();
+
+		// default interactive mode, if no macro specified
 		G4UIExecutive* ui = new G4UIExecutive(argc, argv);
+		UImanager->ApplyCommand(command + fileName);
 		ui->SessionStart();
 		delete ui;
+
+		// delete visualization manager
+		delete visManager;
+	}
+	else
+	{
+		// batch mode, if macro specified
+		UImanager->ApplyCommand(command + fileName);
 	}
 
 	// job termination
-	delete visManager;
 	delete runManager;
 
 	G4cout << "KLMC_SAC finished successfully!" << G4endl;
