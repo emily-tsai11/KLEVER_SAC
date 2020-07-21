@@ -10,7 +10,6 @@
 
 #include "G4NistManager.hh"
 #include "G4RunManager.hh"
-// #include "G4SDManager.hh"
 #include "G4GeometryManager.hh"
 
 #include "G4PhysicalVolumeStore.hh"
@@ -137,9 +136,6 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 		0,										// mother volume
 		false,									// no boolean operations
 		0);										// copy number
-
-	// ------------------------- DEFINE SURFACES -------------------------
-	// TODO
 
 	// create SAC detector
 	fSAC->SetMaterial(G4Material::GetMaterial("G4_Galactic"));

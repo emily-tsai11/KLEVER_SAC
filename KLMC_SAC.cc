@@ -19,6 +19,8 @@
 #include "RunAction.hh"
 #include "SteppingAction.hh"
 
+#include <stdlib.h>
+
 int main(int argc, char** argv)
 {
 	// get macro file and seed number
@@ -26,15 +28,15 @@ int main(int argc, char** argv)
 	G4int seedNum;
 	if(argc == 1)
 	{
-		fileName = "vis.mac";
-		seedNum = -1;
+		fileName = "vis.mac"; // default interactive mode
+		seedNum = rand();
 		G4cout << "No macro specified, using " << fileName << G4endl;
 		G4cout << "No seed number specified, using " << seedNum << G4endl;
 	}
 	else if(argc == 2)
 	{
 		fileName = argv[1];
-		seedNum = -1;
+		seedNum = rand();
 		G4cout << "Using macro " << fileName << G4endl;
 		G4cout << "No seed number specified, using " << seedNum << G4endl;
 	}
@@ -52,8 +54,8 @@ int main(int argc, char** argv)
 	// construct default run manager
 	G4RunManager* runManager = new G4RunManager;
 	DetectorConstruction* detector = new DetectorConstruction();
-	runManager->SetUserInitialization(detector); // detector construction
-	runManager->SetUserInitialization(new PhysicsList); // standard physics list
+	runManager->SetUserInitialization(detector);
+	runManager->SetUserInitialization(new PhysicsList);
 
 	// set user actions
 	runManager->SetUserAction(new RunAction);
@@ -66,16 +68,18 @@ int main(int argc, char** argv)
 	G4VisManager* visManager = new G4VisExecutive;
 	visManager->Initialize();
 
-	// define and start UI session [ADD IN BATCH MODE FUNCTIONALITY LATER]
-	G4UIExecutive* ui = new G4UIExecutive(argc, argv);
-	G4UImanager* UImanager = G4UImanager::GetUIpointer(); // get pointer to UI manager
+	// define and start UI session
+	G4UImanager* UImanager = G4UImanager::GetUIpointer();
 	G4String command = "/control/execute ";
 	UImanager->ApplyCommand(command + fileName);
-	ui->SessionStart();
-	delete ui;
 
-	// close latest root file
-    // RootIOManager::GetInstance()->Close();
+	// default interactive mode, if no macro specified
+	if(argc == 1)
+	{
+		G4UIExecutive* ui = new G4UIExecutive(argc, argv);
+		ui->SessionStart();
+		delete ui;
+	}
 
 	// job termination
 	delete visManager;

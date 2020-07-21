@@ -44,7 +44,6 @@ class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
 
 		G4ParticleTable* fParticleTable;
 		G4ParticleGun* fParticleGun;
-		// G4GeneralParticleSource* fParticleGun;
 
 		G4String fParticleName;
 

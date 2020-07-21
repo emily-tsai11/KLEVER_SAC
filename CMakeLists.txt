@@ -33,8 +33,9 @@ add_subdirectory(${PROJECT_SOURCE_DIR}/SAC) # add SAC subdirectory to build
 include_directories(${PROJECT_SOURCE_DIR}/SAC/include) # specify SAC include directory
 target_link_libraries(KLMC_SAC SAC) # link with KLMC_SAC libraries
 
-# copy over vis.mac
+# copy over macro files
 configure_file(${PROJECT_SOURCE_DIR}/vis.mac ${PROJECT_BINARY_DIR}/vis.mac COPYONLY)
+configure_file(${PROJECT_SOURCE_DIR}/batch.mac ${PROJECT_BINARY_DIR}/batch.mac COPYONLY)
 
 # install executable
 install(TARGETS KLMC_SAC DESTINATION bin)

@@ -28,7 +28,6 @@ class PADME_PHYS: public G4VModularPhysicsList
 		PADME_PHYS(G4int ver = 1);
 		virtual ~PADME_PHYS();
 
-		// SetCuts()
 		virtual void SetCuts();
 
 	private:

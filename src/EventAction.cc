@@ -50,9 +50,6 @@ void EventAction::BeginOfEventAction(const G4Event* evt)
 
 void EventAction::EndOfEventAction(const G4Event* evt)
 {
-	// SAVE EVENT TO ROOT FILE
-
-
 	// stop event timer
 	fTimer->Stop();
 
