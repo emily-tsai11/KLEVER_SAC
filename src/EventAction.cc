@@ -69,7 +69,8 @@ void EventAction::EndOfEventAction(const G4Event* evt)
 		// get name of particle being drawn
 		G4Trajectory* trj = (G4Trajectory*) ((*trajectoryContainer)[i]);
 		G4String name = trj->GetParticleName();
-		G4cout << "EventAction::EndOfEventAction -> particle is a " << name << G4endl;
+		// G4cout << "EventAction::EndOfEventAction -> particle is a " << name << G4endl;
+		if(i % 1000 == 0) G4cout << "EventAction::EndOfEventAction -> trajectory " << i << " processed" << G4endl;
 
 		// draw all trajectories
 		if(vis) trj->DrawTrajectory();

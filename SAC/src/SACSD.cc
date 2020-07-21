@@ -22,6 +22,9 @@
 #include "G4MuonPlus.hh"
 #include "G4MuonMinus.hh"
 #include "G4PionZero.hh"
+#include "G4OpticalPhoton.hh"
+
+#include "Analysis.hh"
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -60,7 +63,6 @@ G4bool SACSD::ProcessHits(G4Step* aStep, G4TouchableHistory*)
 	newHit->SetEdep(preStepPoint->GetTotalEnergy());
 	// newHit->SetEdep(aStep->GetTrack()->GetTotalEnergy());
 	newHit->SetTrackID(aStep->GetTrack()->GetTrackID());
-
 	// newHit->SetChannelId(touchHPre->GetCopyNumber());
 	newHit->SetChannelId(touchHPre->GetCopyNumber(1)); // copy id is that of the cell, not of the crystal
 	newHit->SetEnergy(edep);
@@ -69,7 +71,7 @@ G4bool SACSD::ProcessHits(G4Step* aStep, G4TouchableHistory*)
 	// << " SACSD: Pre energy of the track: " << preStepPoint->GetTotalEnergy()
 	// << " Post energy of the track: " << postStepPoint->GetTotalEnergy()
 	// << " Total energy: " << aStep->GetTrack()->GetTotalEnergy()
-	// << " Energy deposited: " << aStep->GetTotalEnergyDeposit()
+	// << " Energy deposited: " << edep
 	// << G4endl;
 
 	newHit->SetTime(aStep->GetPreStepPoint()->GetGlobalTime());
@@ -92,17 +94,33 @@ G4bool SACSD::ProcessHits(G4Step* aStep, G4TouchableHistory*)
 	// << " local " << G4BestUnit(localPosPost, "Length")
 	// << G4endl;
 
+	G4int partType = ClassifyTrack(aStep->GetTrack(), edep);
 	newHit->SetPosition(worldPosPre);
 	newHit->SetLocalPosition(localPosPre);
-	newHit->SetPType(ClassifyTrack(aStep->GetTrack()));
+	newHit->SetPType(partType);
 	fSACCollection->insert(newHit);
+
+	// fill histograms
+	G4AnalysisManager* fAnalysisManager = G4AnalysisManager::Instance();
+	switch(partType)
+	{
+		case 1: fAnalysisManager->FillH1(0, edep, edep); break;
+		case 2: fAnalysisManager->FillH1(1, edep, edep); break;
+		case 3: fAnalysisManager->FillH1(2, edep, edep); break;
+		case 4: fAnalysisManager->FillH1(3, edep, edep); break;
+		case 5: fAnalysisManager->FillH1(4, edep, edep); break;
+		case 6: fAnalysisManager->FillH1(5, edep, edep); break;
+		case 7: fAnalysisManager->FillH1(6, edep, edep); break;
+		case 8: fAnalysisManager->FillH1(7, edep, edep); break;
+		default: G4cout << "SWITCH CASE DEFAULT -- NOTHING HAPPENS" << G4endl;
+	}
 
 	return true;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-G4int SACSD::ClassifyTrack(G4Track* track)
+G4int SACSD::ClassifyTrack(G4Track* track, G4double edep)
 {
 	G4ParticleDefinition* particleType = track->GetDefinition();
 	if(particleType == G4Gamma::GammaDefinition()) { return 1; }
@@ -112,7 +130,12 @@ G4int SACSD::ClassifyTrack(G4Track* track)
 	else if(particleType == G4PionPlus::PionPlusDefinition() || particleType == G4PionMinus::PionMinusDefinition()) { return 5; }
 	else if(particleType == G4PionZero::PionZeroDefinition()) { return 6; }
 	else if(particleType == G4MuonPlus::MuonPlusDefinition() || particleType == G4MuonMinus::MuonMinusDefinition()) { return 7; }
-	else return -1;
+	else if(particleType == G4OpticalPhoton::OpticalPhotonDefinition()) { return 8; }
+	else
+	{
+		G4cout << "untracked energy deposition: " << edep << " | particleType: " << particleType << G4endl;
+		return -1;
+	}
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

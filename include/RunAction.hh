@@ -10,6 +10,7 @@
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
+#include "G4VAnalysisManager.hh"
 #include "G4UserRunAction.hh"
 #include "globals.hh"
 
@@ -33,6 +34,7 @@ class RunAction : public G4UserRunAction
 	private:
 
 		G4Timer* fTimer;
+		G4VAnalysisManager* fAnalysisManager;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

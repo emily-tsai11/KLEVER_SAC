@@ -14,8 +14,8 @@
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-#include "globals.hh"
 #include "G4SystemOfUnits.hh"
+#include "globals.hh"
 
 #include <vector>
 
@@ -46,8 +46,8 @@ class SACGeometry
 		G4int GetVerboseLevel() { return fVerbose; }
 
 		// position of center of SAC box
-		G4double GetSACPosX() { return 0.0 * cm; }
-		G4double GetSACPosY() { return 0.0 * cm; }
+		G4double GetSACPosX() { return 1.0 * cm; }
+		G4double GetSACPosY() { return 1.0 * cm; }
 		// G4double GetSACPosZ() { return fSACFrontFacePosZ + (GetCellSizeZ() * fSACNLayers) * 0.5 * cm; }
 		G4double GetSACPosZ() { return 0.0 * cm; } // debug
 

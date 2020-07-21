@@ -16,7 +16,6 @@
 #include "EventAction.hh"
 #include "PhysicsList.hh"
 #include "PrimaryGeneratorAction.hh"
-// #include "RootIOManager.hh"
 #include "RunAction.hh"
 #include "SteppingAction.hh"
 

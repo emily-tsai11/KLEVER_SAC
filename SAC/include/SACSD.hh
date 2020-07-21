@@ -29,7 +29,7 @@ class SACSD : public G4VSensitiveDetector
 
 		void Initialize(G4HCofThisEvent*);
 		G4bool ProcessHits(G4Step*, G4TouchableHistory*);
-		G4int ClassifyTrack(G4Track* track);
+		G4int ClassifyTrack(G4Track* track, G4double edep);
 		void EndOfEvent(G4HCofThisEvent*);
 
 	private:
