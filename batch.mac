@@ -6,5 +6,5 @@
 /tracking/verbose 0
 
 /run/initialize
-/tracking/storeTrajectory 1
+/tracking/storeTrajectory 0
 /run/beamOn 1

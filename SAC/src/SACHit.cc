@@ -30,30 +30,24 @@ SACHit::~SACHit() {}
 
 SACHit::SACHit(const SACHit& right) : G4VHit()
 {
-	fTrackType = right.fTrackType;
 	fChannelId = right.fChannelId;
 	fTime = right.fTime;
 	fEnergy = right.fEnergy;
 	fPosition = right.fPosition;
 	fLocalPosition = right.fLocalPosition;
-
-	// obsolete and probably not used
-	fTrackId = right.fTrackId;
+	fTrackType = right.fTrackType;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 const SACHit& SACHit::operator=(const SACHit& right)
 {
-	fTrackType = right.fTrackType;
 	fChannelId = right.fChannelId;
 	fTime = right.fTime;
 	fEnergy = right.fEnergy;
 	fPosition = right.fPosition;
 	fLocalPosition = right.fLocalPosition;
-
-	// obsolete and probably not used
-	fTrackId = right.fTrackId;
+	fTrackType = right.fTrackType;
 
 	return *this;
 }

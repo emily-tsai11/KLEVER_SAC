@@ -21,6 +21,7 @@
 #include "g4root.hh"
 
 #include "PrimaryGeneratorAction.hh"
+#include "Analysis.hh"
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -56,7 +57,7 @@ void EventAction::EndOfEventAction(const G4Event* evt)
 
 	// get number of stored trajectories
 	G4TrajectoryContainer* trajectoryContainer = evt->GetTrajectoryContainer();
-	G4int nTrajectories = 0, nOptical = 0;
+	G4int nTrajectories = 0;
 	if(trajectoryContainer) nTrajectories = trajectoryContainer->entries();
 
 	G4bool vis = false;
@@ -64,18 +65,14 @@ void EventAction::EndOfEventAction(const G4Event* evt)
 
 	for(G4int i = 0; i < nTrajectories; i++)
 	{
-		// get name of particle being drawn
-		G4Trajectory* trj = (G4Trajectory*) ((*trajectoryContainer)[i]);
-		G4String name = trj->GetParticleName();
-		// if(i % 10000 == 0) G4cout << "EventAction::EndOfEventAction -> trajectory " << i << " processed" << G4endl;
-
 		// draw all trajectories
-		if(vis) trj->DrawTrajectory();
-
-		// save count of optical photons
-		if(name == "opticalphoton") nOptical++;
+		if(vis)
+		{
+			G4Trajectory* trj = (G4Trajectory*) ((*trajectoryContainer)[i]);
+			trj->DrawTrajectory();
+		}
+		// if(i % 10000 == 0) G4cout << "EventAction::EndOfEventAction() -> trajectory " << i << " processed" << G4endl;
 	}
-	G4cout << "nOptical: " << nOptical << G4endl;
 
 	// periodic printing
 	G4int eventID = evt->GetEventID();

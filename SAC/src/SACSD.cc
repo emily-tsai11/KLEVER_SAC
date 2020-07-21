@@ -52,70 +52,79 @@ void SACSD::Initialize(G4HCofThisEvent* HCE)
 
 G4bool SACSD::ProcessHits(G4Step* aStep, G4TouchableHistory*)
 {
-	G4double edep = aStep->GetTotalEnergyDeposit();
-	if(edep == 0.0) return false;
-	G4StepPoint* preStepPoint = aStep->GetPreStepPoint();
-	// G4StepPoint* postStepPoint = aStep->GetPostStepPoint();
-	G4TouchableHandle touchHPre = aStep->GetPreStepPoint()->GetTouchableHandle();
-
 	SACHit* newHit = new SACHit();
 
-	newHit->SetEdep(preStepPoint->GetTotalEnergy());
-	// newHit->SetEdep(aStep->GetTrack()->GetTotalEnergy());
-	newHit->SetTrackID(aStep->GetTrack()->GetTrackID());
-	// newHit->SetChannelId(touchHPre->GetCopyNumber());
+	G4StepPoint* preStepPoint = aStep->GetPreStepPoint();
+	G4TouchableHandle touchHPre = preStepPoint->GetTouchableHandle();
 	newHit->SetChannelId(touchHPre->GetCopyNumber(1)); // copy id is that of the cell, not of the crystal
+
+	newHit->SetTime(preStepPoint->GetGlobalTime());
+
+	G4double edep = aStep->GetTotalEnergyDeposit();
+	if(edep == 0.0) return false;
 	newHit->SetEnergy(edep);
 
-	// G4cout
-	// << " SACSD: Pre energy of the track: " << preStepPoint->GetTotalEnergy()
-	// << " Post energy of the track: " << postStepPoint->GetTotalEnergy()
-	// << " Total energy: " << aStep->GetTrack()->GetTotalEnergy()
-	// << " Energy deposited: " << edep
-	// << G4endl;
+	G4ThreeVector worldPosPre = preStepPoint->GetPosition();
+	newHit->SetPosition(worldPosPre);
 
-	newHit->SetTime(aStep->GetPreStepPoint()->GetGlobalTime());
-
-	G4ThreeVector worldPosPre = aStep->GetPreStepPoint()->GetPosition();
 	G4ThreeVector localPosPre = touchHPre->GetHistory()->GetTopTransform().TransformPoint(worldPosPre);
-
-	// G4cout
-	// << "PreStepPoint in " << touchHPre->GetVolume()->GetName()
-	// << " global " << G4BestUnit(worldPosPre, "Length")
-	// << " local " << G4BestUnit(localPosPre, "Length")
-	// << G4endl;
-
-	// G4ThreeVector worldPosPost = aStep->GetPostStepPoint()->GetPosition();
-	// G4TouchableHandle touchHPost = aStep->GetPostStepPoint()->GetTouchableHandle();
-	// G4ThreeVector localPosPost = touchHPost->GetHistory()->GetTopTransform().TransformPoint(worldPosPost);
-	// G4cout
-	// << "PostStepPoint in " << touchHPost->GetVolume()->GetName()
-	// << " global " << G4BestUnit(worldPosPost, "Length")
-	// << " local " << G4BestUnit(localPosPost, "Length")
-	// << G4endl;
+	newHit->SetLocalPosition(localPosPre);
 
 	G4int partType = ClassifyTrack(aStep->GetTrack(), edep);
-	newHit->SetPosition(worldPosPre);
-	newHit->SetLocalPosition(localPosPre);
 	newHit->SetPType(partType);
+
 	fSACCollection->insert(newHit);
+
+	return true;
+}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+void SACSD::EndOfEvent(G4HCofThisEvent*)
+{
+	if(verboseLevel > 0)
+	{
+		G4int NbHits = fSACCollection->entries();
+		G4cout << "\n-- SAC Hits Collection: " << NbHits << " hits --" << G4endl;
+		for(G4int i = 0; i < NbHits; i++) (*fSACCollection)[i]->Print();
+	}
 
 	// fill histograms
 	G4AnalysisManager* fAnalysisManager = G4AnalysisManager::Instance();
-	switch(partType)
+
+	G4int nEntries = fSACCollection->entries();
+	G4int nOptical = 0;
+	G4double TotalOptEPerEvent = 0.0;
+
+	for(int i = 0; i < nEntries; i++)
 	{
-		case 1: fAnalysisManager->FillH1(0, edep, edep); break;
-		case 2: fAnalysisManager->FillH1(1, edep, edep); break;
-		case 3: fAnalysisManager->FillH1(2, edep, edep); break;
-		case 4: fAnalysisManager->FillH1(3, edep, edep); break;
-		case 5: fAnalysisManager->FillH1(4, edep, edep); break;
-		case 6: fAnalysisManager->FillH1(5, edep, edep); break;
-		case 7: fAnalysisManager->FillH1(6, edep, edep); break;
-		case 8: fAnalysisManager->FillH1(7, edep, edep); break;
-		default: G4cout << "SWITCH CASE DEFAULT -- NOTHING HAPPENS" << G4endl;
+		SACHit* currentHit = (*fSACCollection)[i];
+
+		// energy deposition for each hit
+		G4double eDep = currentHit->GetEnergy();
+		G4int partType = currentHit->GetPType();
+		switch(partType)
+		{
+			case 1: fAnalysisManager->FillH1(0, eDep, eDep); break;
+			case 2: fAnalysisManager->FillH1(1, eDep, eDep); break;
+			case 3: fAnalysisManager->FillH1(2, eDep, eDep); break;
+			case 4: fAnalysisManager->FillH1(3, eDep, eDep); break;
+			case 5: fAnalysisManager->FillH1(4, eDep, eDep); break;
+			case 6: fAnalysisManager->FillH1(5, eDep, eDep); break;
+			case 7: fAnalysisManager->FillH1(6, eDep, eDep); break;
+			case 8:
+				fAnalysisManager->FillH1(7, eDep, eDep);
+				TotalOptEPerEvent += eDep;
+				break;
+			default: G4cout << "SWITCH CASE DEFAULT -- NOTHING HAPPENS" << G4endl;
+		}
+
+		if(partType == 8) nOptical++;
 	}
 
-	return true;
+	fAnalysisManager->FillH1(8, nOptical, 1.0);
+	G4cout << "TotalOptEPerEvent: " << TotalOptEPerEvent << G4endl;
+	fAnalysisManager->FillH1(9, TotalOptEPerEvent, 1.0);
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -135,17 +144,5 @@ G4int SACSD::ClassifyTrack(G4Track* track, G4double edep)
 	{
 		G4cout << "untracked energy deposition: " << edep << " | particleType: " << particleType << G4endl;
 		return -1;
-	}
-}
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
-void SACSD::EndOfEvent(G4HCofThisEvent*)
-{
-	if(verboseLevel > 0)
-	{
-		G4int NbHits = fSACCollection->entries();
-		G4cout << "\n-- SAC Hits Collection: " << NbHits << " hits --" << G4endl;
-		for(G4int i = 0; i < NbHits; i++) (*fSACCollection)[i]->Print();
 	}
 }

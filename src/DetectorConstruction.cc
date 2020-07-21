@@ -17,6 +17,7 @@
 #include "G4SolidStore.hh"
 #include "G4LogicalBorderSurface.hh"
 #include "G4LogicalSkinSurface.hh"
+#include "G4OpticalSurface.hh"
 
 #include "G4Material.hh"
 #include "G4LogicalVolume.hh"
@@ -82,7 +83,23 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 	EJ510Paint->AddElement(G4Element::GetElement("H"), 2.899 * perCent);
 	EJ510Paint->AddElement(G4Element::GetElement("O"), 38.854 * perCent);
 
-	// CONSULT NA62 LAVMaterialParameters.cc FOR G4OpticalSurface PROPERTIES (line 238)
+	// optical properties of EJ510Paint
+	G4int EJ510PaintOpticSize = 2;
+	G4double EJ510PaintOpticEnergies[] = {1.88 * eV, 3.1 * eV};
+	G4double EJ510PaintOpticZero[] = {0.0, 0.0};
+	G4double EJ510PaintRef[] = {0.9, 0.9};
+
+	// material properties table of EJ510Paint
+	G4MaterialPropertiesTable* MPTEJ510Paint = new G4MaterialPropertiesTable();
+	MPTEJ510Paint->AddProperty("REFLECTIVITY", EJ510PaintOpticEnergies, EJ510PaintRef, EJ510PaintOpticSize);
+	MPTEJ510Paint->AddProperty("EFFICIENCY", EJ510PaintOpticEnergies, EJ510PaintOpticZero, EJ510PaintOpticSize);
+    MPTEJ510Paint->AddProperty("SPECULARLOBECONSTANT", EJ510PaintOpticEnergies, EJ510PaintOpticZero, EJ510PaintOpticSize);
+    MPTEJ510Paint->AddProperty("SPECULARSPIKECONSTANT", EJ510PaintOpticEnergies, EJ510PaintOpticZero, EJ510PaintOpticSize);
+    MPTEJ510Paint->AddProperty("BACKSCATTERCONSTANT", EJ510PaintOpticEnergies, EJ510PaintOpticZero, EJ510PaintOpticSize);
+
+	// optical surface of EJ510Paint
+	G4OpticalSurface* EJ510PaintOptSurf = new G4OpticalSurface("Diffusive", unified, groundfrontpainted, dielectric_dielectric);
+	EJ510PaintOptSurf->SetMaterialPropertiesTable(MPTEJ510Paint);
 
 	// ----------------------- PbF2 -----------------------
 	// lead fluoride PbF2 (SAC)

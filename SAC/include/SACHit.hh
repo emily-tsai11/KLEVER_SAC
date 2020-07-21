@@ -58,37 +58,17 @@ class SACHit : public G4VHit
 		G4double GetLocalPosY() { return fLocalPosition.y(); };
 		G4double GetLocalPosZ() { return fLocalPosition.z(); };
 
-		// kept for backward compatibility; will be removed
-		// void SetCryNb(G4int cry) { fChannelId = cry; };
-		// G4int GetCryNb() { return fChannelId; };
-
 		void SetPType(G4int typ) { fTrackType = typ; };
 		G4int GetPType() { return fTrackType; };
 
-		void SetPos(G4ThreeVector xyz) { fPosition = xyz; };
-		G4ThreeVector GetPos() { return fPosition; };
-		G4double GetX() { return fPosition.x(); }
-		G4double GetY() { return fPosition.y(); }
-		G4double GetZ() { return fPosition.z(); }
-
-		// obsolete and probably still used but deprecated
-		void SetTrackID(G4int track) { fTrackId = track; };
-		G4int GetTrackID() { return fTrackId; };
-		void SetEdep(G4double de) { fTrackEnergy = de; };
-		G4double GetEdep() { return fTrackEnergy; };
-
 	private:
 
-		G4int fTrackType;
 		G4int fChannelId;
 		G4double fTime;
 		G4double fEnergy;
 		G4ThreeVector fPosition;
 		G4ThreeVector fLocalPosition;
-
-		// obsolete and probably not used
-		G4int fTrackId;
-		G4double fTrackEnergy;
+		G4int fTrackType;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

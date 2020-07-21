@@ -30,7 +30,7 @@ SteppingAction::~SteppingAction() {}
 
 void SteppingAction::UserSteppingAction(const G4Step* aStep)
 {
-	PrintStep(aStep);
+	// PrintStep(aStep);
 
 	G4Track* Track = aStep->GetTrack();
 
@@ -73,29 +73,29 @@ void SteppingAction::PrintStep(const G4Step* aStep, G4String ParticleName)
 	{
 		if(aStep->GetPreStepPoint()->GetPhysicalVolume())
 		{
-			// printf("PreStep: %7.1f %7.1f %8.1f | %f %f %f %f | %s %s\n",
-			// 	aStep->GetPreStepPoint()->GetPosition().x(),
-			// 	aStep->GetPreStepPoint()->GetPosition().y(),
-			// 	aStep->GetPreStepPoint()->GetPosition().z(),
-			// 	aStep->GetPreStepPoint()->GetMomentum().x(),
-			// 	aStep->GetPreStepPoint()->GetMomentum().y(),
-			// 	aStep->GetPreStepPoint()->GetMomentum().z(),
-			// 	aStep->GetPreStepPoint()->GetTotalEnergy(),
-			// 	Track->GetParticleDefinition()->GetParticleName().data(),
-			// 	aStep->GetPreStepPoint()->GetPhysicalVolume()->GetName().data());
+			printf("PreStep: %7.1f %7.1f %8.1f | %f %f %f %f | %s %s\n",
+				aStep->GetPreStepPoint()->GetPosition().x(),
+				aStep->GetPreStepPoint()->GetPosition().y(),
+				aStep->GetPreStepPoint()->GetPosition().z(),
+				aStep->GetPreStepPoint()->GetMomentum().x(),
+				aStep->GetPreStepPoint()->GetMomentum().y(),
+				aStep->GetPreStepPoint()->GetMomentum().z(),
+				aStep->GetPreStepPoint()->GetTotalEnergy(),
+				Track->GetParticleDefinition()->GetParticleName().data(),
+				aStep->GetPreStepPoint()->GetPhysicalVolume()->GetName().data());
 		}
 		if(aStep->GetPostStepPoint()->GetPhysicalVolume())
 		{
-			// printf("PostStep: %7.1f %7.1f %8.1f | %f %f %f %f | %s %s\n",
-			// 	aStep->GetPostStepPoint()->GetPosition().x(),
-			// 	aStep->GetPostStepPoint()->GetPosition().y(),
-			// 	aStep->GetPostStepPoint()->GetPosition().z(),
-			// 	aStep->GetPostStepPoint()->GetMomentum().x(),
-			// 	aStep->GetPostStepPoint()->GetMomentum().y(),
-			// 	aStep->GetPostStepPoint()->GetMomentum().z(),
-			// 	aStep->GetPostStepPoint()->GetTotalEnergy(),
-			// 	Track->GetParticleDefinition()->GetParticleName().data(),
-			// 	aStep->GetPostStepPoint()->GetPhysicalVolume()->GetName().data());
+			printf("PostStep: %7.1f %7.1f %8.1f | %f %f %f %f | %s %s\n",
+				aStep->GetPostStepPoint()->GetPosition().x(),
+				aStep->GetPostStepPoint()->GetPosition().y(),
+				aStep->GetPostStepPoint()->GetPosition().z(),
+				aStep->GetPostStepPoint()->GetMomentum().x(),
+				aStep->GetPostStepPoint()->GetMomentum().y(),
+				aStep->GetPostStepPoint()->GetMomentum().z(),
+				aStep->GetPostStepPoint()->GetTotalEnergy(),
+				Track->GetParticleDefinition()->GetParticleName().data(),
+				aStep->GetPostStepPoint()->GetPhysicalVolume()->GetName().data());
 		}
 	}
 }

@@ -45,15 +45,21 @@ void RunAction::BeginOfRunAction(const G4Run* aRun)
 	// open an output file
 	fAnalysisManager->OpenFile("SAC_output_" + std::to_string(aRun->GetRunID()));
 
-	// create histograms
-	fAnalysisManager->CreateH1("hEDepGamma", "energy deposition of gammas", 100, 0.0 * CLHEP::eV, 1000000.0 * CLHEP::eV);
-	fAnalysisManager->CreateH1("hEDepPositron", "energy deposition of positrons", 100, 0.0 * CLHEP::eV, 1000000.0 * CLHEP::eV);
-	fAnalysisManager->CreateH1("hEDepElectron", "energy deposition of electrons", 100, 0.0 * CLHEP::eV, 1000000.0 * CLHEP::eV);
-	fAnalysisManager->CreateH1("hEDepNeutron", "energy deposition of neutrons", 100, 0.0 * CLHEP::eV, 1000000.0 * CLHEP::eV);
-	fAnalysisManager->CreateH1("hEDepPionPlus", "energy deposition of pion pluses", 100, 0.0 * CLHEP::eV, 1000000.0 * CLHEP::eV);
-	fAnalysisManager->CreateH1("hEDepPionZero", "energy deposition of pion zero", 100, 0.0 * CLHEP::eV, 1000000.0 * CLHEP::eV);
-	fAnalysisManager->CreateH1("hEDepMuonPlus", "energy deposition of muon pluses", 100, 0.0 * CLHEP::eV, 1000000.0 * CLHEP::eV);
-	fAnalysisManager->CreateH1("hEDepOpticalPhotons", "energy deposition of optical photons", 100, 0.0 * CLHEP::eV, 5.0 * CLHEP::eV);
+	// -------------------- CREATE HISTOGRAMS --------------------
+
+	// energy deposition for each step
+	fAnalysisManager->CreateH1("hEDepGamma", "energy deposition of gammas", 100, 0.0 * CLHEP::eV, 300000.0 * CLHEP::eV);				// 0
+	fAnalysisManager->CreateH1("hEDepPositron", "energy deposition of positrons", 100, 0.0 * CLHEP::eV, 1300000.0 * CLHEP::eV);			// 1
+	fAnalysisManager->CreateH1("hEDepElectron", "energy deposition of electrons", 100, 0.0 * CLHEP::eV, 13000000.0 * CLHEP::eV);			// 2
+	fAnalysisManager->CreateH1("hEDepNeutron", "energy deposition of neutrons", 100, 0.0 * CLHEP::eV, 1000000.0 * CLHEP::eV);			// 3
+	fAnalysisManager->CreateH1("hEDepPionPlus", "energy deposition of pion pluses", 100, 0.0 * CLHEP::eV, 1000000.0 * CLHEP::eV);		// 4
+	fAnalysisManager->CreateH1("hEDepPionZero", "energy deposition of pion zero", 100, 0.0 * CLHEP::eV, 1000000.0 * CLHEP::eV);			// 5
+	fAnalysisManager->CreateH1("hEDepMuonPlus", "energy deposition of muon pluses", 100, 0.0 * CLHEP::eV, 1000000.0 * CLHEP::eV);		// 6
+	fAnalysisManager->CreateH1("hEDepOpticalPhotons", "energy deposition of optical photons", 100, 0.0 * CLHEP::eV, 5.0 * CLHEP::eV);	// 7
+
+	// optical photon energy
+	fAnalysisManager->CreateH1("hNOptPerEvent", "number of optical photons per event", 50, 37000, 47000);								// 8
+	fAnalysisManager->CreateH1("hTotalOptEPerEvent", "total optical photon energy per event", 100, 0.0 * CLHEP::eV, 100000.0 * CLHEP::eV);	// 9
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

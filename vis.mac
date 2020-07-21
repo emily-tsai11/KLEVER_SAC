@@ -15,116 +15,14 @@
 # how often event printout is shown
 # /settings/PrintOutFrequency 1
 
-# automatically generate random seeds using system time
-# if disabled, user must set environment variables PADME_SEED1 and PADME_SEED2
-# /settings/AutomaticRandomSeed true
-
-# turbo mode kills low energy particles to speed up rough detector studies
-# ENABLE ONLY IF YOU KNOW WHAT YOU ARE DOING!
-# /settings/TurboModeEnable false
-
-# set verbose level for TurboMode
-# if >=10 show all killed particles
-# /settings/TurboMode/Verbose 0
-
-# turbo mode thresholds for e+, e-, gamma, neutron
-# particles will be killed if their kinetic energy is below threshold
-# /settings/TurboMode/KillEnergyPositron 10.0 MeV
-# /settings/TurboMode/KillEnergyElectron 10.0 MeV
-# /settings/TurboMode/KillEnergyGamma 1.0 MeV
-# /settings/TurboMode/KillEnergyNeutron 10.0 MeV
-
-
-
-# RootIO settings
-
-# output root file with MC hits
-# /output/DataFileName MCData.root
-
-# output root file with analysis histograms/ntuple
-# /output/HistoFileName UBTF.root
-
-# disable/enable SAC/ECal analysis (WARNING! for SAC see command documentation)
-# /analysis/DisableSACAnalysis true
-# /analysis/DisableECalAnalysis true
-
-# disable/enable saving to fast analysis tree U102
-# uses conditions on ECal Energy, SAC energy, Hit in the Veto
-# /analysis/SaveEcal false
-# /analysis/SaveVeto false
-# /analysis/SaveSAC true
-
-# enable IO for single detectors
-# /output/EnableDetectorIO Target:D
-# /output/EnableDetectorIO PVeto:HD
-# /output/EnableDetectorIO EVeto:HD
-# /output/EnableDetectorIO HEPVeto:HD
-# /output/EnableDetectorIO ECal:D
-# /output/EnableDetectorIO SAC:D
-# /output/EnableDetectorIO TPix:D
-
-# disable IO for single detectors
-# /output/DisableDetectorIO Target
-# /output/DisableDetectorIO PVeto
-# /output/DisableDetectorIO EVeto
-# /output/DisableDetectorIO HEPVeto
-# /output/DisableDetectorIO ECal
-# /output/DisableDetectorIO SAC
-# /output/DisableDetectorIO TPix
-
 
 
 # detector settings
 
 #/Detector/VerboseLevel 0
 
-# /Detector/EnableSubDetector ECal
-# /Detector/EnableSubDetector Target
-# /Detector/EnableSubDetector SAC
-# /Detector/EnableSubDetector PVeto
-# /Detector/EnableSubDetector EVeto
-# /Detector/EnableSubDetector HEPVeto
-# /Detector/EnableSubDetector TDump
-# /Detector/EnableSubDetector TPix
-
-# /Detector/EnableStructure Magnet
-# /Detector/EnableStructure Chamber
-# /Detector/EnableStructure BeamLine
-
-# /Detector/DisableSubDetector ECal
-# /Detector/DisableSubDetector Target
-# /Detector/DisableSubDetector SAC
-# /Detector/DisableSubDetector PVeto
-# /Detector/DisableSubDetector EVeto
-# /Detector/DisableSubDetector HEPVeto
-# /Detector/DisableSubDetector TDump
-# /Detector/DisableSubDetector TPix
-
-# /Detector/DisableStructure Magnet
-# /Detector/DisableStructure Chamber
-# /Detector/DisableStructure BeamLine
-
 # /Detector/WorldIsAir
 # /Detector/WorldIsVacuum
-
-# /Detector/SetMagnetVisible
-# /Detector/SetMagnetInvisible
-
-# /Detector/SetChamberVisible
-# /Detector/SetChamberInvisible
-
-# /Detector/SetBeamLineVisible
-# /Detector/SetBeamLineInvisible
-
-# /Detector/EnableMagneticField
-# /Detector/DisableMagneticField
-# /Detector/SetMagneticFieldValue 0.4542 tesla
-
-# /Detector/CrossMagneticVolume internal
-# /Detector/CrossMagneticVolume external
-
-# /Detector/SetMagneticVolumeVisible
-# /Detector/SetMagneticVolumeInvisible
 
 # /Detector/SAC/VerboseLevel 0
 # /Detector/SAC/NRows 10
@@ -138,67 +36,11 @@
 
 
 
-# beam setup
-
-# primary positrons setup (default PADMEMC configuration)
-# particle 0: gamma
-# particle 1: neutron
-# /beam/particle 0
-
-# /beam/n_e+_per_bunch 1
-# /beam/n_e+_poisson_on true
-# /beam/bunch_structure_on true
-# /beam/bunch_time_length 250.0 ns
-# /beam/ubunch_time_length 150.0 ps
-# /beam/ubunch_time_delay 350.0 ps
-# /beam/position_x 0.0 cm
-# /beam/position_y 0.0 cm
-# /beam/position_z -90.0 cm
-# /beam/position_spread_on true
-# /beam/position_x_spread 60.0 mm
-# /beam/position_y_spread 60.0 mm
-# /beam/momentum 25000 MeV
-# /beam/momentum_spread_on true
-# /beam/momentum_spread 5.45 MeV
-# /beam/direction 0.0 0.0 1.0
-# /beam/emittance_on true
-# /beam/emittance_x 5.0 mrad
-# /beam/emittance_y 5.0 mrad
-# /beam/uboson_mass 22.0 MeV
-# /beam/calibration false
-# /beam/calib_energy 50.0 MeV
-# /beam/calib_x 14.0 cm
-# /beam/calib_y 14.0 cm
-# /beam/calib_radius 1.0 cm
-
-
-
-# calibration run setup: single 50MeV photon pointing to a spot on ECal front face
-# /beam/calibration true
-# /beam/calib_energy 50.0 MeV
-# /beam/calib_x 14.0 cm
-# /beam/calib_y 14.0 cm
-# /beam/calib_radius 1.0 cm
-
-
-
 # create detectors and initialize run
 /run/initialize
 
 # use this open statement to create an OpenGL view:
 /vis/open OGL 600x600-0+0
-
-# use this open statement to create a .prim file suitable for viewing in DAWN:
-# /vis/open DAWNFILE
-
-# use this open statement to create a .heprep file suitable for viewing in HepRApp:
-# /vis/open HepRepFile
-# /vis/open HepRepXML
-# /vis/heprep/setEventNumberSuffix -0001
-# /vis/scene/add/trajectories rich
-
-# use this open statement to create a .wrl file suitable for viewing in a VRML viewer:
-# /vis/open VRML2FILE
 
 # disable auto refresh and quieten vis messages whilst scene and trajectories are established:
 /vis/viewer/set/autoRefresh false
@@ -245,7 +87,7 @@
 # /vis/modeling/trajectories/drawByCharge-0/default/setDrawStepPts true
 # /vis/modeling/trajectories/drawByCharge-0/default/setStepPtsSize 1
 # (if too many tracks cause core dump => /tracking/storeTrajectory 0)
-/tracking/storeTrajectory 0
+/tracking/storeTrajectory 1
 
 # draw hits at end of event:
 /vis/scene/add/hits
