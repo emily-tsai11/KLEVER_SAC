@@ -22,7 +22,6 @@
 
 class DetectorConstruction;
 class G4ParticleTable;
-// class G4GeneralParticleSource;
 class G4ParticleGun;
 class G4Event;
 

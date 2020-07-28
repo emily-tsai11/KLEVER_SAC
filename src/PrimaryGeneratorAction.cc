@@ -9,9 +9,7 @@
 
 #include "G4RunManager.hh"
 #include "G4GeometryManager.hh"
-// #include "RootIOManager.hh"
 
-#include "G4GeneralParticleSource.hh"
 #include "G4ParticleGun.hh"
 #include "G4DecayTable.hh"
 #include "G4ParticleTable.hh"
@@ -29,8 +27,8 @@ PrimaryGeneratorAction::PrimaryGeneratorAction(DetectorConstruction* detector, E
 
 	G4int n_particle = 1;
 	fParticleGun = new G4ParticleGun(n_particle);
-	fParticleGun->SetParticleDefinition(fParticleTable->FindParticle("gamma"));
-	fParticleGun->SetParticleEnergy(500.0 * CLHEP::MeV);
+	// fParticleGun->SetParticleDefinition(fParticleTable->FindParticle("gamma"));
+	// fParticleGun->SetParticleEnergy(100.0 * CLHEP::MeV);
 	// fParticleGun->SetParticlePolarization();
 	fParticleGun->SetParticlePosition(G4ThreeVector(0.0 * CLHEP::m, 0.0 * CLHEP::m, 0.7 * CLHEP::m));
 	fParticleGun->SetParticleMomentumDirection(G4ThreeVector(0.0, 0.0, -1.0));

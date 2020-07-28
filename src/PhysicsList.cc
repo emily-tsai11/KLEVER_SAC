@@ -141,6 +141,8 @@ PhysicsList::PhysicsList() : G4VModularPhysicsList(), fCerenkovProcess(nullptr),
 
 	// HNL mode
 	fMDS = 1968.47;
+
+	// AddPhysicsList("FTFP_BERT_EMZ");
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

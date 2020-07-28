@@ -17,6 +17,7 @@
 
 class G4Step;
 class G4HCofThisEvent;
+class G4ParticleTable;
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -29,8 +30,8 @@ class SACSD : public G4VSensitiveDetector
 
 		void Initialize(G4HCofThisEvent*);
 		G4bool ProcessHits(G4Step*, G4TouchableHistory*);
-		G4int ClassifyTrack(G4Track* track, G4double edep);
 		void EndOfEvent(G4HCofThisEvent*);
+		G4int ClassifyTrack(G4Track* track);
 
 	private:
 

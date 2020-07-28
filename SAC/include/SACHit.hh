@@ -61,6 +61,9 @@ class SACHit : public G4VHit
 		void SetPType(G4int typ) { fTrackType = typ; };
 		G4int GetPType() { return fTrackType; };
 
+		void SetTrackLen(G4double len) { fTrackLength = len; }
+		G4double GetTrackLen() { return fTrackLength; }
+
 	private:
 
 		G4int fChannelId;
@@ -69,6 +72,7 @@ class SACHit : public G4VHit
 		G4ThreeVector fPosition;
 		G4ThreeVector fLocalPosition;
 		G4int fTrackType;
+		G4double fTrackLength;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

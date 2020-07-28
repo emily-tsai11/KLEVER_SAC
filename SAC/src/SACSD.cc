@@ -12,16 +12,18 @@
 #include "G4ThreeVector.hh"
 #include "G4SDManager.hh"
 #include "G4ios.hh"
+#include "G4UnitsTable.hh"
 
 #include "G4Gamma.hh"
 #include "G4Electron.hh"
 #include "G4Positron.hh"
+#include "G4Proton.hh"
 #include "G4Neutron.hh"
 #include "G4PionPlus.hh"
 #include "G4PionMinus.hh"
+#include "G4PionZero.hh"
 #include "G4MuonPlus.hh"
 #include "G4MuonMinus.hh"
-#include "G4PionZero.hh"
 #include "G4OpticalPhoton.hh"
 
 #include "Analysis.hh"
@@ -70,8 +72,10 @@ G4bool SACSD::ProcessHits(G4Step* aStep, G4TouchableHistory*)
 	G4ThreeVector localPosPre = touchHPre->GetHistory()->GetTopTransform().TransformPoint(worldPosPre);
 	newHit->SetLocalPosition(localPosPre);
 
-	G4int partType = ClassifyTrack(aStep->GetTrack(), edep);
-	newHit->SetPType(partType);
+	G4Track* track = aStep->GetTrack();
+	newHit->SetPType(ClassifyTrack(track));
+
+	newHit->SetTrackLen(track->GetTrackLength());
 
 	fSACCollection->insert(newHit);
 
@@ -89,60 +93,66 @@ void SACSD::EndOfEvent(G4HCofThisEvent*)
 		for(G4int i = 0; i < NbHits; i++) (*fSACCollection)[i]->Print();
 	}
 
-	// fill histograms
 	G4AnalysisManager* fAnalysisManager = G4AnalysisManager::Instance();
 
-	G4int nEntries = fSACCollection->entries();
-	G4int nOptical = 0;
-	G4double TotalOptEPerEvent = 0.0;
+	G4int nHitEntries = fSACCollection->entries();
+	G4int nParticles = 11;
+	G4int NPerEvent[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+	G4double EPerEvent[] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+	G4double TotalEPerEvent = 0.0;
 
-	for(int i = 0; i < nEntries; i++)
+	for(int i = 0; i < nHitEntries; i++)
 	{
 		SACHit* currentHit = (*fSACCollection)[i];
-
-		// energy deposition for each hit
 		G4double eDep = currentHit->GetEnergy();
+		G4double trLen = currentHit->GetTrackLen();
 		G4int partType = currentHit->GetPType();
-		switch(partType)
+
+		if(partType == -1)
 		{
-			case 1: fAnalysisManager->FillH1(0, eDep, eDep); break;
-			case 2: fAnalysisManager->FillH1(1, eDep, eDep); break;
-			case 3: fAnalysisManager->FillH1(2, eDep, eDep); break;
-			case 4: fAnalysisManager->FillH1(3, eDep, eDep); break;
-			case 5: fAnalysisManager->FillH1(4, eDep, eDep); break;
-			case 6: fAnalysisManager->FillH1(5, eDep, eDep); break;
-			case 7: fAnalysisManager->FillH1(6, eDep, eDep); break;
-			case 8:
-				fAnalysisManager->FillH1(7, eDep, eDep);
-				TotalOptEPerEvent += eDep;
-				break;
-			default: G4cout << "SWITCH CASE DEFAULT -- NOTHING HAPPENS" << G4endl;
+			G4cout << "untracked energy of " << G4BestUnit(eDep, "Energy") << " added to total energy per event" << G4endl;
+			TotalEPerEvent += eDep;
+			continue;
 		}
 
-		if(partType == 8) nOptical++;
+		fAnalysisManager->FillH1(partType + 0 * nParticles, eDep, 1.0);
+		fAnalysisManager->FillH1(partType + 1 * nParticles, trLen, 1.0);
+
+		fAnalysisManager->FillH2(partType + 0 * nParticles, eDep, trLen, 1.0);
+
+		NPerEvent[partType]++;
+		EPerEvent[partType] += eDep;
 	}
 
-	fAnalysisManager->FillH1(8, nOptical, 1.0);
-	G4cout << "TotalOptEPerEvent: " << TotalOptEPerEvent << G4endl;
-	fAnalysisManager->FillH1(9, TotalOptEPerEvent, 1.0);
+	for(int partType = 0; partType < nParticles; partType++)
+	{
+		fAnalysisManager->FillH1(partType + 2 * nParticles, NPerEvent[partType], 1.0);
+		fAnalysisManager->FillH1(partType + 3 * nParticles, EPerEvent[partType], 1.0);
+		TotalEPerEvent += EPerEvent[partType];
+	}
+
+	fAnalysisManager->FillH1(44, TotalEPerEvent, 1.0);
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-G4int SACSD::ClassifyTrack(G4Track* track, G4double edep)
+G4int SACSD::ClassifyTrack(G4Track* track)
 {
 	G4ParticleDefinition* particleType = track->GetDefinition();
-	if(particleType == G4Gamma::GammaDefinition()) { return 1; }
-	else if(particleType == G4Positron::PositronDefinition()) { return 2; }
-	else if(particleType == G4Electron::ElectronDefinition()) { return 3; }
+	if(particleType == G4Gamma::GammaDefinition()) { return 0; }
+	else if(particleType == G4Positron::PositronDefinition()) { return 1; }
+	else if(particleType == G4Electron::ElectronDefinition()) { return 2; }
+	else if(particleType == G4Proton::ProtonDefinition()) { return 3; }
 	else if(particleType == G4Neutron::NeutronDefinition()) { return 4; }
-	else if(particleType == G4PionPlus::PionPlusDefinition() || particleType == G4PionMinus::PionMinusDefinition()) { return 5; }
-	else if(particleType == G4PionZero::PionZeroDefinition()) { return 6; }
-	else if(particleType == G4MuonPlus::MuonPlusDefinition() || particleType == G4MuonMinus::MuonMinusDefinition()) { return 7; }
-	else if(particleType == G4OpticalPhoton::OpticalPhotonDefinition()) { return 8; }
+	else if(particleType == G4PionPlus::PionPlusDefinition()) { return 5; }
+	else if(particleType == G4PionMinus::PionMinusDefinition()) { return 6; }
+	else if(particleType == G4PionZero::PionZeroDefinition()) { return 7; }
+	else if(particleType == G4MuonPlus::MuonPlusDefinition()) { return 8; }
+	else if(particleType == G4MuonMinus::MuonMinusDefinition()) { return 9; }
+	else if(particleType == G4OpticalPhoton::OpticalPhotonDefinition()) { return 10; }
 	else
 	{
-		G4cout << "untracked energy deposition: " << edep << " | particleType: " << particleType << G4endl;
+		G4cout << "untracked energy deposition!! particle name: " << particleType->GetParticleName() << G4endl;
 		return -1;
 	}
 }

@@ -36,6 +36,7 @@ SACHit::SACHit(const SACHit& right) : G4VHit()
 	fPosition = right.fPosition;
 	fLocalPosition = right.fLocalPosition;
 	fTrackType = right.fTrackType;
+	fTrackLength = right.fTrackLength;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -48,6 +49,7 @@ const SACHit& SACHit::operator=(const SACHit& right)
 	fPosition = right.fPosition;
 	fLocalPosition = right.fLocalPosition;
 	fTrackType = right.fTrackType;
+	fTrackLength = right.fTrackLength;
 
 	return *this;
 }
@@ -87,5 +89,6 @@ void SACHit::Print()
 	<< " global position: " << G4BestUnit(fPosition, "Length")
 	<< " local position: " << G4BestUnit(fLocalPosition, "Length")
 	<< " track type: " << fTrackType
+	<< " track length: " << G4BestUnit(fTrackLength, "Length")
 	<< G4endl;
 }
