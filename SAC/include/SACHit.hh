@@ -43,8 +43,14 @@ class SACHit : public G4VHit
 		void SetTime(G4double t) { fTime = t; };
 		G4double GetTime() { return fTime; };
 
-		void SetEnergy(G4double e) { fEnergy = e; }
-		G4double GetEnergy() { return fEnergy; }
+		void SetInitialEnergy(G4double e) { fInitialEnergy = e; }
+		G4double GetInitialEnergy() { return fInitialEnergy; }
+
+		void SetFinalEnergy(G4double e) { fFinalEnergy = e; }
+		G4double GetFinalEnergy() { return fFinalEnergy; }
+
+		void SetEnergyDep(G4double e) { fEnergyDep = e; }
+		G4double GetEnergyDep() { return fEnergyDep; }
 
 		void SetPosition(G4ThreeVector p) { fPosition = p; }
 		G4ThreeVector GetPosition() { return fPosition; }
@@ -58,6 +64,9 @@ class SACHit : public G4VHit
 		G4double GetLocalPosY() { return fLocalPosition.y(); };
 		G4double GetLocalPosZ() { return fLocalPosition.z(); };
 
+		void SetTrackId(G4int id) { fTrackId = id; }
+		G4int GetTrackId() { return fTrackId; }
+
 		void SetPType(G4int typ) { fTrackType = typ; };
 		G4int GetPType() { return fTrackType; };
 
@@ -68,9 +77,12 @@ class SACHit : public G4VHit
 
 		G4int fChannelId;
 		G4double fTime;
-		G4double fEnergy;
+		G4double fInitialEnergy;
+		G4double fFinalEnergy;
+		G4double fEnergyDep;
 		G4ThreeVector fPosition;
 		G4ThreeVector fLocalPosition;
+		G4int fTrackId;
 		G4int fTrackType;
 		G4double fTrackLength;
 };

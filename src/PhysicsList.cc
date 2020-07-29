@@ -142,7 +142,11 @@ PhysicsList::PhysicsList() : G4VModularPhysicsList(), fCerenkovProcess(nullptr),
 	// HNL mode
 	fMDS = 1968.47;
 
-	// AddPhysicsList("FTFP_BERT_EMZ");
+	// add hadronic and optical photon physics list
+	AddPhysicsList("FTFP_BERT_EMZ");
+
+	// physics list messenger
+	fMessenger = new PhysicsListMessenger();
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -152,6 +156,7 @@ PhysicsList::~PhysicsList()
 	delete fParticleList;
 	delete fEmPhysicsList;
 	for(size_t i = 0; i < fHadronPhys.size(); i++) delete fHadronPhys[i];
+	delete fMessenger;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

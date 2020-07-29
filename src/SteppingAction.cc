@@ -59,8 +59,8 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
 	}
 
 	// save all steps [NOT SURE WHAT TO DO WITH THIS BUT I'LL FIGURE IT OUT LATER]
-	fFinalMomentum = G4LorentzVector(Track->GetMomentum(), Track->GetTotalEnergy());
-	fInitialMomentum = fFinalMomentum - G4LorentzVector(aStep->GetDeltaMomentum(), aStep->GetDeltaEnergy());
+	// fFinalMomentum = G4LorentzVector(Track->GetMomentum(), Track->GetTotalEnergy());
+	// fInitialMomentum = fFinalMomentum - G4LorentzVector(aStep->GetDeltaMomentum(), aStep->GetDeltaEnergy());
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

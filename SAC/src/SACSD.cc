@@ -26,6 +26,8 @@
 #include "G4MuonMinus.hh"
 #include "G4OpticalPhoton.hh"
 
+#include <map>
+
 #include "Analysis.hh"
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -62,9 +64,14 @@ G4bool SACSD::ProcessHits(G4Step* aStep, G4TouchableHistory*)
 
 	newHit->SetTime(preStepPoint->GetGlobalTime());
 
-	G4double edep = aStep->GetTotalEnergyDeposit();
-	if(edep == 0.0) return false;
-	newHit->SetEnergy(edep);
+	newHit->SetInitialEnergy(preStepPoint->GetTotalEnergy());
+
+	G4StepPoint* postStepPoint = aStep->GetPostStepPoint();
+	newHit->SetFinalEnergy(postStepPoint->GetTotalEnergy());
+
+	G4double eDep = aStep->GetTotalEnergyDeposit();
+	if(eDep == 0.0) return false;
+	newHit->SetEnergyDep(eDep);
 
 	G4ThreeVector worldPosPre = preStepPoint->GetPosition();
 	newHit->SetPosition(worldPosPre);
@@ -73,6 +80,8 @@ G4bool SACSD::ProcessHits(G4Step* aStep, G4TouchableHistory*)
 	newHit->SetLocalPosition(localPosPre);
 
 	G4Track* track = aStep->GetTrack();
+	newHit->SetTrackId(track->GetTrackID());
+
 	newHit->SetPType(ClassifyTrack(track));
 
 	newHit->SetTrackLen(track->GetTrackLength());
@@ -80,58 +89,6 @@ G4bool SACSD::ProcessHits(G4Step* aStep, G4TouchableHistory*)
 	fSACCollection->insert(newHit);
 
 	return true;
-}
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
-void SACSD::EndOfEvent(G4HCofThisEvent*)
-{
-	if(verboseLevel > 0)
-	{
-		G4int NbHits = fSACCollection->entries();
-		G4cout << "\n-- SAC Hits Collection: " << NbHits << " hits --" << G4endl;
-		for(G4int i = 0; i < NbHits; i++) (*fSACCollection)[i]->Print();
-	}
-
-	G4AnalysisManager* fAnalysisManager = G4AnalysisManager::Instance();
-
-	G4int nHitEntries = fSACCollection->entries();
-	G4int nParticles = 11;
-	G4int NPerEvent[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-	G4double EPerEvent[] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
-	G4double TotalEPerEvent = 0.0;
-
-	for(int i = 0; i < nHitEntries; i++)
-	{
-		SACHit* currentHit = (*fSACCollection)[i];
-		G4double eDep = currentHit->GetEnergy();
-		G4double trLen = currentHit->GetTrackLen();
-		G4int partType = currentHit->GetPType();
-
-		if(partType == -1)
-		{
-			G4cout << "untracked energy of " << G4BestUnit(eDep, "Energy") << " added to total energy per event" << G4endl;
-			TotalEPerEvent += eDep;
-			continue;
-		}
-
-		fAnalysisManager->FillH1(partType + 0 * nParticles, eDep, 1.0);
-		fAnalysisManager->FillH1(partType + 1 * nParticles, trLen, 1.0);
-
-		fAnalysisManager->FillH2(partType + 0 * nParticles, eDep, trLen, 1.0);
-
-		NPerEvent[partType]++;
-		EPerEvent[partType] += eDep;
-	}
-
-	for(int partType = 0; partType < nParticles; partType++)
-	{
-		fAnalysisManager->FillH1(partType + 2 * nParticles, NPerEvent[partType], 1.0);
-		fAnalysisManager->FillH1(partType + 3 * nParticles, EPerEvent[partType], 1.0);
-		TotalEPerEvent += EPerEvent[partType];
-	}
-
-	fAnalysisManager->FillH1(44, TotalEPerEvent, 1.0);
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -155,4 +112,72 @@ G4int SACSD::ClassifyTrack(G4Track* track)
 		G4cout << "untracked energy deposition!! particle name: " << particleType->GetParticleName() << G4endl;
 		return -1;
 	}
+}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+void SACSD::EndOfEvent(G4HCofThisEvent*)
+{
+	if(verboseLevel > 0)
+	{
+		G4int NbHits = fSACCollection->entries();
+		G4cout << "\n-- SAC Hits Collection: " << NbHits << " hits --" << G4endl;
+		for(G4int i = 0; i < NbHits; i++) (*fSACCollection)[i]->Print();
+	}
+
+	G4AnalysisManager* fAnalysisManager = G4AnalysisManager::Instance();
+
+	G4int nHitEntries = fSACCollection->entries();
+	const G4int nParticles = 11;
+	std::map<G4int, G4bool> trackedHits;
+
+	G4int NPerEvent[nParticles];
+	G4double EPerEvent[nParticles];
+	G4double TotalEInEvent = 0.0;
+	G4double UntrackedE = 0.0;
+
+	for(int i = 0; i < nHitEntries; i++)
+	{
+		SACHit* currentHit = (*fSACCollection)[i];
+
+		G4double initialE = currentHit->GetInitialEnergy();
+		G4double eDep = currentHit->GetEnergyDep();
+		G4int trackID = currentHit->GetTrackId();
+		G4int partType = currentHit->GetPType();
+		G4double trLen = currentHit->GetTrackLen();
+
+		if(partType == -1)
+		{
+			G4cout << "untracked energy of " << G4BestUnit(eDep, "Energy")
+				<< " added to untracked energy in event" << G4endl;
+			UntrackedE += eDep;
+			continue;
+		}
+
+		fAnalysisManager->FillH1(partType + 0 * nParticles, eDep, 1.0);
+		fAnalysisManager->FillH1(partType + 1 * nParticles, eDep, eDep);
+		fAnalysisManager->FillH1(partType + 2 * nParticles, trLen, 1.0);
+
+		if(trackedHits[trackID] == false)
+		{
+			trackedHits[trackID] = true;
+			fAnalysisManager->FillH1(partType + 5 * nParticles, initialE, 1.0);
+			fAnalysisManager->FillH1(partType + 6 * nParticles, initialE, initialE);
+		}
+
+		NPerEvent[partType]++;
+		EPerEvent[partType] += eDep;
+
+		fAnalysisManager->FillH2(partType + 0 * nParticles, eDep, trLen, 1.0);
+	}
+
+	for(int partType = 0; partType < nParticles; partType++)
+	{
+		fAnalysisManager->FillH1(partType + 3 * nParticles, NPerEvent[partType], 1.0);
+		fAnalysisManager->FillH1(partType + 4 * nParticles, EPerEvent[partType], 1.0);
+		TotalEInEvent += EPerEvent[partType];
+	}
+
+	fAnalysisManager->FillH1(77, TotalEInEvent, 1.0);
+	fAnalysisManager->FillH1(78, UntrackedE, 1.0);
 }

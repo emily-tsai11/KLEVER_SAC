@@ -1,42 +1,39 @@
-// RunAction.hh
+// RunActionMessenger.hh
 // --------------------------------------------------------------
 // History:
 //
-// Created by Emily Tsai (emily.tsai11@gmail.com) 2020-7-9
+// Created by Emily Tsai (emily.tsai11@gmail.com) 2020-7-28
 // --------------------------------------------------------------
 
-#ifndef RunAction_H
-#define RunAction_H 1
+#ifndef RunActionMessenger_H
+#define RunActionMessenger_H 1
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-#include "G4VAnalysisManager.hh"
-#include "G4UserRunAction.hh"
-#include "globals.hh"
+#include "G4UImessenger.hh"
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-class G4Timer;
-class G4Run;
-class RunActionMessenger;
+class G4UIdirectory;
+class G4UIcmdWithAString;
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-class RunAction : public G4UserRunAction
+class RunActionMessenger : public G4UImessenger
 {
 	public:
 
-		RunAction();
-		~RunAction();
+		RunActionMessenger();
+		virtual ~RunActionMessenger();
 
-		void BeginOfRunAction(const G4Run* aRun);
-		void EndOfRunAction(const G4Run* aRun);
+		void SetNewValue(G4UIcommand*, G4String);
+		G4String GetFileName() { return fFileName; }
 
 	private:
 
-		G4Timer* fTimer;
-		G4VAnalysisManager* fAnalysisManager;
-		RunActionMessenger* fMessenger;
+		G4UIdirectory* fRunActionDir;
+		G4UIcmdWithAString* fSetFileNameCmd;
+		G4String fFileName;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
