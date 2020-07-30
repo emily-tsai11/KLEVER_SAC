@@ -1,0 +1,48 @@
+# run KLMC in batch mode
+
+# sets some default verbose
+/control/verbose 1
+/run/verbose 1
+/tracking/verbose 0
+
+/tracking/storeTrajectory 0
+
+/run/initialize
+/gun/particle gamma
+
+/gun/energy 200 MeV
+
+/RunAction/FileName SAC_200MeV_n100
+
+/RunAction/GammaPerEventMultMin 50
+/RunAction/GammaPerEventMultMax 150
+/RunAction/PositronPerEventMultMin 0
+/RunAction/PositronPerEventMultMax 30
+/RunAction/ElectronPerEventMultMin 50
+/RunAction/ElectronPerEventMultMax 300
+/RunAction/ProtonPerEventMultMin 0
+/RunAction/ProtonPerEventMultMax 10
+/RunAction/NeutronPerEventMultMin 0
+/RunAction/NeutronPerEventMultMax 10
+/RunAction/OptPhotPerEventMultMin 7000
+/RunAction/OptPhotPerEventMultMax 22000
+
+/RunAction/GammaPerEventEDep 10.0 MeV
+/RunAction/PositronPerEventEDep 110.0 MeV
+/RunAction/ElectronPerEventEDep 250.0 MeV
+/RunAction/ProtonPerEventEDep 5.0 MeV
+/RunAction/NeutronPerEventEDep 5.0 MeV
+/RunAction/OptPhotPerEventEDep 0.05 MeV
+
+/RunAction/GammaPerEventInitE 210.0 MeV
+/RunAction/PositronPerEventInitE 210.0 MeV
+/RunAction/ElectronPerEventInitE 210.0 MeV
+/RunAction/ProtonPerEventInitE 210.0 MeV
+/RunAction/NeutronPerEventInitE 2100.0 MeV
+/RunAction/OptPhotPerEventInitE 5.0 eV
+
+/RunAction/PerEventEDepMin 125.0 MeV
+/RunAction/PerEventEDepMax 220.0 MeV
+/RunAction/PerEventUntrackedE 0.5 MeV
+
+/run/beamOn 100

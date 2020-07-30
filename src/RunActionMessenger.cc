@@ -17,15 +17,15 @@
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 RunActionMessenger::RunActionMessenger() : G4UImessenger(), fFileName("SACRun"),
-	fGammaPerHitEDepBound(2.0), fPositronPerHitEDepBound(2.0), fElectronPerHitEDepBound(2.0),
-	fProtonPerHitEDepBound(2.0), fNeutronPerHitEDepBound(2.0), fPionPlusPerHitEDepBound(2.0),
+	fGammaPerHitEDepBound(0.15), fPositronPerHitEDepBound(4.0), fElectronPerHitEDepBound(4.0),
+	fProtonPerHitEDepBound(4.0), fNeutronPerHitEDepBound(1.0), fPionPlusPerHitEDepBound(2.0),
 	fPionMinusPerHitEDepBound(2.0), fPionZeroPerHitEDepBound(2.0), fMuonPlusPerHitEDepBound(2.0),
-	fMuonMinusPerHitEDepBound(2.0), fOptPhotPerHitEDepBound(2.0),
+	fMuonMinusPerHitEDepBound(2.0), fOptPhotPerHitEDepBound(0.000005),
 
-	fGammaPerHitTrLenBound(2.0), fPositronPerHitTrLenBound(2.0), fElectronPerHitTrLenBound(2.0),
-	fProtonPerHitTrLenBound(2.0), fNeutronPerHitTrLenBound(2.0), fPionPlusPerHitTrLenBound(2.0),
-	fPionMinusPerHitTrLenBound(2.0), fPionZeroPerHitTrLenBound(2.0), fMuonPlusPerHitTrLenBound(2.0),
-	fMuonMinusPerHitTrLenBound(2.0), fOptPhotPerHitTrLenBound(2.0),
+	fGammaPerHitTrLenBound(30.0), fPositronPerHitTrLenBound(10.0), fElectronPerHitTrLenBound(10.5),
+	fProtonPerHitTrLenBound(10.0), fNeutronPerHitTrLenBound(100.0), fPionPlusPerHitTrLenBound(50.0),
+	fPionMinusPerHitTrLenBound(50.0), fPionZeroPerHitTrLenBound(50.0), fMuonPlusPerHitTrLenBound(50.0),
+	fMuonMinusPerHitTrLenBound(50.0), fOptPhotPerHitTrLenBound(10.0),
 
 	fGammaPerEventMultMinBound(0), fGammaPerEventMultMaxBound(100000000),
 	fPositronPerEventMultMinBound(0), fPositronPerEventMultMaxBound(100000000),
@@ -44,10 +44,10 @@ RunActionMessenger::RunActionMessenger() : G4UImessenger(), fFileName("SACRun"),
 	fPionMinusPerEventEDepBound(5.0), fPionZeroPerEventEDepBound(5.0), fMuonPlusPerEventEDepBound(5.0),
 	fMuonMinusPerEventEDepBound(5.0), fOptPhotPerEventEDepBound(5.0),
 
-	fGammaPerEventInitEBound(25.0), fPositronPerEventInitEBound(25.0), fElectronPerEventInitEBound(25.0),
-	fProtonPerEventInitEBound(25.0), fNeutronPerEventInitEBound(25.0), fPionPlusPerEventInitEBound(25.0),
-	fPionMinusPerEventInitEBound(25.0), fPionZeroPerEventInitEBound(25.0), fMuonPlusPerEventInitEBound(25.0),
-	fMuonMinusPerEventInitEBound(25.0), fOptPhotPerEventInitEBound(25.0),
+	fGammaPerEventInitEBound(250.0), fPositronPerEventInitEBound(250.0), fElectronPerEventInitEBound(250.0),
+	fProtonPerEventInitEBound(1500.0), fNeutronPerEventInitEBound(1500.0), fPionPlusPerEventInitEBound(30.0),
+	fPionMinusPerEventInitEBound(30.0), fPionZeroPerEventInitEBound(30.0), fMuonPlusPerEventInitEBound(30.0),
+	fMuonMinusPerEventInitEBound(30.0), fOptPhotPerEventInitEBound(0.000005),
 
 	fPerEventEDepMinBound(50.0), fPerEventEDepMaxBound(100.0), fPerEventUntrackedEBound(0.001)
 {

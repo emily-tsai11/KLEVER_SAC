@@ -34,8 +34,7 @@ include_directories(${PROJECT_SOURCE_DIR}/SAC/include) # specify SAC include dir
 target_link_libraries(KLMC_SAC SAC) # link with KLMC_SAC libraries
 
 # copy over macro files
-configure_file(${PROJECT_SOURCE_DIR}/vis.mac ${PROJECT_BINARY_DIR}/vis.mac COPYONLY)
-configure_file(${PROJECT_SOURCE_DIR}/batch.mac ${PROJECT_BINARY_DIR}/batch.mac COPYONLY)
+file(COPY macros DESTINATION .)
 
 # install executable
 install(TARGETS KLMC_SAC DESTINATION bin)
