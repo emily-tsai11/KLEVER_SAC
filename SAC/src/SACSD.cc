@@ -128,19 +128,19 @@ void SACSD::EndOfEvent(G4HCofThisEvent*)
 	G4AnalysisManager* fAnalysisManager = G4AnalysisManager::Instance();
 
 	G4int nHitEntries = fSACCollection->entries();
-	const G4int nParticles = 11;
 	std::map<G4int, G4bool> trackedHits;
 
-	G4int NPerEvent[nParticles];
-	G4double EPerEvent[nParticles];
-	G4double TotalEInEvent = 0.0;
+	G4int nParticles = 11;
+	G4int NPerEvent[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+	G4double EPerEvent[] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+	G4double TotalEDep = 0.0;
 	G4double UntrackedE = 0.0;
 
-	for(int i = 0; i < nHitEntries; i++)
+	for(G4int i = 0; i < nHitEntries; i++)
 	{
 		SACHit* currentHit = (*fSACCollection)[i];
 
-		G4double initialE = currentHit->GetInitialEnergy();
+		G4double initE = currentHit->GetInitialEnergy();
 		G4double eDep = currentHit->GetEnergyDep();
 		G4int trackID = currentHit->GetTrackId();
 		G4int partType = currentHit->GetPType();
@@ -161,23 +161,27 @@ void SACSD::EndOfEvent(G4HCofThisEvent*)
 		if(trackedHits[trackID] == false)
 		{
 			trackedHits[trackID] = true;
-			fAnalysisManager->FillH1(partType + 5 * nParticles, initialE, 1.0);
-			fAnalysisManager->FillH1(partType + 6 * nParticles, initialE, initialE);
+			NPerEvent[partType]++;
+			fAnalysisManager->FillH1(partType + 5 * nParticles, initE, 1.0);
+			fAnalysisManager->FillH1(partType + 6 * nParticles, initE, initE);
 		}
 
-		NPerEvent[partType]++;
 		EPerEvent[partType] += eDep;
 
 		fAnalysisManager->FillH2(partType + 0 * nParticles, eDep, trLen, 1.0);
 	}
 
-	for(int partType = 0; partType < nParticles; partType++)
+	for(G4int partType = 0; partType < nParticles; partType++)
 	{
-		fAnalysisManager->FillH1(partType + 3 * nParticles, NPerEvent[partType], 1.0);
-		fAnalysisManager->FillH1(partType + 4 * nParticles, EPerEvent[partType], 1.0);
-		TotalEInEvent += EPerEvent[partType];
+		if(NPerEvent[partType] > 0)
+			fAnalysisManager->FillH1(partType + 3 * nParticles, NPerEvent[partType], 1.0);
+		if(EPerEvent[partType] > 0)
+		{
+			fAnalysisManager->FillH1(partType + 4 * nParticles, EPerEvent[partType], 1.0);
+			TotalEDep += EPerEvent[partType];
+		}
 	}
 
-	fAnalysisManager->FillH1(77, TotalEInEvent, 1.0);
-	fAnalysisManager->FillH1(78, UntrackedE, 1.0);
+	if(TotalEDep > 0.0) fAnalysisManager->FillH1(77, TotalEDep, 1.0);
+	if(UntrackedE > 0.0) fAnalysisManager->FillH1(78, UntrackedE, 1.0);
 }
