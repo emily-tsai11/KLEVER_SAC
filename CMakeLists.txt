@@ -1,5 +1,5 @@
 # require minimum cmake version
-cmake_minimum_required(VERSION 3.8 FATAL_ERROR)
+cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
 project(KLMC_SAC)
 
 # find Geant4, activate all available UI and vis drivers by default
