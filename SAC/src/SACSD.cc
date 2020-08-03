@@ -189,9 +189,11 @@ void SACSD::EndOfEvent(G4HCofThisEvent*)
 			fAnalysisManager->FillH3(partType, x, y, z, 1.0);
 			fAnalysisManager->FillH3(11, x, y, z, 1.0);
 
+			// increment multiplicity of particle
 			NPerEvent[partType]++;
 		}
 
+		// increment energy deposition of particle
 		EPerEvent[partType] += eDep;
 
 		// fill energy deposition vs. track length
