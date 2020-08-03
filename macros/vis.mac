@@ -94,7 +94,7 @@
 # /vis/filtering/trajectories/particleFilter-0/add neutron
 # /vis/filtering/trajectories/particleFilter-0/add opticalphoton
 
-# to invert the above, drawing all particles except certain ones, keep the above two lines but also add:
+# to invert the above, drawing all particles except certain ones, keep the above lines but also add:
 # /vis/filtering/trajectories/particleFilter-0/invert true
 
 # to select colour by particle ID:

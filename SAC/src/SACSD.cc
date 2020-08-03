@@ -28,6 +28,7 @@
 
 #include <map>
 
+#include "SACGeometry.hh"
 #include "Analysis.hh"
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -64,7 +65,7 @@ G4bool SACSD::ProcessHits(G4Step* aStep, G4TouchableHistory*)
 
 	newHit->SetTime(preStepPoint->GetGlobalTime());
 
-	newHit->SetInitialEnergy(preStepPoint->GetTotalEnergy());
+	newHit->SetInitialEnergy(preStepPoint->GetKineticEnergy());
 
 	G4StepPoint* postStepPoint = aStep->GetPostStepPoint();
 	newHit->SetFinalEnergy(postStepPoint->GetTotalEnergy());
@@ -130,6 +131,9 @@ void SACSD::EndOfEvent(G4HCofThisEvent*)
 	G4int nHitEntries = fSACCollection->entries();
 	std::map<G4int, G4bool> trackedHits;
 
+	SACGeometry* geo = SACGeometry::GetInstance();
+	G4double incidentE = geo->GetIncidentE();
+
 	G4int nParticles = 11;
 	G4int NPerEvent[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 	G4double EPerEvent[] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
@@ -162,46 +166,48 @@ void SACSD::EndOfEvent(G4HCofThisEvent*)
 		// fill track length per hit
 		fAnalysisManager->FillH1(partType + 2 * nParticles, trLen, 1.0);
 
-		if(trackedHits[trackID] == false)
-		{
-			trackedHits[trackID] = true;
-			NPerEvent[partType]++;
-
-			// fill initial energy per particle
-			fAnalysisManager->FillH1(partType + 5 * nParticles, initE, 1.0);
-			fAnalysisManager->FillH1(partType + 6 * nParticles, initE, initE);
-		}
-
-		EPerEvent[partType] += eDep;
-
 		G4int x = channelID % 10;
 		channelID /= 10;
 		G4int y = channelID % 10;
 		channelID /= 10;
 		G4int z = channelID;
 
+		// only do this if the particle hasn't been seen before
+		if(trackedHits[trackID] == false)
+		{
+			trackedHits[trackID] = true;
+
+			// fill initial energy per particle
+			fAnalysisManager->FillH1(partType + 5 * nParticles, initE, 1.0);
+			fAnalysisManager->FillH1(partType + 6 * nParticles, initE, initE);
+
+			// fill x-y plane of SAC hits
+			fAnalysisManager->FillH2(partType + (z + 1) * nParticles, x, y, 1.0);
+			fAnalysisManager->FillH2(z + 5 * nParticles, x, y, 1.0);
+
+			// fill SAC hits
+			fAnalysisManager->FillH3(partType, x, y, z, 1.0);
+			fAnalysisManager->FillH3(11, x, y, z, 1.0);
+
+			NPerEvent[partType]++;
+		}
+
+		EPerEvent[partType] += eDep;
+
 		// fill energy deposition vs. track length
 		fAnalysisManager->FillH2(partType + 0 * nParticles, eDep, trLen, 1.0);
-
-		// fill x-y plane of SAC hits
-		fAnalysisManager->FillH2(partType + (z + 1) * nParticles, x, y, 1.0);
-		fAnalysisManager->FillH2(z + 5 * nParticles, x, y, 1.0);
-
-		// fill SAC hits
-		fAnalysisManager->FillH3(partType, x, y, z, 1.0);
-		fAnalysisManager->FillH3(11, x, y, z, 1.0);
 	}
 
 	for(G4int partType = 0; partType < nParticles; partType++)
 	{
 		// fill multiplicity of each particle per event
 		if(NPerEvent[partType] > 0)
-			fAnalysisManager->FillH1(partType + 3 * nParticles, NPerEvent[partType], 1.0);
+			fAnalysisManager->FillH1(partType + 3 * nParticles, NPerEvent[partType] / incidentE, 1.0);
 
 		// fill total energy deposition for each particle per event
 		if(EPerEvent[partType] > 0)
 		{
-			fAnalysisManager->FillH1(partType + 4 * nParticles, EPerEvent[partType], 1.0);
+			fAnalysisManager->FillH1(partType + 4 * nParticles, EPerEvent[partType] / incidentE, 1.0);
 			TotalEDep += EPerEvent[partType];
 		}
 	}

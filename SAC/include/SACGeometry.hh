@@ -115,6 +115,10 @@ class SACGeometry
 		// get name of SAC sensitive detector
 		G4String GetSACSensitiveDetectorName() { return fSACSensitiveDetectorName; }
 
+		// incident particle energy
+		void SetIncidentE(G4double e) { fIncidentE = e; }
+		G4double GetIncidentE() { return fIncidentE; }
+
 	private:
 
 		// geometry parameters
@@ -147,6 +151,7 @@ class SACGeometry
 
 		// other parameters
 		G4String fSACSensitiveDetectorName;
+		G4double fIncidentE;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

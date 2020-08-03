@@ -82,6 +82,13 @@ SACMessenger::SACMessenger(SACDetector* det) : fSACDetector(det)
 	fSetVerboseLevelCmd->SetParameterName("VL", false);
 	fSetVerboseLevelCmd->SetRange("VL >= 0");
 	fSetVerboseLevelCmd->AvailableForStates(G4State_PreInit, G4State_Idle);
+
+	fSetIncidentECmd = new G4UIcmdWithADoubleAndUnit("/Detector/SAC/IncidentE", this);
+	fSetIncidentECmd->SetGuidance("Pass in incident particle energy.");
+	fSetIncidentECmd->SetParameterName("IncidentE", false);
+	fSetIncidentECmd->SetDefaultUnit("MeV");
+	fSetIncidentECmd->SetRange("IncidentE >= 0.0");
+	fSetIncidentECmd->AvailableForStates(G4State_PreInit, G4State_Idle);
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -101,6 +108,8 @@ SACMessenger::~SACMessenger()
 	delete fSetSACFrontFaceZCmd;
 
 	delete fSetVerboseLevelCmd;
+
+	delete fSetIncidentECmd;
 
 	delete fSACDetectorDir;
 }
@@ -127,4 +136,6 @@ void SACMessenger::SetNewValue(G4UIcommand* cmd, G4String par)
 	if(cmd == fSetSACFrontFaceZCmd) fSACGeometry->SetSACFrontFacePosZ(fSetSACFrontFaceZCmd->GetNewDoubleValue(par));
 
 	if(cmd == fSetVerboseLevelCmd) fSACGeometry->SetVerboseLevel(fSetVerboseLevelCmd->GetNewIntValue(par));
+
+	if(cmd == fSetIncidentECmd) fSACGeometry->SetIncidentE(fSetIncidentECmd->GetNewDoubleValue(par));
 }

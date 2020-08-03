@@ -103,8 +103,7 @@ class RunActionMessenger : public G4UImessenger
 		G4double GetMuonMinusPerEventInitEBound() { return fMuonMinusPerEventInitEBound; }
 		G4double GetOptPhotPerEventInitEBound() { return fOptPhotPerEventInitEBound; }
 
-		G4double GetPerEventEDepMinBound() { return fPerEventEDepMinBound; }
-		G4double GetPerEventEDepMaxBound() { return fPerEventEDepMaxBound; }
+		G4double GetPerEventEDepBound() { return fPerEventEDepBound; }
 		G4double GetPerEventUntrackedEBound() { return fPerEventUntrackedEBound; }
 
 	private:
@@ -256,12 +255,10 @@ class RunActionMessenger : public G4UImessenger
 		G4double fMuonMinusPerEventInitEBound;
 		G4double fOptPhotPerEventInitEBound;
 
-		G4UIcmdWithADoubleAndUnit* fSetPerEventEDepMinBoundCmd;
-		G4UIcmdWithADoubleAndUnit* fSetPerEventEDepMaxBoundCmd;
+		G4UIcmdWithADoubleAndUnit* fSetPerEventEDepBoundCmd;
 		G4UIcmdWithADoubleAndUnit* fSetPerEventUntrackedEBoundCmd;
 
-		G4double fPerEventEDepMinBound;
-		G4double fPerEventEDepMaxBound;
+		G4double fPerEventEDepBound;
 		G4double fPerEventUntrackedEBound;
 };
 

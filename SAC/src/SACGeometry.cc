@@ -55,6 +55,8 @@ SACGeometry::SACGeometry()
 	fDigiPMTCableDelay = 0.0 * ns; // delay due to connection cables
 
 	fSACSensitiveDetectorName = "SACSD";
+
+	fIncidentE = 1.0;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

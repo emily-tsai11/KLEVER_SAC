@@ -17,39 +17,39 @@
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 RunActionMessenger::RunActionMessenger() : G4UImessenger(), fFileName("SACRun"),
-	fGammaPerHitEDepBound(0.15), fPositronPerHitEDepBound(4.0), fElectronPerHitEDepBound(4.0),
-	fProtonPerHitEDepBound(20.0), fNeutronPerHitEDepBound(1.0), fPionPlusPerHitEDepBound(2.0),
-	fPionMinusPerHitEDepBound(2.0), fPionZeroPerHitEDepBound(2.0), fMuonPlusPerHitEDepBound(2.0),
-	fMuonMinusPerHitEDepBound(2.0), fOptPhotPerHitEDepBound(0.000005),
+	fGammaPerHitEDepBound(0.5), fPositronPerHitEDepBound(20.0), fElectronPerHitEDepBound(20.0),
+	fProtonPerHitEDepBound(20.0), fNeutronPerHitEDepBound(20.0), fPionPlusPerHitEDepBound(20.0),
+	fPionMinusPerHitEDepBound(20.0), fPionZeroPerHitEDepBound(20.0), fMuonPlusPerHitEDepBound(20.0),
+	fMuonMinusPerHitEDepBound(20.0), fOptPhotPerHitEDepBound(0.000005),
 
-	fGammaPerHitTrLenBound(30.0), fPositronPerHitTrLenBound(10.0), fElectronPerHitTrLenBound(10.5),
-	fProtonPerHitTrLenBound(10.0), fNeutronPerHitTrLenBound(200.0), fPionPlusPerHitTrLenBound(50.0),
-	fPionMinusPerHitTrLenBound(50.0), fPionZeroPerHitTrLenBound(50.0), fMuonPlusPerHitTrLenBound(50.0),
-	fMuonMinusPerHitTrLenBound(50.0), fOptPhotPerHitTrLenBound(10.0),
+	fGammaPerHitTrLenBound(202.5), fPositronPerHitTrLenBound(202.5), fElectronPerHitTrLenBound(202.5),
+	fProtonPerHitTrLenBound(202.5), fNeutronPerHitTrLenBound(202.5), fPionPlusPerHitTrLenBound(202.5),
+	fPionMinusPerHitTrLenBound(202.5), fPionZeroPerHitTrLenBound(202.5), fMuonPlusPerHitTrLenBound(202.5),
+	fMuonMinusPerHitTrLenBound(202.5), fOptPhotPerHitTrLenBound(202.5),
 
-	fGammaPerEventMultMinBound(0), fGammaPerEventMultMaxBound(100000000),
-	fPositronPerEventMultMinBound(0), fPositronPerEventMultMaxBound(100000000),
-	fElectronPerEventMultMinBound(0), fElectronPerEventMultMaxBound(100000000),
-	fProtonPerEventMultMinBound(0), fProtonPerEventMultMaxBound(100000000),
-	fNeutronPerEventMultMinBound(0), fNeutronPerEventMultMaxBound(100000000),
-	fPionPlusPerEventMultMinBound(0), fPionPlusPerEventMultMaxBound(100000000),
-	fPionMinusPerEventMultMinBound(0), fPionMinusPerEventMultMaxBound(100000000),
-	fPionZeroPerEventMultMinBound(0), fPionZeroPerEventMultMaxBound(100000000),
-	fMuonPlusPerEventMultMinBound(0), fMuonPlusPerEventMultMaxBound(100000000),
-	fMuonMinusPerEventMultMinBound(0), fMuonMinusPerEventMultMaxBound(100000000),
-	fOptPhotPerEventMultMinBound(0), fOptPhotPerEventMultMaxBound(100000000),
+	fGammaPerEventMultMinBound(0), fGammaPerEventMultMaxBound(5),
+	fPositronPerEventMultMinBound(0), fPositronPerEventMultMaxBound(5),
+	fElectronPerEventMultMinBound(0), fElectronPerEventMultMaxBound(5),
+	fProtonPerEventMultMinBound(0), fProtonPerEventMultMaxBound(5),
+	fNeutronPerEventMultMinBound(0), fNeutronPerEventMultMaxBound(5),
+	fPionPlusPerEventMultMinBound(0), fPionPlusPerEventMultMaxBound(5),
+	fPionMinusPerEventMultMinBound(0), fPionMinusPerEventMultMaxBound(5),
+	fPionZeroPerEventMultMinBound(0), fPionZeroPerEventMultMaxBound(5),
+	fMuonPlusPerEventMultMinBound(0), fMuonPlusPerEventMultMaxBound(5),
+	fMuonMinusPerEventMultMinBound(0), fMuonMinusPerEventMultMaxBound(5),
+	fOptPhotPerEventMultMinBound(0), fOptPhotPerEventMultMaxBound(200),
 
-	fGammaPerEventEDepBound(5.0), fPositronPerEventEDepBound(5.0), fElectronPerEventEDepBound(5.0),
-	fProtonPerEventEDepBound(5.0), fNeutronPerEventEDepBound(5.0), fPionPlusPerEventEDepBound(5.0),
-	fPionMinusPerEventEDepBound(5.0), fPionZeroPerEventEDepBound(5.0), fMuonPlusPerEventEDepBound(5.0),
-	fMuonMinusPerEventEDepBound(5.0), fOptPhotPerEventEDepBound(5.0),
+	fGammaPerEventEDepBound(1.0), fPositronPerEventEDepBound(1.0), fElectronPerEventEDepBound(1.0),
+	fProtonPerEventEDepBound(1.0), fNeutronPerEventEDepBound(1.0), fPionPlusPerEventEDepBound(1.0),
+	fPionMinusPerEventEDepBound(1.0), fPionZeroPerEventEDepBound(1.0), fMuonPlusPerEventEDepBound(1.0),
+	fMuonMinusPerEventEDepBound(1.0), fOptPhotPerEventEDepBound(1.0),
 
-	fGammaPerEventInitEBound(250.0), fPositronPerEventInitEBound(250.0), fElectronPerEventInitEBound(250.0),
-	fProtonPerEventInitEBound(1500.0), fNeutronPerEventInitEBound(1500.0), fPionPlusPerEventInitEBound(30.0),
-	fPionMinusPerEventInitEBound(30.0), fPionZeroPerEventInitEBound(30.0), fMuonPlusPerEventInitEBound(30.0),
-	fMuonMinusPerEventInitEBound(30.0), fOptPhotPerEventInitEBound(0.000005),
+	fGammaPerEventInitEBound(1.0), fPositronPerEventInitEBound(1.0), fElectronPerEventInitEBound(1.0),
+	fProtonPerEventInitEBound(1.0), fNeutronPerEventInitEBound(1.0), fPionPlusPerEventInitEBound(1.0),
+	fPionMinusPerEventInitEBound(1.0), fPionZeroPerEventInitEBound(1.0), fMuonPlusPerEventInitEBound(1.0),
+	fMuonMinusPerEventInitEBound(1.0), fOptPhotPerEventInitEBound(1.0),
 
-	fPerEventEDepMinBound(50.0), fPerEventEDepMaxBound(100.0), fPerEventUntrackedEBound(0.001)
+	fPerEventEDepBound(1.0), fPerEventUntrackedEBound(1.0)
 {
 	fRunActionDir = new G4UIdirectory("/RunAction/");
 	fRunActionDir->SetGuidance("UI commands to control RunAction");
@@ -503,19 +503,12 @@ RunActionMessenger::RunActionMessenger() : G4UImessenger(), fFileName("SACRun"),
 		fSetOptPhotPerEventInitEBoundCmd->AvailableForStates(G4State_PreInit, G4State_Idle);
 	}
 
-	fSetPerEventEDepMinBoundCmd = new G4UIcmdWithADoubleAndUnit("/RunAction/PerEventEDepMin", this);
-	fSetPerEventEDepMinBoundCmd->SetGuidance("Set energy deposition minimum per event bound");
-	fSetPerEventEDepMinBoundCmd->SetParameterName("PerEventEDepMin", false);
-	fSetPerEventEDepMinBoundCmd->SetUnitCategory("Energy");
-	fSetPerEventEDepMinBoundCmd->SetRange("PerEventEDepMin >= 0.0");
-	fSetPerEventEDepMinBoundCmd->AvailableForStates(G4State_PreInit, G4State_Idle);
-
-	fSetPerEventEDepMaxBoundCmd = new G4UIcmdWithADoubleAndUnit("/RunAction/PerEventEDepMax", this);
-	fSetPerEventEDepMaxBoundCmd->SetGuidance("Set energy deposition maximum per event bound");
-	fSetPerEventEDepMaxBoundCmd->SetParameterName("PerEventEDepMax", false);
-	fSetPerEventEDepMaxBoundCmd->SetUnitCategory("Energy");
-	fSetPerEventEDepMaxBoundCmd->SetRange("PerEventEDepMax >= 0.0");
-	fSetPerEventEDepMaxBoundCmd->AvailableForStates(G4State_PreInit, G4State_Idle);
+	fSetPerEventEDepBoundCmd = new G4UIcmdWithADoubleAndUnit("/RunAction/PerEventEDep", this);
+	fSetPerEventEDepBoundCmd->SetGuidance("Set energy deposition per event bound");
+	fSetPerEventEDepBoundCmd->SetParameterName("PerEventEDep", false);
+	fSetPerEventEDepBoundCmd->SetUnitCategory("Energy");
+	fSetPerEventEDepBoundCmd->SetRange("PerEventEDep >= 0.0");
+	fSetPerEventEDepBoundCmd->AvailableForStates(G4State_PreInit, G4State_Idle);
 
 	fSetPerEventUntrackedEBoundCmd = new G4UIcmdWithADoubleAndUnit("/RunAction/PerEventUntrackedE", this);
 	fSetPerEventUntrackedEBoundCmd->SetGuidance("Set untracked energy deposition per event bound");
@@ -602,8 +595,7 @@ RunActionMessenger::~RunActionMessenger()
 	delete fSetMuonMinusPerEventInitEBoundCmd;
 	delete fSetOptPhotPerEventInitEBoundCmd;
 
-	delete fSetPerEventEDepMinBoundCmd;
-	delete fSetPerEventEDepMaxBoundCmd;
+	delete fSetPerEventEDepBoundCmd;
 	delete fSetPerEventUntrackedEBoundCmd;
 
 	delete fRunActionDir;
@@ -777,10 +769,8 @@ void RunActionMessenger::SetNewValue(G4UIcommand* cmd, G4String par)
 			fOptPhotPerEventInitEBound = fSetGammaPerEventInitEBoundCmd->GetNewDoubleValue(par);
 	}
 
-	if(cmd == fSetPerEventEDepMinBoundCmd)
-		fPerEventEDepMinBound = fSetPerEventEDepMinBoundCmd->GetNewDoubleValue(par);
-	if(cmd == fSetPerEventEDepMaxBoundCmd)
-		fPerEventEDepMaxBound = fSetPerEventEDepMaxBoundCmd->GetNewDoubleValue(par);
+	if(cmd == fSetPerEventEDepBoundCmd)
+		fPerEventEDepBound = fSetPerEventEDepBoundCmd->GetNewDoubleValue(par);
 	if(cmd == fSetPerEventUntrackedEBoundCmd)
 		fPerEventUntrackedEBound = fSetPerEventUntrackedEBoundCmd->GetNewDoubleValue(par);
 }

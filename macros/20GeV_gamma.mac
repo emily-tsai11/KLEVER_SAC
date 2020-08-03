@@ -11,37 +11,18 @@
 
 /gun/energy 20 GeV
 
-/RunAction/FileName SAC_20GeV_n3_gamma
+/Detector/SAC/IncidentE 20.0 GeV
 
-/RunAction/GammaPerEventMultMin 7000
-/RunAction/GammaPerEventMultMax 13000
-/RunAction/PositronPerEventMultMin 700
-/RunAction/PositronPerEventMultMax 1300
-/RunAction/ElectronPerEventMultMin 14000
-/RunAction/ElectronPerEventMultMax 20000
-/RunAction/ProtonPerEventMultMin 0
-/RunAction/ProtonPerEventMultMax 20
-/RunAction/NeutronPerEventMultMin 0
-/RunAction/NeutronPerEventMultMax 20
-/RunAction/OptPhotPerEventMultMin 1400000
-/RunAction/OptPhotPerEventMultMax 1900000
+/RunAction/FileName SAC_20GeV_n1_gamma
 
-/RunAction/GammaPerEventEDep 1.0 GeV
-/RunAction/PositronPerEventEDep 8.0 GeV
-/RunAction/ElectronPerEventEDep 16.0 GeV
-/RunAction/ProtonPerEventEDep 50.0 MeV
-/RunAction/NeutronPerEventEDep 5.0 MeV
-/RunAction/OptPhotPerEventEDep 10.0 MeV
-
-/RunAction/GammaPerEventInitE 20.1 GeV
-/RunAction/PositronPerEventInitE 20.1 GeV
-/RunAction/ElectronPerEventInitE 20.1 GeV
-/RunAction/ProtonPerEventInitE 20.1 GeV
-/RunAction/NeutronPerEventInitE 210.0 GeV
+/RunAction/GammaPerEventInitE 20.0 GeV
+/RunAction/PositronPerEventInitE 20.0 GeV
+/RunAction/ElectronPerEventInitE 20.0 GeV
+/RunAction/ProtonPerEventInitE 20.0 GeV
+/RunAction/NeutronPerEventInitE 20.0 GeV
 /RunAction/OptPhotPerEventInitE 5.0 eV
 
-/RunAction/PerEventEDepMin 10.0 GeV
-/RunAction/PerEventEDepMax 20.1 GeV
-/RunAction/PerEventUntrackedE 20.0 MeV
+/RunAction/PerEventEDep 20.0 GeV
+/RunAction/PerEventUntrackedE 20.0 GeV
 
-/run/beamOn 3
+/run/beamOn 1

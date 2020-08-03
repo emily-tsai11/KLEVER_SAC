@@ -21,6 +21,7 @@ class G4UIcmdWithAnInteger;
 class G4UIcmdWithADoubleAndUnit;
 class SACDetector;
 class SACGeometry;
+class SACSD;
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -37,6 +38,7 @@ class SACMessenger : public G4UImessenger
 
 		SACDetector* fSACDetector;
 		SACGeometry* fSACGeometry;
+		SACSD* fSACSD;
 
 		G4UIdirectory* fSACDetectorDir;
 
@@ -53,6 +55,8 @@ class SACMessenger : public G4UImessenger
 		G4UIcmdWithADoubleAndUnit* fSetSACFrontFaceZCmd;
 
 		G4UIcmdWithAnInteger* fSetVerboseLevelCmd;
+
+		G4UIcmdWithADoubleAndUnit* fSetIncidentECmd;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
