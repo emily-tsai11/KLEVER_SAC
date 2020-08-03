@@ -18,12 +18,12 @@
 
 RunActionMessenger::RunActionMessenger() : G4UImessenger(), fFileName("SACRun"),
 	fGammaPerHitEDepBound(0.15), fPositronPerHitEDepBound(4.0), fElectronPerHitEDepBound(4.0),
-	fProtonPerHitEDepBound(4.0), fNeutronPerHitEDepBound(1.0), fPionPlusPerHitEDepBound(2.0),
+	fProtonPerHitEDepBound(20.0), fNeutronPerHitEDepBound(1.0), fPionPlusPerHitEDepBound(2.0),
 	fPionMinusPerHitEDepBound(2.0), fPionZeroPerHitEDepBound(2.0), fMuonPlusPerHitEDepBound(2.0),
 	fMuonMinusPerHitEDepBound(2.0), fOptPhotPerHitEDepBound(0.000005),
 
 	fGammaPerHitTrLenBound(30.0), fPositronPerHitTrLenBound(10.0), fElectronPerHitTrLenBound(10.5),
-	fProtonPerHitTrLenBound(10.0), fNeutronPerHitTrLenBound(100.0), fPionPlusPerHitTrLenBound(50.0),
+	fProtonPerHitTrLenBound(10.0), fNeutronPerHitTrLenBound(200.0), fPionPlusPerHitTrLenBound(50.0),
 	fPionMinusPerHitTrLenBound(50.0), fPionZeroPerHitTrLenBound(50.0), fMuonPlusPerHitTrLenBound(50.0),
 	fMuonMinusPerHitTrLenBound(50.0), fOptPhotPerHitTrLenBound(10.0),
 

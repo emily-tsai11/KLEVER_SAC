@@ -30,7 +30,7 @@ int main(int argc, char** argv)
 	G4int seedNum = rand();
 	if(argc == 1)
 	{
-		fileName = "vis.mac"; // default interactive mode
+		fileName = "macros/vis.mac"; // default interactive mode
 		G4cout << "No macro specified, using " << fileName << G4endl;
 		G4cout << "No seed number specified, using " << seedNum << G4endl;
 	}

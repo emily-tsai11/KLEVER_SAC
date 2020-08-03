@@ -1,28 +1,20 @@
 # visualize KLMC_SAC
 
+# --------------------------------------------------
+
 # sets some default verbose
 /control/verbose 1
 /run/verbose 1
 /tracking/verbose 0
 
+# --------------------------------------------------
+
 # simulation from NA62
 # /Simulation/Physics QGSP_FTFP_BERT
 
-
-
-# general run settings
-
-# how often event printout is shown
-# /settings/PrintOutFrequency 1
-
-
+# --------------------------------------------------
 
 # detector settings
-
-#/Detector/VerboseLevel 0
-
-# /Detector/WorldIsAir
-# /Detector/WorldIsVacuum
 
 # /Detector/SAC/VerboseLevel 0
 # /Detector/SAC/NRows 10
@@ -34,7 +26,7 @@
 # /Detector/SAC/CrystalCoating 100.0 um
 # /Detector/SAC/FrontFaceZ 300.0 cm
 
-
+# --------------------------------------------------
 
 # create detectors and initialize run
 /run/initialize
@@ -86,23 +78,33 @@
 # /vis/modeling/trajectories/create/drawByCharge
 # /vis/modeling/trajectories/drawByCharge-0/default/setDrawStepPts true
 # /vis/modeling/trajectories/drawByCharge-0/default/setStepPtsSize 1
+
 # (if too many tracks cause core dump => /tracking/storeTrajectory 0)
 /tracking/storeTrajectory 1
 
 # draw hits at end of event:
 /vis/scene/add/hits
 
-# to draw only gammas:
+# to draw only certain particles:
 # /vis/filtering/trajectories/create/particleFilter
 # /vis/filtering/trajectories/particleFilter-0/add gamma
+# /vis/filtering/trajectories/particleFilter-0/add positron
+# /vis/filtering/trajectories/particleFilter-0/add electron
+# /vis/filtering/trajectories/particleFilter-0/add proton
+# /vis/filtering/trajectories/particleFilter-0/add neutron
+# /vis/filtering/trajectories/particleFilter-0/add opticalphoton
 
-# to invert the above, drawing all particles except gammas, keep the above two lines but also add:
+# to invert the above, drawing all particles except certain ones, keep the above two lines but also add:
 # /vis/filtering/trajectories/particleFilter-0/invert true
 
-# many other options are available with /vis/modeling and /vis/filtering
-# for example, to select colour by particle ID:
-# /vis/modeling/trajectories/create/drawByParticleID
-# /vis/modeling/trajectories/drawByParticleID-0/set e- blue
+# to select colour by particle ID:
+/vis/modeling/trajectories/create/drawByParticleID
+/vis/modeling/trajectories/drawByParticleID-0/set gamma white
+/vis/modeling/trajectories/drawByParticleID-0/set positron green
+/vis/modeling/trajectories/drawByParticleID-0/set electron blue
+/vis/modeling/trajectories/drawByParticleID-0/set proton yellow
+/vis/modeling/trajectories/drawByParticleID-0/set neutron magenta
+/vis/modeling/trajectories/drawByParticleID-0/set opticalphoton cyan
 
 # to superimpose all of the events from a given run:
 # /vis/scene/endOfEventAction accumulate
@@ -121,7 +123,7 @@
 # calo picture
 # /vis/viewer/set/viewpointThetaPhi 45.0 45.0
 # /vis/viewer/panTo -1 -0.9
-/vis/viewer/zoom 4.5
+# /vis/viewer/zoom 4.5
 
 # monitor picture
 # /vis/viewer/panTo -0.5 0.0

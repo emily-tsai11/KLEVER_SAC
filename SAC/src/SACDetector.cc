@@ -55,7 +55,7 @@ void SACDetector::CreateGeometry()
 
 	G4Box* solidSAC = new G4Box("SAC", 0.5 * sacSizeX, 0.5 * sacSizeY, 0.5 * sacSizeZ);
 	fSACVolume = new G4LogicalVolume(solidSAC, fMaterial, "SAC", 0, 0, 0);
-	// fSACVolume->SetVisAttributes(G4VisAttributes::Invisible);
+	fSACVolume->SetVisAttributes(G4VisAttributes::Invisible);
 
 	G4RotationMatrix* Rot = new G4RotationMatrix;
 	Rot->rotateY(0.1 * rad);
@@ -76,7 +76,7 @@ void SACDetector::CreateGeometry()
 
 	G4Box* solidCry = new G4Box("SACCry", 0.5 * crySizeX, 0.5 * crySizeY, 0.5 * crySizeZ);
 	fCrystalVolume = new G4LogicalVolume(solidCry, G4Material::GetMaterial("PbF2"), "SACCry", 0, 0, 0);
-	fCrystalVolume->SetVisAttributes(G4VisAttributes(G4Colour::Magenta()));
+	fCrystalVolume->SetVisAttributes(G4VisAttributes(G4Colour::Grey()));
 
 	// make crystal a sensitive detector
 	G4SDManager* sdMan = G4SDManager::GetSDMpointer();
@@ -95,7 +95,7 @@ void SACDetector::CreateGeometry()
 
 	G4Box* solidCell = new G4Box("SACCell", 0.5 * cellSizeX, 0.5 * cellSizeY, 0.5 * cellSizeZ);
 	fCellVolume = new G4LogicalVolume(solidCell, G4Material::GetMaterial("EJ510Paint"), "SACCell", 0, 0, 0);
-	fCellVolume->SetVisAttributes(G4VisAttributes(G4Colour::Cyan()));
+	fCellVolume->SetVisAttributes(G4VisAttributes(G4Colour::Grey()));
 
 	// position SAC crystal inside cell
 	new G4PVPlacement(0, G4ThreeVector(0.0, 0.0, 0.0), fCrystalVolume, "SACCry", fCellVolume, false, 0, false);

@@ -190,6 +190,7 @@ void RunAction::BeginOfRunAction(const G4Run* aRun)
 		100, 0.0 * CLHEP::GeV, fMessenger->GetPerEventUntrackedEBound() * CLHEP::MeV);
 
 	// -------------------- CREATE 2D HISTOGRAMS --------------------
+	// NOTE: number of cells in SAC are hard coded...
 
 	// energy deposition vs. track length per hit -- 0
 	for(G4int i = 0; i < nParticles; i++)
@@ -197,6 +198,62 @@ void RunAction::BeginOfRunAction(const G4Run* aRun)
 			ParticleNames[i] + " track length vs. energy deposition per hit",
 			100, 0.0 * CLHEP::MeV, PerHitEDepBound[i] * CLHEP::MeV,
 			100, 0.0 * CLHEP::cm, PerHitTrLenBound[i] * CLHEP::cm);
+	// x-y plane of SAC for each particle, z = 0 (BACK) -- 1
+	for(G4int i = 0; i < nParticles; i++)
+		fAnalysisManager->CreateH2("hSACz0_" + ParticleNames[i],
+			"x-y plane of " + ParticleNames[i] + " SAC hits, z = 0 (BACK)",
+			10, 0, 10,
+			10, 0, 10);
+	// x-y plane of SAC for each particle, z = 1 -- 2
+	for(G4int i = 0; i < nParticles; i++)
+		fAnalysisManager->CreateH2("hSACz1_" + ParticleNames[i],
+			"x-y plane of " + ParticleNames[i] + " SAC hits, z = 1",
+			10, 0, 10,
+			10, 0, 10);
+	// x-y plane of SAC for each particle, z = 2 -- 3
+	for(G4int i = 0; i < nParticles; i++)
+		fAnalysisManager->CreateH2("hSACz2_" + ParticleNames[i],
+			"x-y plane of " + ParticleNames[i] + " SAC hits, z = 2",
+			10, 0, 10,
+			10, 0, 10);
+	// x-y plane of SAC for each particle, z = 3 (FRONT) -- 4
+	for(G4int i = 0; i < nParticles; i++)
+		fAnalysisManager->CreateH2("hSACz3_" + ParticleNames[i],
+			"x-y plane of " + ParticleNames[i] + " SAC hits, z = 3 (FRONT)",
+			10, 0, 10,
+			10, 0, 10);
+	// x-y plane of SAC, z = 0 (BACK) - 55
+	fAnalysisManager->CreateH2("hSACz0", "x-y plane of SAC, z = 0 (BACK)",
+		10, 0, 10,
+		10, 0, 10);
+	// x-y plane of SAC, z = 1 - 56
+	fAnalysisManager->CreateH2("hSACz1", "x-y plane of SAC, z = 1",
+		10, 0, 10,
+		10, 0, 10);
+	// x-y plane of SAC, z = 2 - 57
+	fAnalysisManager->CreateH2("hSACz2", "x-y plane of SAC, z = 2",
+		10, 0, 10,
+		10, 0, 10);
+	// x-y plane of SAC, z = 3 (FRONT) - 58
+	fAnalysisManager->CreateH2("hSACz3", "x-y plane of SAC, z = 3 (FRONT)",
+		10, 0, 10,
+		10, 0, 10);
+
+	// -------------------- CREATE 3D HISTOGRAMS --------------------
+	// NOTE: number of cells in SAC are hard coded...
+
+	// particle hits on the SAC -- 0
+	for(G4int i = 0; i < nParticles; i++)
+		fAnalysisManager->CreateH3("hSACHits_" + ParticleNames[i],
+			ParticleNames[i] + " SAC hits",
+			10, 0, 10,
+			10, 0, 10,
+			4, 0, 4);
+	// hits on the SAC -- 11
+	fAnalysisManager->CreateH3("hSACHits", "SAC hits",
+		10, 0, 10,
+		10, 0, 10,
+		4, 0, 4);
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

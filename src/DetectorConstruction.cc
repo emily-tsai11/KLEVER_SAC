@@ -160,7 +160,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 	fSAC->CreateGeometry();
 
 	// make world invisible
-	// logicalWorld->SetVisAttributes(G4VisAttributes::Invisible);
+	logicalWorld->SetVisAttributes(G4VisAttributes::Invisible);
 
 	// return physical world
 	return physicalWorld;

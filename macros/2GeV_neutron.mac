@@ -1,18 +1,17 @@
-# run KLMC in batch mode
-
-# sets some default verbose
 /control/verbose 1
 /run/verbose 1
 /tracking/verbose 0
 
+# 0 -- don't store particle tracks, runs faster
+# 1 -- stored particle tracks are drawn in viewer, runs very slow
 /tracking/storeTrajectory 0
 
 /run/initialize
-/gun/particle gamma
+/gun/particle neutron
 
 /gun/energy 2 GeV
 
-/RunAction/FileName SAC_2GeV_n10
+/RunAction/FileName SAC_2GeV_n10_neutron
 
 /RunAction/GammaPerEventMultMin 700
 /RunAction/GammaPerEventMultMax 2000

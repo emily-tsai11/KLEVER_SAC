@@ -30,7 +30,7 @@ PrimaryGeneratorAction::PrimaryGeneratorAction(DetectorConstruction* detector, E
 	// fParticleGun->SetParticleDefinition(fParticleTable->FindParticle("gamma"));
 	// fParticleGun->SetParticleEnergy(100.0 * CLHEP::MeV);
 	// fParticleGun->SetParticlePolarization();
-	fParticleGun->SetParticlePosition(G4ThreeVector(0.0 * CLHEP::m, 0.0 * CLHEP::m, 0.7 * CLHEP::m));
+	fParticleGun->SetParticlePosition(G4ThreeVector(0.0 * CLHEP::m, 0.0 * CLHEP::m, 1.0 * CLHEP::m));
 	fParticleGun->SetParticleMomentumDirection(G4ThreeVector(0.0, 0.0, -1.0));
 }
 

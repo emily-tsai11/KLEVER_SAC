@@ -1,7 +1,5 @@
 universe = vanilla
 
-request_memory = 1000
-
 log = batch.log
 output = batch.out
 error = batch.error

@@ -1,38 +1,37 @@
-# run KLMC in batch mode
-
-# sets some default verbose
 /control/verbose 1
 /run/verbose 1
 /tracking/verbose 0
 
+# 0 -- don't store particle tracks, runs faster
+# 1 -- stored particle tracks are drawn in viewer, runs very slow
 /tracking/storeTrajectory 0
 
 /run/initialize
-/gun/particle gamma
+/gun/particle neutron
 
 /gun/energy 500 MeV
 
-/RunAction/FileName SAC_500MeV_n50
+/RunAction/FileName SAC_500MeV_n1000_neutron
 
 /RunAction/GammaPerEventMultMin 150
 /RunAction/GammaPerEventMultMax 400
 /RunAction/PositronPerEventMultMin 10
 /RunAction/PositronPerEventMultMax 50
-/RunAction/ElectronPerEventMultMin 300
+/RunAction/ElectronPerEventMultMin 200
 /RunAction/ElectronPerEventMultMax 600
 /RunAction/ProtonPerEventMultMin 0
 /RunAction/ProtonPerEventMultMax 15
 /RunAction/NeutronPerEventMultMin 0
-/RunAction/NeutronPerEventMultMax 15
-/RunAction/OptPhotPerEventMultMin 22000
+/RunAction/NeutronPerEventMultMax 30
+/RunAction/OptPhotPerEventMultMin 15000
 /RunAction/OptPhotPerEventMultMax 60000
 
-/RunAction/GammaPerEventEDep 20.0 MeV
-/RunAction/PositronPerEventEDep 200.0 MeV
+/RunAction/GammaPerEventEDep 25.0 MeV
+/RunAction/PositronPerEventEDep 300.0 MeV
 /RunAction/ElectronPerEventEDep 500.0 MeV
-/RunAction/ProtonPerEventEDep 5.0 MeV
+/RunAction/ProtonPerEventEDep 20.0 MeV
 /RunAction/NeutronPerEventEDep 5.0 MeV
-/RunAction/OptPhotPerEventEDep 0.15 MeV
+/RunAction/OptPhotPerEventEDep 0.20 MeV
 
 /RunAction/GammaPerEventInitE 510.0 MeV
 /RunAction/PositronPerEventInitE 510.0 MeV
@@ -41,8 +40,8 @@
 /RunAction/NeutronPerEventInitE 5100.0 MeV
 /RunAction/OptPhotPerEventInitE 5.0 eV
 
-/RunAction/PerEventEDepMin 100.0 MeV
-/RunAction/PerEventEDepMax 550.0 MeV
-/RunAction/PerEventUntrackedE 1.0 MeV
+/RunAction/PerEventEDepMin 0.0 MeV
+/RunAction/PerEventEDepMax 510.0 MeV
+/RunAction/PerEventUntrackedE 25.0 MeV
 
-/run/beamOn 50
+/run/beamOn 1000

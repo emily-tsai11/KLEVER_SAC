@@ -1,0 +1,47 @@
+/control/verbose 1
+/run/verbose 1
+/tracking/verbose 0
+
+# 0 -- don't store particle tracks, runs faster
+# 1 -- stored particle tracks are drawn in viewer, runs very slow
+/tracking/storeTrajectory 0
+
+/run/initialize
+/gun/particle gamma
+
+/gun/energy 10 GeV
+
+/RunAction/FileName SAC_10GeV_n3_gamma
+
+/RunAction/GammaPerEventMultMin 3000
+/RunAction/GammaPerEventMultMax 7000
+/RunAction/PositronPerEventMultMin 300
+/RunAction/PositronPerEventMultMax 700
+/RunAction/ElectronPerEventMultMin 7000
+/RunAction/ElectronPerEventMultMax 11000
+/RunAction/ProtonPerEventMultMin 0
+/RunAction/ProtonPerEventMultMax 20
+/RunAction/NeutronPerEventMultMin 0
+/RunAction/NeutronPerEventMultMax 20
+/RunAction/OptPhotPerEventMultMin 600000
+/RunAction/OptPhotPerEventMultMax 1100000
+
+/RunAction/GammaPerEventEDep 400.0 MeV
+/RunAction/PositronPerEventEDep 3.1 GeV
+/RunAction/ElectronPerEventEDep 7.0 GeV
+/RunAction/ProtonPerEventEDep 50.0 MeV
+/RunAction/NeutronPerEventEDep 5.0 MeV
+/RunAction/OptPhotPerEventEDep 5.0 MeV
+
+/RunAction/GammaPerEventInitE 10.1 GeV
+/RunAction/PositronPerEventInitE 10.1 GeV
+/RunAction/ElectronPerEventInitE 10.1 GeV
+/RunAction/ProtonPerEventInitE 10.1 GeV
+/RunAction/NeutronPerEventInitE 110.0 GeV
+/RunAction/OptPhotPerEventInitE 5.0 eV
+
+/RunAction/PerEventEDepMin 5.0 GeV
+/RunAction/PerEventEDepMax 10.1 GeV
+/RunAction/PerEventUntrackedE 10.0 MeV
+
+/run/beamOn 3
