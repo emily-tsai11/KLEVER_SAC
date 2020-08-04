@@ -16,8 +16,8 @@
 
 class G4UIdirectory;
 class G4UIcmdWithAString;
+class G4UIcmdWithADouble;
 class G4UIcmdWithADoubleAndUnit;
-class G4UIcmdWithAnInteger;
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -56,28 +56,28 @@ class RunActionMessenger : public G4UImessenger
 		G4double GetMuonMinusPerHitTrLenBound() { return fMuonMinusPerHitTrLenBound; }
 		G4double GetOptPhotPerHitTrLenBound() { return fOptPhotPerHitTrLenBound; }
 
-		G4int GetGammaPerEventMultMinBound() { return fGammaPerEventMultMinBound; }
-		G4int GetGammaPerEventMultMaxBound() { return fGammaPerEventMultMaxBound; }
-		G4int GetPositronPerEventMultMinBound() { return fPositronPerEventMultMinBound; }
-		G4int GetPositronPerEventMultMaxBound() { return fPositronPerEventMultMaxBound; }
-		G4int GetElectronPerEventMultMinBound() { return fElectronPerEventMultMinBound; }
-		G4int GetElectronPerEventMultMaxBound() { return fElectronPerEventMultMaxBound; }
-		G4int GetProtonPerEventMultMinBound() { return fProtonPerEventMultMinBound; }
-		G4int GetProtonPerEventMultMaxBound() { return fProtonPerEventMultMaxBound; }
-		G4int GetNeutronPerEventMultMinBound() { return fNeutronPerEventMultMinBound; }
-		G4int GetNeutronPerEventMultMaxBound() { return fNeutronPerEventMultMaxBound; }
-		G4int GetPionPlusPerEventMultMinBound() { return fPionPlusPerEventMultMinBound; }
-		G4int GetPionPlusPerEventMultMaxBound() { return fPionPlusPerEventMultMaxBound; }
-		G4int GetPionMinusPerEventMultMinBound() { return fPionMinusPerEventMultMinBound; }
-		G4int GetPionMinusPerEventMultMaxBound() { return fPionMinusPerEventMultMaxBound; }
-		G4int GetPionZeroPerEventMultMinBound() { return fPionZeroPerEventMultMinBound; }
-		G4int GetPionZeroPerEventMultMaxBound() { return fPionZeroPerEventMultMaxBound; }
-		G4int GetMuonPlusPerEventMultMinBound() { return fMuonPlusPerEventMultMinBound; }
-		G4int GetMuonPlusPerEventMultMaxBound() { return fMuonPlusPerEventMultMaxBound; }
-		G4int GetMuonMinusPerEventMultMinBound() { return fMuonMinusPerEventMultMinBound; }
-		G4int GetMuonMinusPerEventMultMaxBound() { return fMuonMinusPerEventMultMaxBound; }
-		G4int GetOptPhotPerEventMultMinBound() { return fOptPhotPerEventMultMinBound; }
-		G4int GetOptPhotPerEventMultMaxBound() { return fOptPhotPerEventMultMaxBound; }
+		G4double GetGammaPerEventMultMinBound() { return fGammaPerEventMultMinBound; }
+		G4double GetGammaPerEventMultMaxBound() { return fGammaPerEventMultMaxBound; }
+		G4double GetPositronPerEventMultMinBound() { return fPositronPerEventMultMinBound; }
+		G4double GetPositronPerEventMultMaxBound() { return fPositronPerEventMultMaxBound; }
+		G4double GetElectronPerEventMultMinBound() { return fElectronPerEventMultMinBound; }
+		G4double GetElectronPerEventMultMaxBound() { return fElectronPerEventMultMaxBound; }
+		G4double GetProtonPerEventMultMinBound() { return fProtonPerEventMultMinBound; }
+		G4double GetProtonPerEventMultMaxBound() { return fProtonPerEventMultMaxBound; }
+		G4double GetNeutronPerEventMultMinBound() { return fNeutronPerEventMultMinBound; }
+		G4double GetNeutronPerEventMultMaxBound() { return fNeutronPerEventMultMaxBound; }
+		G4double GetPionPlusPerEventMultMinBound() { return fPionPlusPerEventMultMinBound; }
+		G4double GetPionPlusPerEventMultMaxBound() { return fPionPlusPerEventMultMaxBound; }
+		G4double GetPionMinusPerEventMultMinBound() { return fPionMinusPerEventMultMinBound; }
+		G4double GetPionMinusPerEventMultMaxBound() { return fPionMinusPerEventMultMaxBound; }
+		G4double GetPionZeroPerEventMultMinBound() { return fPionZeroPerEventMultMinBound; }
+		G4double GetPionZeroPerEventMultMaxBound() { return fPionZeroPerEventMultMaxBound; }
+		G4double GetMuonPlusPerEventMultMinBound() { return fMuonPlusPerEventMultMinBound; }
+		G4double GetMuonPlusPerEventMultMaxBound() { return fMuonPlusPerEventMultMaxBound; }
+		G4double GetMuonMinusPerEventMultMinBound() { return fMuonMinusPerEventMultMinBound; }
+		G4double GetMuonMinusPerEventMultMaxBound() { return fMuonMinusPerEventMultMaxBound; }
+		G4double GetOptPhotPerEventMultMinBound() { return fOptPhotPerEventMultMinBound; }
+		G4double GetOptPhotPerEventMultMaxBound() { return fOptPhotPerEventMultMaxBound; }
 
 		G4double GetGammaPerEventEDepBound() { return fGammaPerEventEDepBound; }
 		G4double GetPositronPerEventEDepBound() { return fPositronPerEventEDepBound; }
@@ -161,51 +161,51 @@ class RunActionMessenger : public G4UImessenger
 		G4double fMuonMinusPerHitTrLenBound;
 		G4double fOptPhotPerHitTrLenBound;
 
-		G4UIcmdWithAnInteger* fSetGammaPerEventMultMinBoundCmd;
-		G4UIcmdWithAnInteger* fSetGammaPerEventMultMaxBoundCmd;
-		G4UIcmdWithAnInteger* fSetPositronPerEventMultMinBoundCmd;
-		G4UIcmdWithAnInteger* fSetPositronPerEventMultMaxBoundCmd;
-		G4UIcmdWithAnInteger* fSetElectronPerEventMultMinBoundCmd;
-		G4UIcmdWithAnInteger* fSetElectronPerEventMultMaxBoundCmd;
-		G4UIcmdWithAnInteger* fSetProtonPerEventMultMinBoundCmd;
-		G4UIcmdWithAnInteger* fSetProtonPerEventMultMaxBoundCmd;
-		G4UIcmdWithAnInteger* fSetNeutronPerEventMultMinBoundCmd;
-		G4UIcmdWithAnInteger* fSetNeutronPerEventMultMaxBoundCmd;
-		G4UIcmdWithAnInteger* fSetPionPlusPerEventMultMinBoundCmd;
-		G4UIcmdWithAnInteger* fSetPionPlusPerEventMultMaxBoundCmd;
-		G4UIcmdWithAnInteger* fSetPionMinusPerEventMultMinBoundCmd;
-		G4UIcmdWithAnInteger* fSetPionMinusPerEventMultMaxBoundCmd;
-		G4UIcmdWithAnInteger* fSetPionZeroPerEventMultMinBoundCmd;
-		G4UIcmdWithAnInteger* fSetPionZeroPerEventMultMaxBoundCmd;
-		G4UIcmdWithAnInteger* fSetMuonPlusPerEventMultMinBoundCmd;
-		G4UIcmdWithAnInteger* fSetMuonPlusPerEventMultMaxBoundCmd;
-		G4UIcmdWithAnInteger* fSetMuonMinusPerEventMultMinBoundCmd;
-		G4UIcmdWithAnInteger* fSetMuonMinusPerEventMultMaxBoundCmd;
-		G4UIcmdWithAnInteger* fSetOptPhotPerEventMultMinBoundCmd;
-		G4UIcmdWithAnInteger* fSetOptPhotPerEventMultMaxBoundCmd;
+		G4UIcmdWithADouble* fSetGammaPerEventMultMinBoundCmd;
+		G4UIcmdWithADouble* fSetGammaPerEventMultMaxBoundCmd;
+		G4UIcmdWithADouble* fSetPositronPerEventMultMinBoundCmd;
+		G4UIcmdWithADouble* fSetPositronPerEventMultMaxBoundCmd;
+		G4UIcmdWithADouble* fSetElectronPerEventMultMinBoundCmd;
+		G4UIcmdWithADouble* fSetElectronPerEventMultMaxBoundCmd;
+		G4UIcmdWithADouble* fSetProtonPerEventMultMinBoundCmd;
+		G4UIcmdWithADouble* fSetProtonPerEventMultMaxBoundCmd;
+		G4UIcmdWithADouble* fSetNeutronPerEventMultMinBoundCmd;
+		G4UIcmdWithADouble* fSetNeutronPerEventMultMaxBoundCmd;
+		G4UIcmdWithADouble* fSetPionPlusPerEventMultMinBoundCmd;
+		G4UIcmdWithADouble* fSetPionPlusPerEventMultMaxBoundCmd;
+		G4UIcmdWithADouble* fSetPionMinusPerEventMultMinBoundCmd;
+		G4UIcmdWithADouble* fSetPionMinusPerEventMultMaxBoundCmd;
+		G4UIcmdWithADouble* fSetPionZeroPerEventMultMinBoundCmd;
+		G4UIcmdWithADouble* fSetPionZeroPerEventMultMaxBoundCmd;
+		G4UIcmdWithADouble* fSetMuonPlusPerEventMultMinBoundCmd;
+		G4UIcmdWithADouble* fSetMuonPlusPerEventMultMaxBoundCmd;
+		G4UIcmdWithADouble* fSetMuonMinusPerEventMultMinBoundCmd;
+		G4UIcmdWithADouble* fSetMuonMinusPerEventMultMaxBoundCmd;
+		G4UIcmdWithADouble* fSetOptPhotPerEventMultMinBoundCmd;
+		G4UIcmdWithADouble* fSetOptPhotPerEventMultMaxBoundCmd;
 
-		G4int fGammaPerEventMultMinBound;
-		G4int fGammaPerEventMultMaxBound;
-		G4int fPositronPerEventMultMinBound;
-		G4int fPositronPerEventMultMaxBound;
-		G4int fElectronPerEventMultMinBound;
-		G4int fElectronPerEventMultMaxBound;
-		G4int fProtonPerEventMultMinBound;
-		G4int fProtonPerEventMultMaxBound;
-		G4int fNeutronPerEventMultMinBound;
-		G4int fNeutronPerEventMultMaxBound;
-		G4int fPionPlusPerEventMultMinBound;
-		G4int fPionPlusPerEventMultMaxBound;
-		G4int fPionMinusPerEventMultMinBound;
-		G4int fPionMinusPerEventMultMaxBound;
-		G4int fPionZeroPerEventMultMinBound;
-		G4int fPionZeroPerEventMultMaxBound;
-		G4int fMuonPlusPerEventMultMinBound;
-		G4int fMuonPlusPerEventMultMaxBound;
-		G4int fMuonMinusPerEventMultMinBound;
-		G4int fMuonMinusPerEventMultMaxBound;
-		G4int fOptPhotPerEventMultMinBound;
-		G4int fOptPhotPerEventMultMaxBound;
+		G4double fGammaPerEventMultMinBound;
+		G4double fGammaPerEventMultMaxBound;
+		G4double fPositronPerEventMultMinBound;
+		G4double fPositronPerEventMultMaxBound;
+		G4double fElectronPerEventMultMinBound;
+		G4double fElectronPerEventMultMaxBound;
+		G4double fProtonPerEventMultMinBound;
+		G4double fProtonPerEventMultMaxBound;
+		G4double fNeutronPerEventMultMinBound;
+		G4double fNeutronPerEventMultMaxBound;
+		G4double fPionPlusPerEventMultMinBound;
+		G4double fPionPlusPerEventMultMaxBound;
+		G4double fPionMinusPerEventMultMinBound;
+		G4double fPionMinusPerEventMultMaxBound;
+		G4double fPionZeroPerEventMultMinBound;
+		G4double fPionZeroPerEventMultMaxBound;
+		G4double fMuonPlusPerEventMultMinBound;
+		G4double fMuonPlusPerEventMultMaxBound;
+		G4double fMuonMinusPerEventMultMinBound;
+		G4double fMuonMinusPerEventMultMaxBound;
+		G4double fOptPhotPerEventMultMinBound;
+		G4double fOptPhotPerEventMultMaxBound;
 
 		G4UIcmdWithADoubleAndUnit* fSetGammaPerEventEDepBoundCmd;
 		G4UIcmdWithADoubleAndUnit* fSetPositronPerEventEDepBoundCmd;

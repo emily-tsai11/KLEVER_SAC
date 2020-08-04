@@ -16,6 +16,20 @@ incidentEUnit = args.incidentEUnit
 numEvents = args.numEvents
 runNum = args.r
 
+# get bound of lowMult histogram
+EwithUnit = str(incidentE) + incidentEUnit
+bound = ""
+if EwithUnit == "100.0MeV": bound = "13050.0"
+elif EwithUnit == "200.0MeV": bound = "6525.0"
+elif EwithUnit == "500.0MeV": bound = "2610.0"
+elif EwithUnit == "1.0GeV": bound = "1305.0"
+elif EwithUnit == "2.0GeV": bound = "652.5"
+elif EwithUnit == "5.0GeV": bound = "261.0"
+elif EwithUnit == "10.0GeV": bound = "130.5"
+elif EwithUnit == "20.0GeV": bound = "65.25"
+elif EwithUnit == "50.0GeV": bound = "26.1"
+elif EwithUnit == "100.0GeV": bound = "13.05"
+
 # name of file
 filename = str(int(incidentE)) + incidentEUnit + "_" + incidentP + "_n" + str(numEvents)
 if args.r != None: filename += "_r" + str(runNum)
@@ -53,6 +67,30 @@ with open(filename + ".mac", "w") as f:
 	f.write("/RunAction/MuonPlusPerEventInitE " + str(incidentE) + " " + incidentEUnit + "\n")
 	f.write("/RunAction/MuonMinusPerEventInitE " + str(incidentE) + " " + incidentEUnit + "\n")
 	f.write("/RunAction/OptPhotPerEventInitE " + str(incidentE) + " " + incidentEUnit + "\n")
+	f.write("\n")
+	f.write("/RunAction/GammaPerEventMultMin 0\n")
+	f.write("/RunAction/PositronPerEventMultMin 0\n")
+	f.write("/RunAction/ElectronPerEventMultMin 0\n")
+	f.write("/RunAction/ProtonPerEventMultMin 0\n")
+	f.write("/RunAction/NeutronPerEventMultMin 0\n")
+	f.write("/RunAction/PionPlusPerEventMultMin 0\n")
+	f.write("/RunAction/PionMinusPerEventMultMin 0\n")
+	f.write("/RunAction/PionZeroPerEventMultMin 0\n")
+	f.write("/RunAction/MuonPlusPerEventMultMin 0\n")
+	f.write("/RunAction/MuonMinusPerEventMultMin 0\n")
+	f.write("/RunAction/OptPhotPerEventMultMin 0\n")
+	f.write("\n")
+	f.write("/RunAction/GammaPerEventMultMax " + bound + "\n")
+	f.write("/RunAction/PositronPerEventMultMax " + bound + "\n")
+	f.write("/RunAction/ElectronPerEventMultMax " + bound + "\n")
+	f.write("/RunAction/ProtonPerEventMultMax " + bound + "\n")
+	f.write("/RunAction/NeutronPerEventMultMax " + bound + "\n")
+	f.write("/RunAction/PionPlusPerEventMultMax " + bound + "\n")
+	f.write("/RunAction/PionMinusPerEventMultMax " + bound + "\n")
+	f.write("/RunAction/PionZeroPerEventMultMax " + bound + "\n")
+	f.write("/RunAction/MuonPlusPerEventMultMax " + bound + "\n")
+	f.write("/RunAction/MuonMinusPerEventMultMax " + bound + "\n")
+	f.write("/RunAction/OptPhotPerEventMultMax " + bound + "\n")
 	f.write("\n")
 	f.write("/RunAction/PerEventEDep " + str(incidentE) + " " + incidentEUnit + "\n")
 	f.write("/RunAction/PerEventUntrackedE " + str(incidentE) + " " + incidentEUnit + "\n")

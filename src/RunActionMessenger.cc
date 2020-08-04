@@ -9,8 +9,8 @@
 
 #include "G4RunManager.hh"
 #include "G4UIcmdWithAString.hh"
+#include "G4UIcmdWithADouble.hh"
 #include "G4UIcmdWithADoubleAndUnit.hh"
-#include "G4UIcmdWithAnInteger.hh"
 
 #include "RunAction.hh"
 
@@ -27,17 +27,17 @@ RunActionMessenger::RunActionMessenger() : G4UImessenger(), fFileName("SACRun"),
 	fPionMinusPerHitTrLenBound(202.5), fPionZeroPerHitTrLenBound(202.5), fMuonPlusPerHitTrLenBound(202.5),
 	fMuonMinusPerHitTrLenBound(202.5), fOptPhotPerHitTrLenBound(202.5),
 
-	fGammaPerEventMultMinBound(0), fGammaPerEventMultMaxBound(5),
-	fPositronPerEventMultMinBound(0), fPositronPerEventMultMaxBound(5),
-	fElectronPerEventMultMinBound(0), fElectronPerEventMultMaxBound(5),
-	fProtonPerEventMultMinBound(0), fProtonPerEventMultMaxBound(5),
-	fNeutronPerEventMultMinBound(0), fNeutronPerEventMultMaxBound(5),
-	fPionPlusPerEventMultMinBound(0), fPionPlusPerEventMultMaxBound(5),
-	fPionMinusPerEventMultMinBound(0), fPionMinusPerEventMultMaxBound(5),
-	fPionZeroPerEventMultMinBound(0), fPionZeroPerEventMultMaxBound(5),
-	fMuonPlusPerEventMultMinBound(0), fMuonPlusPerEventMultMaxBound(5),
-	fMuonMinusPerEventMultMinBound(0), fMuonMinusPerEventMultMaxBound(5),
-	fOptPhotPerEventMultMinBound(0), fOptPhotPerEventMultMaxBound(200),
+	fGammaPerEventMultMinBound(0.0), fGammaPerEventMultMaxBound(5.0),
+	fPositronPerEventMultMinBound(0.0), fPositronPerEventMultMaxBound(5.0),
+	fElectronPerEventMultMinBound(0.0), fElectronPerEventMultMaxBound(5.0),
+	fProtonPerEventMultMinBound(0.0), fProtonPerEventMultMaxBound(5.0),
+	fNeutronPerEventMultMinBound(0.0), fNeutronPerEventMultMaxBound(5.0),
+	fPionPlusPerEventMultMinBound(0.0), fPionPlusPerEventMultMaxBound(5.0),
+	fPionMinusPerEventMultMinBound(0.0), fPionMinusPerEventMultMaxBound(5.0),
+	fPionZeroPerEventMultMinBound(0.0), fPionZeroPerEventMultMaxBound(5.0),
+	fMuonPlusPerEventMultMinBound(0.0), fMuonPlusPerEventMultMaxBound(5.0),
+	fMuonMinusPerEventMultMinBound(0.0), fMuonMinusPerEventMultMaxBound(5.0),
+	fOptPhotPerEventMultMinBound(0.0), fOptPhotPerEventMultMaxBound(200.0),
 
 	fGammaPerEventEDepBound(1.0), fPositronPerEventEDepBound(1.0), fElectronPerEventEDepBound(1.0),
 	fProtonPerEventEDepBound(1.0), fNeutronPerEventEDepBound(1.0), fPionPlusPerEventEDepBound(1.0),
@@ -221,122 +221,122 @@ RunActionMessenger::RunActionMessenger() : G4UImessenger(), fFileName("SACRun"),
 
 	// -------------------- multiplicity per event --------------------
 	{
-		fSetGammaPerEventMultMinBoundCmd = new G4UIcmdWithAnInteger("/RunAction/GammaPerEventMultMin", this);
+		fSetGammaPerEventMultMinBoundCmd = new G4UIcmdWithADouble("/RunAction/GammaPerEventMultMin", this);
 		fSetGammaPerEventMultMinBoundCmd->SetGuidance("Set Gamma multiplicity minimum per event bound");
 		fSetGammaPerEventMultMinBoundCmd->SetParameterName("GammaPerEventMultMin", false);
 		fSetGammaPerEventMultMinBoundCmd->SetRange("GammaPerEventMultMin >= 0");
 		fSetGammaPerEventMultMinBoundCmd->AvailableForStates(G4State_PreInit, G4State_Idle);
-		fSetGammaPerEventMultMaxBoundCmd = new G4UIcmdWithAnInteger("/RunAction/GammaPerEventMultMax", this);
+		fSetGammaPerEventMultMaxBoundCmd = new G4UIcmdWithADouble("/RunAction/GammaPerEventMultMax", this);
 		fSetGammaPerEventMultMaxBoundCmd->SetGuidance("Set Gamma multiplicity maximum per event bound");
 		fSetGammaPerEventMultMaxBoundCmd->SetParameterName("GammaPerEventMultMax", false);
 		fSetGammaPerEventMultMaxBoundCmd->SetRange("GammaPerEventMultMax >= 0");
 		fSetGammaPerEventMultMaxBoundCmd->AvailableForStates(G4State_PreInit, G4State_Idle);
 
-		fSetPositronPerEventMultMinBoundCmd = new G4UIcmdWithAnInteger("/RunAction/PositronPerEventMultMin", this);
+		fSetPositronPerEventMultMinBoundCmd = new G4UIcmdWithADouble("/RunAction/PositronPerEventMultMin", this);
 		fSetPositronPerEventMultMinBoundCmd->SetGuidance("Set Positron multiplicity minimum per event bound");
 		fSetPositronPerEventMultMinBoundCmd->SetParameterName("PositronPerEventMultMin", false);
 		fSetPositronPerEventMultMinBoundCmd->SetRange("PositronPerEventMultMin >= 0");
 		fSetPositronPerEventMultMinBoundCmd->AvailableForStates(G4State_PreInit, G4State_Idle);
-		fSetPositronPerEventMultMaxBoundCmd = new G4UIcmdWithAnInteger("/RunAction/PositronPerEventMultMax", this);
+		fSetPositronPerEventMultMaxBoundCmd = new G4UIcmdWithADouble("/RunAction/PositronPerEventMultMax", this);
 		fSetPositronPerEventMultMaxBoundCmd->SetGuidance("Set Positron multiplicity maximum per event bound");
 		fSetPositronPerEventMultMaxBoundCmd->SetParameterName("PositronPerEventMultMax", false);
 		fSetPositronPerEventMultMaxBoundCmd->SetRange("PositronPerEventMultMax >= 0");
 		fSetPositronPerEventMultMaxBoundCmd->AvailableForStates(G4State_PreInit, G4State_Idle);
 
-		fSetElectronPerEventMultMinBoundCmd = new G4UIcmdWithAnInteger("/RunAction/ElectronPerEventMultMin", this);
+		fSetElectronPerEventMultMinBoundCmd = new G4UIcmdWithADouble("/RunAction/ElectronPerEventMultMin", this);
 		fSetElectronPerEventMultMinBoundCmd->SetGuidance("Set Electron multiplicity minimum per event bound");
 		fSetElectronPerEventMultMinBoundCmd->SetParameterName("ElectronPerEventMultMin", false);
 		fSetElectronPerEventMultMinBoundCmd->SetRange("ElectronPerEventMultMin >= 0");
 		fSetElectronPerEventMultMinBoundCmd->AvailableForStates(G4State_PreInit, G4State_Idle);
-		fSetElectronPerEventMultMaxBoundCmd = new G4UIcmdWithAnInteger("/RunAction/ElectronPerEventMultMax", this);
+		fSetElectronPerEventMultMaxBoundCmd = new G4UIcmdWithADouble("/RunAction/ElectronPerEventMultMax", this);
 		fSetElectronPerEventMultMaxBoundCmd->SetGuidance("Set Electron multiplicity maximum per event bound");
 		fSetElectronPerEventMultMaxBoundCmd->SetParameterName("ElectronPerEventMultMax", false);
 		fSetElectronPerEventMultMaxBoundCmd->SetRange("ElectronPerEventMultMax >= 0");
 		fSetElectronPerEventMultMaxBoundCmd->AvailableForStates(G4State_PreInit, G4State_Idle);
 
-		fSetProtonPerEventMultMinBoundCmd = new G4UIcmdWithAnInteger("/RunAction/ProtonPerEventMultMin", this);
+		fSetProtonPerEventMultMinBoundCmd = new G4UIcmdWithADouble("/RunAction/ProtonPerEventMultMin", this);
 		fSetProtonPerEventMultMinBoundCmd->SetGuidance("Set Proton multiplicity minimum per event bound");
 		fSetProtonPerEventMultMinBoundCmd->SetParameterName("ProtonPerEventMultMin", false);
 		fSetProtonPerEventMultMinBoundCmd->SetRange("ProtonPerEventMultMin >= 0");
 		fSetProtonPerEventMultMinBoundCmd->AvailableForStates(G4State_PreInit, G4State_Idle);
-		fSetProtonPerEventMultMaxBoundCmd = new G4UIcmdWithAnInteger("/RunAction/ProtonPerEventMultMax", this);
+		fSetProtonPerEventMultMaxBoundCmd = new G4UIcmdWithADouble("/RunAction/ProtonPerEventMultMax", this);
 		fSetProtonPerEventMultMaxBoundCmd->SetGuidance("Set Proton multiplicity maximum per event bound");
 		fSetProtonPerEventMultMaxBoundCmd->SetParameterName("ProtonPerEventMultMax", false);
 		fSetProtonPerEventMultMaxBoundCmd->SetRange("ProtonPerEventMultMax >= 0");
 		fSetProtonPerEventMultMaxBoundCmd->AvailableForStates(G4State_PreInit, G4State_Idle);
 
-		fSetNeutronPerEventMultMinBoundCmd = new G4UIcmdWithAnInteger("/RunAction/NeutronPerEventMultMin", this);
+		fSetNeutronPerEventMultMinBoundCmd = new G4UIcmdWithADouble("/RunAction/NeutronPerEventMultMin", this);
 		fSetNeutronPerEventMultMinBoundCmd->SetGuidance("Set Neutron multiplicity minimum per event bound");
 		fSetNeutronPerEventMultMinBoundCmd->SetParameterName("NeutronPerEventMultMin", false);
 		fSetNeutronPerEventMultMinBoundCmd->SetRange("NeutronPerEventMultMin >= 0");
 		fSetNeutronPerEventMultMinBoundCmd->AvailableForStates(G4State_PreInit, G4State_Idle);
-		fSetNeutronPerEventMultMaxBoundCmd = new G4UIcmdWithAnInteger("/RunAction/NeutronPerEventMultMax", this);
+		fSetNeutronPerEventMultMaxBoundCmd = new G4UIcmdWithADouble("/RunAction/NeutronPerEventMultMax", this);
 		fSetNeutronPerEventMultMaxBoundCmd->SetGuidance("Set Neutron multiplicity maximum per event bound");
 		fSetNeutronPerEventMultMaxBoundCmd->SetParameterName("NeutronPerEventMultMax", false);
 		fSetNeutronPerEventMultMaxBoundCmd->SetRange("NeutronPerEventMultMax >= 0");
 		fSetNeutronPerEventMultMaxBoundCmd->AvailableForStates(G4State_PreInit, G4State_Idle);
 
-		fSetPionPlusPerEventMultMinBoundCmd = new G4UIcmdWithAnInteger("/RunAction/PionPlusPerEventMultMin", this);
+		fSetPionPlusPerEventMultMinBoundCmd = new G4UIcmdWithADouble("/RunAction/PionPlusPerEventMultMin", this);
 		fSetPionPlusPerEventMultMinBoundCmd->SetGuidance("Set PionPlus multiplicity minimum per event bound");
 		fSetPionPlusPerEventMultMinBoundCmd->SetParameterName("PionPlusPerEventMultMin", false);
 		fSetPionPlusPerEventMultMinBoundCmd->SetRange("PionPlusPerEventMultMin >= 0");
 		fSetPionPlusPerEventMultMinBoundCmd->AvailableForStates(G4State_PreInit, G4State_Idle);
-		fSetPionPlusPerEventMultMaxBoundCmd = new G4UIcmdWithAnInteger("/RunAction/PionPlusPerEventMultMax", this);
+		fSetPionPlusPerEventMultMaxBoundCmd = new G4UIcmdWithADouble("/RunAction/PionPlusPerEventMultMax", this);
 		fSetPionPlusPerEventMultMaxBoundCmd->SetGuidance("Set PionPlus multiplicity maximum per event bound");
 		fSetPionPlusPerEventMultMaxBoundCmd->SetParameterName("PionPlusPerEventMultMax", false);
 		fSetPionPlusPerEventMultMaxBoundCmd->SetRange("PionPlusPerEventMultMax >= 0");
 		fSetPionPlusPerEventMultMaxBoundCmd->AvailableForStates(G4State_PreInit, G4State_Idle);
 
-		fSetPionMinusPerEventMultMinBoundCmd = new G4UIcmdWithAnInteger("/RunAction/PionMinusPerEventMultMin", this);
+		fSetPionMinusPerEventMultMinBoundCmd = new G4UIcmdWithADouble("/RunAction/PionMinusPerEventMultMin", this);
 		fSetPionMinusPerEventMultMinBoundCmd->SetGuidance("Set PionMinus multiplicity minimum per event bound");
 		fSetPionMinusPerEventMultMinBoundCmd->SetParameterName("PionMinusPerEventMultMin", false);
 		fSetPionMinusPerEventMultMinBoundCmd->SetRange("PionMinusPerEventMultMin >= 0");
 		fSetPionMinusPerEventMultMinBoundCmd->AvailableForStates(G4State_PreInit, G4State_Idle);
-		fSetPionMinusPerEventMultMaxBoundCmd = new G4UIcmdWithAnInteger("/RunAction/PionMinusPerEventMultMax", this);
+		fSetPionMinusPerEventMultMaxBoundCmd = new G4UIcmdWithADouble("/RunAction/PionMinusPerEventMultMax", this);
 		fSetPionMinusPerEventMultMaxBoundCmd->SetGuidance("Set PionMinus multiplicity maximum per event bound");
 		fSetPionMinusPerEventMultMaxBoundCmd->SetParameterName("PionMinusPerEventMultMax", false);
 		fSetPionMinusPerEventMultMaxBoundCmd->SetRange("PionMinusPerEventMultMax >= 0");
 		fSetPionMinusPerEventMultMaxBoundCmd->AvailableForStates(G4State_PreInit, G4State_Idle);
 
-		fSetPionZeroPerEventMultMinBoundCmd = new G4UIcmdWithAnInteger("/RunAction/PionZeroPerEventMultMin", this);
+		fSetPionZeroPerEventMultMinBoundCmd = new G4UIcmdWithADouble("/RunAction/PionZeroPerEventMultMin", this);
 		fSetPionZeroPerEventMultMinBoundCmd->SetGuidance("Set PionZero multiplicity minimum per event bound");
 		fSetPionZeroPerEventMultMinBoundCmd->SetParameterName("PionZeroPerEventMultMin", false);
 		fSetPionZeroPerEventMultMinBoundCmd->SetRange("PionZeroPerEventMultMin >= 0");
 		fSetPionZeroPerEventMultMinBoundCmd->AvailableForStates(G4State_PreInit, G4State_Idle);
-		fSetPionZeroPerEventMultMaxBoundCmd = new G4UIcmdWithAnInteger("/RunAction/PionZeroPerEventMultMax", this);
+		fSetPionZeroPerEventMultMaxBoundCmd = new G4UIcmdWithADouble("/RunAction/PionZeroPerEventMultMax", this);
 		fSetPionZeroPerEventMultMaxBoundCmd->SetGuidance("Set PionZero multiplicity maximum per event bound");
 		fSetPionZeroPerEventMultMaxBoundCmd->SetParameterName("PionZeroPerEventMultMax", false);
 		fSetPionZeroPerEventMultMaxBoundCmd->SetRange("PionZeroPerEventMultMax >= 0");
 		fSetPionZeroPerEventMultMaxBoundCmd->AvailableForStates(G4State_PreInit, G4State_Idle);
 
-		fSetMuonPlusPerEventMultMinBoundCmd = new G4UIcmdWithAnInteger("/RunAction/MuonPlusPerEventMultMin", this);
+		fSetMuonPlusPerEventMultMinBoundCmd = new G4UIcmdWithADouble("/RunAction/MuonPlusPerEventMultMin", this);
 		fSetMuonPlusPerEventMultMinBoundCmd->SetGuidance("Set MuonPlus multiplicity minimum per event bound");
 		fSetMuonPlusPerEventMultMinBoundCmd->SetParameterName("MuonPlusPerEventMultMin", false);
 		fSetMuonPlusPerEventMultMinBoundCmd->SetRange("MuonPlusPerEventMultMin >= 0");
 		fSetMuonPlusPerEventMultMinBoundCmd->AvailableForStates(G4State_PreInit, G4State_Idle);
-		fSetMuonPlusPerEventMultMaxBoundCmd = new G4UIcmdWithAnInteger("/RunAction/MuonPlusPerEventMultMax", this);
+		fSetMuonPlusPerEventMultMaxBoundCmd = new G4UIcmdWithADouble("/RunAction/MuonPlusPerEventMultMax", this);
 		fSetMuonPlusPerEventMultMaxBoundCmd->SetGuidance("Set MuonPlus multiplicity maximum per event bound");
 		fSetMuonPlusPerEventMultMaxBoundCmd->SetParameterName("MuonPlusPerEventMultMax", false);
 		fSetMuonPlusPerEventMultMaxBoundCmd->SetRange("MuonPlusPerEventMultMax >= 0");
 		fSetMuonPlusPerEventMultMaxBoundCmd->AvailableForStates(G4State_PreInit, G4State_Idle);
 
-		fSetMuonMinusPerEventMultMinBoundCmd = new G4UIcmdWithAnInteger("/RunAction/MuonMinusPerEventMultMin", this);
+		fSetMuonMinusPerEventMultMinBoundCmd = new G4UIcmdWithADouble("/RunAction/MuonMinusPerEventMultMin", this);
 		fSetMuonMinusPerEventMultMinBoundCmd->SetGuidance("Set MuonMinus multiplicity minimum per event bound");
 		fSetMuonMinusPerEventMultMinBoundCmd->SetParameterName("MuonMinusPerEventMultMin", false);
 		fSetMuonMinusPerEventMultMinBoundCmd->SetRange("MuonMinusPerEventMultMin >= 0");
 		fSetMuonMinusPerEventMultMinBoundCmd->AvailableForStates(G4State_PreInit, G4State_Idle);
-		fSetMuonMinusPerEventMultMaxBoundCmd = new G4UIcmdWithAnInteger("/RunAction/MuonMinusPerEventMultMax", this);
+		fSetMuonMinusPerEventMultMaxBoundCmd = new G4UIcmdWithADouble("/RunAction/MuonMinusPerEventMultMax", this);
 		fSetMuonMinusPerEventMultMaxBoundCmd->SetGuidance("Set MuonMinus multiplicity maximum per event bound");
 		fSetMuonMinusPerEventMultMaxBoundCmd->SetParameterName("MuonMinusPerEventMultMax", false);
 		fSetMuonMinusPerEventMultMaxBoundCmd->SetRange("MuonMinusPerEventMultMax >= 0");
 		fSetMuonMinusPerEventMultMaxBoundCmd->AvailableForStates(G4State_PreInit, G4State_Idle);
 
-		fSetOptPhotPerEventMultMinBoundCmd = new G4UIcmdWithAnInteger("/RunAction/OptPhotPerEventMultMin", this);
+		fSetOptPhotPerEventMultMinBoundCmd = new G4UIcmdWithADouble("/RunAction/OptPhotPerEventMultMin", this);
 		fSetOptPhotPerEventMultMinBoundCmd->SetGuidance("Set OptPhot multiplicity minimum per event bound");
 		fSetOptPhotPerEventMultMinBoundCmd->SetParameterName("OptPhotPerEventMultMin", false);
 		fSetOptPhotPerEventMultMinBoundCmd->SetRange("OptPhotPerEventMultMin >= 0");
 		fSetOptPhotPerEventMultMinBoundCmd->AvailableForStates(G4State_PreInit, G4State_Idle);
-		fSetOptPhotPerEventMultMaxBoundCmd = new G4UIcmdWithAnInteger("/RunAction/OptPhotPerEventMultMax", this);
+		fSetOptPhotPerEventMultMaxBoundCmd = new G4UIcmdWithADouble("/RunAction/OptPhotPerEventMultMax", this);
 		fSetOptPhotPerEventMultMaxBoundCmd->SetGuidance("Set OptPhot multiplicity maximum per event bound");
 		fSetOptPhotPerEventMultMaxBoundCmd->SetParameterName("OptPhotPerEventMultMax", false);
 		fSetOptPhotPerEventMultMaxBoundCmd->SetRange("OptPhotPerEventMultMax >= 0");
@@ -662,59 +662,59 @@ void RunActionMessenger::SetNewValue(G4UIcommand* cmd, G4String par)
 	// -------------------- multiplicity per event --------------------
 	{
 		if(cmd == fSetGammaPerEventMultMinBoundCmd)
-			fGammaPerEventMultMinBound = fSetGammaPerEventMultMinBoundCmd->GetNewIntValue(par);
+			fGammaPerEventMultMinBound = fSetGammaPerEventMultMinBoundCmd->GetNewDoubleValue(par);
 		if(cmd == fSetGammaPerEventMultMaxBoundCmd)
-			fGammaPerEventMultMaxBound = fSetGammaPerEventMultMaxBoundCmd->GetNewIntValue(par);
+			fGammaPerEventMultMaxBound = fSetGammaPerEventMultMaxBoundCmd->GetNewDoubleValue(par);
 
 		if(cmd == fSetPositronPerEventMultMinBoundCmd)
-			fPositronPerEventMultMinBound = fSetPositronPerEventMultMinBoundCmd->GetNewIntValue(par);
+			fPositronPerEventMultMinBound = fSetPositronPerEventMultMinBoundCmd->GetNewDoubleValue(par);
 		if(cmd == fSetPositronPerEventMultMaxBoundCmd)
-			fPositronPerEventMultMaxBound = fSetPositronPerEventMultMaxBoundCmd->GetNewIntValue(par);
+			fPositronPerEventMultMaxBound = fSetPositronPerEventMultMaxBoundCmd->GetNewDoubleValue(par);
 
 		if(cmd == fSetElectronPerEventMultMinBoundCmd)
-			fElectronPerEventMultMinBound = fSetElectronPerEventMultMinBoundCmd->GetNewIntValue(par);
+			fElectronPerEventMultMinBound = fSetElectronPerEventMultMinBoundCmd->GetNewDoubleValue(par);
 		if(cmd == fSetElectronPerEventMultMaxBoundCmd)
-			fElectronPerEventMultMaxBound = fSetElectronPerEventMultMaxBoundCmd->GetNewIntValue(par);
+			fElectronPerEventMultMaxBound = fSetElectronPerEventMultMaxBoundCmd->GetNewDoubleValue(par);
 
 		if(cmd == fSetProtonPerEventMultMinBoundCmd)
-			fProtonPerEventMultMinBound = fSetProtonPerEventMultMinBoundCmd->GetNewIntValue(par);
+			fProtonPerEventMultMinBound = fSetProtonPerEventMultMinBoundCmd->GetNewDoubleValue(par);
 		if(cmd == fSetProtonPerEventMultMaxBoundCmd)
-			fProtonPerEventMultMaxBound = fSetProtonPerEventMultMaxBoundCmd->GetNewIntValue(par);
+			fProtonPerEventMultMaxBound = fSetProtonPerEventMultMaxBoundCmd->GetNewDoubleValue(par);
 
 		if(cmd == fSetNeutronPerEventMultMinBoundCmd)
-			fNeutronPerEventMultMinBound = fSetNeutronPerEventMultMinBoundCmd->GetNewIntValue(par);
+			fNeutronPerEventMultMinBound = fSetNeutronPerEventMultMinBoundCmd->GetNewDoubleValue(par);
 		if(cmd == fSetNeutronPerEventMultMaxBoundCmd)
-			fNeutronPerEventMultMaxBound = fSetNeutronPerEventMultMaxBoundCmd->GetNewIntValue(par);
+			fNeutronPerEventMultMaxBound = fSetNeutronPerEventMultMaxBoundCmd->GetNewDoubleValue(par);
 
 		if(cmd == fSetPionPlusPerEventMultMinBoundCmd)
-			fPionPlusPerEventMultMinBound = fSetPionPlusPerEventMultMinBoundCmd->GetNewIntValue(par);
+			fPionPlusPerEventMultMinBound = fSetPionPlusPerEventMultMinBoundCmd->GetNewDoubleValue(par);
 		if(cmd == fSetPionPlusPerEventMultMaxBoundCmd)
-			fPionPlusPerEventMultMaxBound = fSetPionPlusPerEventMultMaxBoundCmd->GetNewIntValue(par);
+			fPionPlusPerEventMultMaxBound = fSetPionPlusPerEventMultMaxBoundCmd->GetNewDoubleValue(par);
 
 		if(cmd == fSetPionMinusPerEventMultMinBoundCmd)
-			fPionMinusPerEventMultMinBound = fSetPionMinusPerEventMultMinBoundCmd->GetNewIntValue(par);
+			fPionMinusPerEventMultMinBound = fSetPionMinusPerEventMultMinBoundCmd->GetNewDoubleValue(par);
 		if(cmd == fSetPionMinusPerEventMultMaxBoundCmd)
-			fPionMinusPerEventMultMaxBound = fSetPionMinusPerEventMultMaxBoundCmd->GetNewIntValue(par);
+			fPionMinusPerEventMultMaxBound = fSetPionMinusPerEventMultMaxBoundCmd->GetNewDoubleValue(par);
 
 		if(cmd == fSetPionZeroPerEventMultMinBoundCmd)
-			fPionZeroPerEventMultMinBound = fSetPionZeroPerEventMultMinBoundCmd->GetNewIntValue(par);
+			fPionZeroPerEventMultMinBound = fSetPionZeroPerEventMultMinBoundCmd->GetNewDoubleValue(par);
 		if(cmd == fSetPionZeroPerEventMultMaxBoundCmd)
-			fPionZeroPerEventMultMaxBound = fSetPionZeroPerEventMultMaxBoundCmd->GetNewIntValue(par);
+			fPionZeroPerEventMultMaxBound = fSetPionZeroPerEventMultMaxBoundCmd->GetNewDoubleValue(par);
 
 		if(cmd == fSetMuonPlusPerEventMultMinBoundCmd)
-			fMuonPlusPerEventMultMinBound = fSetMuonPlusPerEventMultMinBoundCmd->GetNewIntValue(par);
+			fMuonPlusPerEventMultMinBound = fSetMuonPlusPerEventMultMinBoundCmd->GetNewDoubleValue(par);
 		if(cmd == fSetMuonPlusPerEventMultMaxBoundCmd)
-			fMuonPlusPerEventMultMaxBound = fSetMuonPlusPerEventMultMaxBoundCmd->GetNewIntValue(par);
+			fMuonPlusPerEventMultMaxBound = fSetMuonPlusPerEventMultMaxBoundCmd->GetNewDoubleValue(par);
 
 		if(cmd == fSetMuonMinusPerEventMultMinBoundCmd)
-			fMuonMinusPerEventMultMinBound = fSetMuonMinusPerEventMultMinBoundCmd->GetNewIntValue(par);
+			fMuonMinusPerEventMultMinBound = fSetMuonMinusPerEventMultMinBoundCmd->GetNewDoubleValue(par);
 		if(cmd == fSetMuonMinusPerEventMultMaxBoundCmd)
-			fMuonMinusPerEventMultMaxBound = fSetMuonMinusPerEventMultMaxBoundCmd->GetNewIntValue(par);
+			fMuonMinusPerEventMultMaxBound = fSetMuonMinusPerEventMultMaxBoundCmd->GetNewDoubleValue(par);
 
 		if(cmd == fSetOptPhotPerEventMultMinBoundCmd)
-			fOptPhotPerEventMultMinBound = fSetGammaPerEventMultMinBoundCmd->GetNewIntValue(par);
+			fOptPhotPerEventMultMinBound = fSetGammaPerEventMultMinBoundCmd->GetNewDoubleValue(par);
 		if(cmd == fSetOptPhotPerEventMultMaxBoundCmd)
-			fOptPhotPerEventMultMaxBound = fSetGammaPerEventMultMaxBoundCmd->GetNewIntValue(par);
+			fOptPhotPerEventMultMaxBound = fSetGammaPerEventMultMaxBoundCmd->GetNewDoubleValue(par);
 	}
 
 	// -------------------- energy deposition per event bound --------------------

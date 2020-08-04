@@ -12,9 +12,9 @@
 #include <math.h>
 
 // CHANGE THESE
-int numEnergies = 3;
+int numEnergies = 6;
 string initPart = "gamma";
-string n = "1000";
+string n = "100000";
 
 // energies
 vector<double> energies_dbl {100.0, 200.0, 500.0, 1000.0, 2000.0, 5000.0,
@@ -56,7 +56,7 @@ void SACAnalysis()
 
 	// open input files
 	for(int i = 0; i < numEnergies; i++)
-		mFiles["f" + energies_str[i]] = new TFile(("n" + n + "_" + initPart + "/SAC_" + energies_str[i] + "_n" + n + "_" + initPart + ".root").c_str());
+		mFiles["f" + energies_str[i]] = new TFile(("n" + n + "_" + initPart + "/SAC_" + energies_str[i] + "_" + initPart + "_n" + n + ".root").c_str());
 	{
 		// fill x-axis arrays
 		mData["x"] = energies_dbl;

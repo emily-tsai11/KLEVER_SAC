@@ -161,35 +161,43 @@ void RunAction::BeginOfRunAction(const G4Run* aRun)
 			ParticleNames[i] + " track length per hit",
 			500, 0.0 * CLHEP::cm, PerHitTrLenBound[i] * CLHEP::cm);
 	// multiplicity per event -- 3
-	for(G4int i = 0; i < nParticles; i++)
+	for(G4int i = 0; i < nParticles - 1; i++)
 		fAnalysisManager->CreateH1("h" + ParticleNames[i] + "_PerEvent_Mult",
 			ParticleNames[i] + " multiplicity per event / incident energy",
-			500, PerEventMultMinBound[i], PerEventMultMaxBound[i]);
-	// energy deposition per event -- 4
+			500, 0, 5.0);
+	fAnalysisManager->CreateH1("hOptPhot_PerEvent_Mult",
+		"OptPhot multiplicity per event / incident energy",
+		500, 0, 200.0);
+	// multiplicity per event for threshold plots -- 4
+	for(G4int i = 0; i < nParticles; i++)
+		fAnalysisManager->CreateH1("h" + ParticleNames[i] + "_PerEvent_lowMult",
+			ParticleNames[i] + " multiplicity per event / incident energy",
+			1500, PerEventMultMinBound[i], PerEventMultMaxBound[i]);
+	// energy deposition per event -- 5
 	for(G4int i = 0; i < nParticles; i++)
 		fAnalysisManager->CreateH1("h" + ParticleNames[i] + "_PerEvent_EDep",
 			ParticleNames[i] + " energy deposition per event / incident energy",
 			500, 0.0 * CLHEP::MeV, PerEventEDepBound[i] * CLHEP::MeV);
-	// initial (PreStepPoint) energy, unweighted -- 5
+	// initial (PreStepPoint) energy, unweighted -- 6
 	for(G4int i = 0; i < nParticles; i++)
 		fAnalysisManager->CreateH1("h" + ParticleNames[i] + "_PerEvent_InitE",
 			ParticleNames[i] + " initial energy",
 			500, 0.0 * CLHEP::MeV, PerEventInitEBound[i] * CLHEP::MeV);
-	// initial (PreStepPoint) energy, weighted by initial energy -- 6
+	// initial (PreStepPoint) energy, weighted by initial energy -- 7
 	for(G4int i = 0; i < nParticles; i++)
 		fAnalysisManager->CreateH1("h" + ParticleNames[i] + "_PerEvent_wInitE",
 			ParticleNames[i] + " weighted initial energy",
 			500, 0.0 * CLHEP::MeV, PerEventInitEBound[i] * CLHEP::MeV);
-	// initial particle hits in SAC per layer -- 7
+	// initial particle hits in SAC per layer -- 8
 	for(G4int i = 0; i < nParticles; i++)
 		fAnalysisManager->CreateH1("h" + ParticleNames[i] + "_SAC_Mult",
 			"number of " + ParticleNames[i] + " in SAC layers",
 			4, 0, 4);
-	// total energy deposition per event -- 88
+	// total energy deposition per event -- 99
 	fAnalysisManager->CreateH1("hPerEvent_EDep",
 		"total energy deposition per event",
 		500, 0.0 * CLHEP::MeV, fMessenger->GetPerEventEDepBound() * CLHEP::MeV);
-	// total untracked energy deposition in event -- 89
+	// total untracked energy deposition in event -- 100
 	fAnalysisManager->CreateH1("hPerEvent_UntrackedE",
 		"untracked energy deposition from other particles per event",
 		500, 0.0 * CLHEP::GeV, fMessenger->GetPerEventUntrackedEBound() * CLHEP::MeV);
