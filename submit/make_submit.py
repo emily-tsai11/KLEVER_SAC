@@ -31,6 +31,7 @@ os.chdir(filename + str(numRuns))
 os.mkdir("err")
 os.mkdir("log")
 os.mkdir("out")
+os.mkdir("root_files")
 
 # write in file
 with open(filename + str(numRuns) + ".in", "w") as f:
