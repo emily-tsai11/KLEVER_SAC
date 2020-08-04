@@ -1,4 +1,4 @@
-import os, argparse
+import argparse
 
 # define parser
 parser = argparse.ArgumentParser(description = "variables to generate KLMC_SAC macro files with")
@@ -16,9 +16,11 @@ incidentEUnit = args.incidentEUnit
 numEvents = args.numEvents
 runNum = args.r
 
-# write macro file
+# name of file
 filename = str(int(incidentE)) + incidentEUnit + "_" + incidentP + "_n" + str(numEvents)
 if args.r != None: filename += "_r" + str(runNum)
+
+# write macro file
 with open(filename + ".mac", "w") as f:
 	f.write("/control/verbose 1\n")
 	f.write("/run/verbose 1\n")
