@@ -52,7 +52,7 @@ with open(filename + ".condor", "w") as f:
 	f.write("environment\t\t\t\t\t= LD_LIBRARY_PATH=/cvmfs/sft.cern.ch/lcg/contrib/gcc/6.3/x86_64-slc6/lib64\n")
 	f.write("executable\t\t\t\t\t= batch.sh\n")
 	f.write("transfer_executable\t\t\t= TRUE\n")
-	f.write("arguments\t\t\t\t\t= KLMC_SAC $(macro)\n")
+	f.write("arguments\t\t\t\t\t= KLMC_SAC $(macro).mac\n")
 	f.write("transfer_input_files\t\t= ../build/KLMC_SAC, " + filename + "_macros/$(macro).mac\n")
 	f.write("\n")
 	f.write("+JobFlavour\t\t\t\t\t= \"espresso\"\n")
