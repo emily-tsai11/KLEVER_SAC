@@ -181,6 +181,9 @@ void SACSD::EndOfEvent(G4HCofThisEvent*)
 			fAnalysisManager->FillH1(partType + 5 * nParticles, initE, 1.0);
 			fAnalysisManager->FillH1(partType + 6 * nParticles, initE, initE);
 
+			// fill number of particle hits in SAC by layer
+			fAnalysisManager->FillH1(partType + 7 * nParticles, z, 1.0);
+
 			// fill x-y plane of SAC hits
 			fAnalysisManager->FillH2(partType + (z + 1) * nParticles, x, y, 1.0);
 			fAnalysisManager->FillH2(z + 5 * nParticles, x, y, 1.0);
@@ -215,8 +218,8 @@ void SACSD::EndOfEvent(G4HCofThisEvent*)
 	}
 
 	// fill total energy deposition per event
-	if(TotalEDep > 0.0) fAnalysisManager->FillH1(77, TotalEDep, 1.0);
+	if(TotalEDep > 0.0) fAnalysisManager->FillH1(88, TotalEDep, 1.0);
 
 	// fill untracked energy from other particles per event
-	if(UntrackedE > 0.0) fAnalysisManager->FillH1(78, UntrackedE, 1.0);
+	if(UntrackedE > 0.0) fAnalysisManager->FillH1(89, UntrackedE, 1.0);
 }
