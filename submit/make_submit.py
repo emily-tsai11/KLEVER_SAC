@@ -7,6 +7,7 @@ parser.add_argument("incidentE", type = float, help = "energy of incident partic
 parser.add_argument("incidentEUnit", type = str, help = "unit of energy of incident particle")
 parser.add_argument("numEvents", type = int, help = "number of events")
 parser.add_argument("numRuns", type = int, help = "number of runs")
+parser.add_argument("jobFlav", type = str, help = "job flavour")
 
 # parse the arguments and save values
 args = parser.parse_args()
@@ -15,6 +16,7 @@ incidentE = args.incidentE
 incidentEUnit = args.incidentEUnit
 numEvents = args.numEvents
 numRuns = args.numRuns
+jobFlav = args.jobFlav
 
 # filename
 filename = str(int(incidentE)) + incidentEUnit + "_" + incidentP + "_n" + str(numEvents)
@@ -55,7 +57,7 @@ with open(filename + ".condor", "w") as f:
 	f.write("arguments\t\t\t\t\t= KLMC_SAC $(macro).mac\n")
 	f.write("transfer_input_files\t\t= ../build/KLMC_SAC, " + filename + "_macros/$(macro).mac\n")
 	f.write("\n")
-	f.write("+JobFlavour\t\t\t\t\t= \"espresso\"\n")
+	f.write("+JobFlavour\t\t\t\t\t= \"" + jobFlav + "\"\n")
 	f.write("\n")
 	f.write("queue macro from " + filename + ".in\n")
 print(".condor file created!")
