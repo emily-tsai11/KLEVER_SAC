@@ -57,5 +57,5 @@ with open(filename + ".condor", "w") as f:
 	f.write("\n")
 	f.write("+JobFlavour\t\t\t\t\t= \"espresso\"\n")
 	f.write("\n")
-	f.write("queue $(macro) from " + filename + ".in\n")
+	f.write("queue macro from " + filename + ".in\n")
 print(".condor file created!")
