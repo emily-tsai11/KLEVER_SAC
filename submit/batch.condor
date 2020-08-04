@@ -1,16 +1,18 @@
-universe = vanilla
+universe					= vanilla
 
-log = batch.log
-output = batch.out
-error = batch.error
+log							= log/$(macro).log
+output						= out/$(macro).out
+error						= err/$(macro).error
 
-should_transfer_files = YES
-when_to_transfer_output = ON_EXIT
+should_transfer_files		= YES
+when_to_transfer_output		= ON_EXIT
 
-environment = LD_LIBRARY_PATH=/cvmfs/sft.cern.ch/lcg/contrib/gcc/6.3/x86_64-slc6/lib64
-executable = batch.sh
-transfer_executable = TRUE
-arguments = KLMC_SAC batch_100MeV_gamma.mac
-transfer_input_files = ../build/KLMC_SAC, ../build/macros/batch_100MeV_gamma.mac
+environment					= LD_LIBRARY_PATH=/cvmfs/sft.cern.ch/lcg/contrib/gcc/6.3/x86_64-slc6/lib64
+executable					= batch.sh
+transfer_executable			= TRUE
+arguments					= KLMC_SAC $(macro)
+transfer_input_files		= ../build/KLMC_SAC, ../build/macros/$(macro).mac
 
-queue
++JobFlavour					= "tomorrow"
+
+queue $(macro) from batch.in
