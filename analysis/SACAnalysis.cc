@@ -32,6 +32,10 @@ int numAttr = 3;
 string attr[] = {"Mult", "EDep", "InitE"};
 string attr_title[] = {"multiplicity", "energy deposition", "initial energy"};
 
+// optical photon efficiency thresholds
+int numThresholds = 7;
+double thresholds[] = {20.0, 30.0, 40.0, 50.0, 60.0, 70.0, 80.0};
+
 // TGraph drawing options
 string x_axis = "incident energy (MeV)";
 string draw_opt = "ap";
@@ -114,6 +118,20 @@ void SACAnalysis()
 			TH1D* UntrackedEFromParticlesTemp = (TH1D*) mFiles["f" + energies_str[i]]->Get("hPerEvent_UntrackedE");
 			mData["y_untrackedEFromParticles_mean"][i] = UntrackedEFromParticlesTemp->GetMean() / energies_dbl[i];
 			mData["y_untrackedEFromParticles_stddev"][i] = UntrackedEFromParticlesTemp->GetStdDev() / energies_dbl[i];
+		}
+
+		// optical photon efficiency plots
+		for(int i = 0; i < numThresholds; i++)
+		{
+			mData["OptPhotEff_t" + to_string(thresholds[i])] = vector<double>(numEnergies);
+			for(int j = 0; j < numEnergies; j++)
+			{
+				TH1D* OptPhotMultTemp = (TH1D*) mFiles["f" + energies_str[j]]->Get("hOptPhot_PerEvent_Mult");
+				double low = OptPhotMultTemp->GetXaxis()->FindBin(thresholds[i]);
+				double high = OptPhotMultTemp->FindLastBinAbove(0, 1);
+				double integral = OptPhotMultTemp->Integral(low, high);
+				mData["OptPhotEff_t" + to_string(thresholds[i])][j] = integral / stoi(n);
+			}
 		}
 	}
 	for(int i = 0; i < numEnergies; i++) mFiles["f" + energies_str[i]]->Close();
@@ -230,6 +248,28 @@ void SACAnalysis()
 
 			mg->Draw();
 			mg->Write();
+		}
+
+		// PLOT HERE
+		// mData["OptPhotEff_t" + to_string(thresholds[i])]
+		for(int i = 0; i < numThresholds; i++)
+		{
+			mCanvas["cOptPhotEff_t" + to_string(thresholds[i])] = new TCanvas(("cOptPhotEff_t" + to_string(thresholds[i])).c_str(),
+				("optical photon efficiency, threshold = " + to_string(thresholds[i])).c_str(), 800, 600);
+			mGraphs["gOptPhotEff_t" + to_string(thresholds[i])] = new TGraph(numEnergies,
+				mData["x"].data(), mData["OptPhotEff_t" + to_string(thresholds[i])].data());
+
+			mGraphs["gOptPhotEff_t" + to_string(thresholds[i])]->SetName(("gOptPhotEff_t" + to_string(thresholds[i])).c_str());
+			mGraphs["gOptPhotEff_t" + to_string(thresholds[i])]->SetTitle(("optical photon efficiency, threshold = " + to_string(thresholds[i])).c_str());
+			mGraphs["gOptPhotEff_t" + to_string(thresholds[i])]->GetXaxis()->SetTitle(x_axis.c_str());
+			mGraphs["gOptPhotEff_t" + to_string(thresholds[i])]->GetYaxis()->SetTitle("optical photon efficiency");
+
+			mGraphs["gOptPhotEff_t" + to_string(thresholds[i])]->SetMarkerColor(colors[10]);
+			mGraphs["gOptPhotEff_t" + to_string(thresholds[i])]->SetMarkerSize(mSize);
+			mGraphs["gOptPhotEff_t" + to_string(thresholds[i])]->SetMarkerStyle(mStyle);
+
+			mGraphs["gOptPhotEff_t" + to_string(thresholds[i])]->Draw();
+			mGraphs["gOptPhotEff_t" + to_string(thresholds[i])]->Write();
 		}
 	}
 	mFiles["fOut"]->Close();
