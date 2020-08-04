@@ -19,29 +19,27 @@ numRuns = args.numRuns
 jobFlav = args.jobFlav
 
 # filename
-filename = str(int(incidentE)) + incidentEUnit + "_" + incidentP + "_n" + str(numEvents)
-print("filename: " + filename + "_r" + str(numRuns) + "...")
+filename = str(int(incidentE)) + incidentEUnit + "_" + incidentP + "_n" + str(numEvents) + "_r"
+print("filename: " + filename + str(numRuns) + "...")
+
+# delete and create new directory
+os.system("rm -rf " + filename)
+os.mkdir(filename + str(numRuns))
+os.chdir(filename + str(numRuns))
+
+# create err, log, and out folders
+os.mkdir("err")
+os.mkdir("log")
+os.mkdir("out")
 
 # write in file
-with open(filename + "_r" + str(numRuns) + ".in", "w") as f:
+with open(filename + str(numRuns) + ".in", "w") as f:
 	for i in range(numRuns):
-		f.write(filename + "_r" + str(i) + "\n")
+		f.write(filename + str(i) + "\n")
 print(".in file created!")
 
-# add number of runs to filename
-filename += "_r" + str(numRuns)
-
-# generate macro files
-os.system("rm -rf " + filename + "_macros")
-os.mkdir(filename + "_macros")
-os.chdir(filename + "_macros")
-for i in range(numRuns):
-	os.system("python ../../macros/make_macro.py " + incidentP + " " + str(incidentE) + " " + incidentEUnit + " " + str(numEvents) + " -r " + str(i))
-os.chdir("..")
-print("macro files created!")
-
 # write condor file
-with open(filename + ".condor", "w") as f:
+with open(filename + str(numRuns) + ".condor", "w") as f:
 	f.write("universe\t\t\t\t\t= vanilla\n")
 	f.write("\n")
 	f.write("error\t\t\t\t\t\t= err/$(macro).error\n")
@@ -52,12 +50,19 @@ with open(filename + ".condor", "w") as f:
 	f.write("when_to_transfer_output\t\t= ON_EXIT\n")
 	f.write("\n")
 	f.write("environment\t\t\t\t\t= LD_LIBRARY_PATH=/cvmfs/sft.cern.ch/lcg/contrib/gcc/6.3/x86_64-slc6/lib64\n")
-	f.write("executable\t\t\t\t\t= batch.sh\n")
+	f.write("executable\t\t\t\t\t= ../batch.sh\n")
 	f.write("transfer_executable\t\t\t= TRUE\n")
 	f.write("arguments\t\t\t\t\t= KLMC_SAC $(macro).mac\n")
-	f.write("transfer_input_files\t\t= ../build/KLMC_SAC, " + filename + "_macros/$(macro).mac\n")
+	f.write("transfer_input_files\t\t= ../../build/KLMC_SAC, macros/$(macro).mac\n")
 	f.write("\n")
 	f.write("+JobFlavour\t\t\t\t\t= \"" + jobFlav + "\"\n")
 	f.write("\n")
-	f.write("queue macro from " + filename + ".in\n")
+	f.write("queue macro from " + filename + str(numRuns) + ".in\n")
 print(".condor file created!")
+
+# generate macro files
+os.mkdir("macros")
+os.chdir("macros")
+for i in range(numRuns):
+	os.system("python ../../../macros/make_macro.py " + incidentP + " " + str(incidentE) + " " + incidentEUnit + " " + str(numEvents) + " -r " + str(i))
+print("macro files created!")
