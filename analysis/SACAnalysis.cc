@@ -12,9 +12,9 @@
 #include <math.h>
 
 // CHANGE THESE
-int numEnergies = 3;
+int numEnergies = 8;
 string initPart = "gamma";
-string n = "1000";
+string n = "100000";
 
 // energies
 vector<double> energies_dbl {100.0, 200.0, 500.0, 1000.0, 2000.0, 5000.0,
@@ -32,15 +32,21 @@ int numAttr = 3;
 string attr[] = {"EDep", "Mult", "InitE"};
 string attr_title[] = {"energy deposition", "multiplicity", "initial energy"};
 
+// optical photon mult gaussian fit ranges
+double fitRangeMin[] = {70.0, 70.0, 70.0, 70.0, 70.0, 70.0, 70.0, 70.0, 70.0, 70.0};
+double fitRangeMax[] = {95.0, 95.0, 95.0, 95.0, 95.0, 95.0, 95.0, 95.0, 95.0, 95.0};
+
 // optical photon efficiency thresholds in MeV
-int numThresholds = 10;
+int numThresholds = 20;
 double bin_width = 10.0; // in MeV
-double thresholds[] = {50.0, 100.0, 150.0, 200.0, 250.0, 300.0, 350.0, 400.0, 450.0, 500.0};
+double thresholds[] = {50.0, 100.0, 150.0, 200.0, 450.0, 1000.0, 2000.0,
+	3000.0, 4000.0, 5000.0, 6000.0, 7000.0, 8000.0, 9000.0, 10000.0, 11000.0,
+	12000.0, 13000.0, 14000.0, 15000.0};
 
 // TGraph drawing options
 string x_axis = "incident energy (MeV)";
 string draw_opt = "ap";
-int colors[] = {2, 3, 4, 5, 6, 39, 38, 29, 28, 45, 7};
+int colors[] = {2, 3, 4, 5, 6, 7, 38, 29, 28, 45, 39};
 double mSize = 1.5;
 int mStyle = 21;
 
@@ -63,11 +69,9 @@ void SACAnalysis()
 		mData["x"] = energies_dbl;
 		mData["x_stddev"] = vector<double>(mData["x"].size(), 0.0);
 
-		// fit function
-		TF1* gaussian = new TF1("gaussian", "[0] * exp(-0.5 * ((x - [1]) / [2]) * ((x - [1]) / [2]))", 0.0, 200.0);
-		gaussian->SetParName(0, "normalization");
-		gaussian->SetParName(1, "#mu");
-		gaussian->SetParName(2, "#sigma");
+		// optical photon stddev / mean energy resolution
+		mData["y_OptPhot_Mult_nStdDev_dMean_mean"] = vector<double>(numEnergies, 0.0);
+		mData["y_OptPhot_Mult_nStdDev_dMean_stddev"] = vector<double>(numEnergies, 0.0);
 
 		// fill attr
 		for(int i = 0; i < numAttr; i++)
@@ -79,10 +83,40 @@ void SACAnalysis()
 
 				for(int k = 0; k < numEnergies; k++)
 				{
-					// CHANGE THIS TO GAUSSIAN FIT LATER
 					TH1D* tempHist = (TH1D*) mFiles["f" + energies_str[k]]->Get(("h" + partType[j] + "_PerEvent_" + attr[i]).c_str());
-					mData["y_" + partType[j] + "_" + attr[i] + "_mean"][k] = tempHist->GetMean();
-					mData["y_" + partType[j] + "_" + attr[i] + "_stddev"][k] = tempHist->GetStdDev();
+
+					double m;
+					double sd;
+					if(partType[j] == "OptPhot" && attr[i] == "Mult")
+					{
+						// fit gaussian in range
+						TF1* func = new TF1("func", "gaus", fitRangeMin[k], fitRangeMax[k]);
+						tempHist->Fit("func", "R");
+						TF1* fit = tempHist->GetFunction("func");
+
+						// fill optical photon stddev / mean energy resolution
+						m = fit->GetParameter(1);
+						sd = fit->GetParameter(2);
+						double dm = fit->GetParError(1);
+						double dsd = fit->GetParError(2);
+
+						double m_new = sd / m;
+						double a = dm / m;
+						double b = dsd / sd;
+						double sd_new = m_new * sqrt(a * a + b * b);
+
+						mData["y_OptPhot_Mult_nStdDev_dMean_mean"][k] = m_new;
+						mData["y_OptPhot_Mult_nStdDev_dMean_stddev"][k] = sd_new;
+					}
+					else
+					{
+						// or just pull mean and stddev from root histograms
+						m = tempHist->GetMean();
+						sd = tempHist->GetStdDev();
+					}
+
+					mData["y_" + partType[j] + "_" + attr[i] + "_mean"][k] = m;
+					mData["y_" + partType[j] + "_" + attr[i] + "_stddev"][k] = sd;
 				}
 			}
 		}
@@ -248,6 +282,25 @@ void SACAnalysis()
 			mg->Draw();
 			mg->Write();
 		}
+
+		// optical photon stddev / mean energy resolution
+		mCanvas["cOptPhot_Mult_nStdDev_dMean"] = new TCanvas("cOptPhot_Mult_nStdDev_dMean",
+			"optical photon multiplicity std / mean", 800, 600);
+		mGraphs["gOptPhot_Mult_nStdDev_dMean"] = new TGraphErrors(numEnergies,
+			mData["x"].data(), mData["y_OptPhot_Mult_nStdDev_dMean_mean"].data(),
+			mData["x_stddev"].data(), mData["y_OptPhot_Mult_nStdDev_dMean_stddev"].data());
+
+		mGraphs["gOptPhot_Mult_nStdDev_dMean"]->SetName("gOptPhot_Mult_nStdDev_dMean");
+		mGraphs["gOptPhot_Mult_nStdDev_dMean"]->SetTitle("optical photon multiplicity std / mean");
+		mGraphs["gOptPhot_Mult_nStdDev_dMean"]->GetXaxis()->SetTitle(x_axis.c_str());
+		mGraphs["gOptPhot_Mult_nStdDev_dMean"]->GetYaxis()->SetTitle("optical photon multiplicity std / mean");
+
+		mGraphs["gOptPhot_Mult_nStdDev_dMean"]->SetMarkerColor(colors[10]);
+		mGraphs["gOptPhot_Mult_nStdDev_dMean"]->SetMarkerSize(mSize);
+		mGraphs["gOptPhot_Mult_nStdDev_dMean"]->SetMarkerStyle(mStyle);
+
+		mGraphs["gOptPhot_Mult_nStdDev_dMean"]->Draw();
+		mGraphs["gOptPhot_Mult_nStdDev_dMean"]->Write();
 
 		// threshold graphs
 		for(int i = 0; i < numThresholds; i++)
