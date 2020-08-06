@@ -12,7 +12,7 @@
 #include <math.h>
 
 // CHANGE THESE
-int numEnergies = 8;
+int numEnergies = 10;
 string initPart = "gamma";
 string n = "100000";
 
@@ -33,8 +33,8 @@ string attr[] = {"EDep", "Mult", "InitE"};
 string attr_title[] = {"energy deposition", "multiplicity", "initial energy"};
 
 // optical photon mult gaussian fit ranges
-double fitRangeMin[] = {70.0, 70.0, 70.0, 70.0, 70.0, 70.0, 70.0, 70.0, 70.0, 70.0};
-double fitRangeMax[] = {95.0, 95.0, 95.0, 95.0, 95.0, 95.0, 95.0, 95.0, 95.0, 95.0};
+double fitRangeMin[] = {82.0, 82.0, 82.0, 82.0, 80.0, 78.0, 78.0, 78.0, 75.0, 73.0};
+double fitRangeMax[] = {95.0, 95.0, 95.0, 92.0, 90.0, 88.0, 87.0, 86.0, 85.0, 83.0};
 
 // optical photon efficiency thresholds in MeV
 int numThresholds = 20;
@@ -42,6 +42,9 @@ double bin_width = 10.0; // in MeV
 double thresholds[] = {50.0, 100.0, 150.0, 200.0, 450.0, 1000.0, 2000.0,
 	3000.0, 4000.0, 5000.0, 6000.0, 7000.0, 8000.0, 9000.0, 10000.0, 11000.0,
 	12000.0, 13000.0, 14000.0, 15000.0};
+string thresh_str[] = {"50MeV", "100MeV", "150MeV", "200MeV", "450MeV", "1GeV",
+	"2GeV", "3GeV", "4GeV", "5GeV", "6GeV", "7GeV", "8GeV", "9GeV", "10GeV",
+	"11GeV", "12GeV", "13GeV", "14GeV", "15GeV"};
 
 // TGraph drawing options
 string x_axis = "incident energy (MeV)";
@@ -158,12 +161,12 @@ void SACAnalysis()
 		// optical photon efficiency threshold plots
 		for(int i = 0; i < numThresholds; i++)
 		{
-			mData["OptPhotIneff_t" + to_string(thresholds[i])] = vector<double>(numEnergies);
+			mData["OptPhotIneff_t" + thresh_str[i]] = vector<double>(numEnergies);
 			for(int j = 0; j < numEnergies; j++)
 			{
 				TH1D* OptPhotMultTemp = (TH1D*) mFiles["f" + energies_str[j]]->Get("hOptPhot_PerEvent_lowMult");
 				double integral = OptPhotMultTemp->Integral(0, (int) (thresholds[i] / bin_width));
-				mData["OptPhotIneff_t" + to_string(thresholds[i])][j] = integral / stoi(n);
+				mData["OptPhotIneff_t" + thresh_str[i]][j] = integral / stoi(n);
 			}
 		}
 	}
@@ -305,25 +308,103 @@ void SACAnalysis()
 		// threshold graphs
 		for(int i = 0; i < numThresholds; i++)
 		{
-			mCanvas["cOptPhotIneff_t" + to_string(thresholds[i])] = new TCanvas(("cOptPhotIneff_t" + to_string(thresholds[i])).c_str(),
-				("optical photon inefficiency, threshold = " + to_string(thresholds[i])).c_str(), 800, 600);
-			mGraphs["gOptPhotIneff_t" + to_string(thresholds[i])] = new TGraph(numEnergies,
-				mData["x"].data(), mData["OptPhotIneff_t" + to_string(thresholds[i])].data());
+			mCanvas["cOptPhotIneff_t" + thresh_str[i]] = new TCanvas(("cOptPhotIneff_t" + thresh_str[i]).c_str(),
+				("optical photon inefficiency, threshold = " + thresh_str[i]).c_str(), 800, 600);
+			mGraphs["gOptPhotIneff_t" + thresh_str[i]] = new TGraph(numEnergies,
+				mData["x"].data(), mData["OptPhotIneff_t" + thresh_str[i]].data());
 
-			mGraphs["gOptPhotIneff_t" + to_string(thresholds[i])]->SetName(("gOptPhotIneff_t" + to_string(thresholds[i])).c_str());
-			mGraphs["gOptPhotIneff_t" + to_string(thresholds[i])]->SetTitle(("optical photon inefficiency, threshold = " + to_string(thresholds[i])).c_str());
-			mGraphs["gOptPhotIneff_t" + to_string(thresholds[i])]->GetXaxis()->SetTitle(x_axis.c_str());
-			mGraphs["gOptPhotIneff_t" + to_string(thresholds[i])]->GetYaxis()->SetTitle("optical photon inefficiency");
+			mGraphs["gOptPhotIneff_t" + thresh_str[i]]->SetName(("gOptPhotIneff_t" + thresh_str[i]).c_str());
+			mGraphs["gOptPhotIneff_t" + thresh_str[i]]->SetTitle(("Cerenkov photon inefficiency, threshold = " + thresh_str[i]).c_str());
+			mGraphs["gOptPhotIneff_t" + thresh_str[i]]->GetXaxis()->SetTitle(x_axis.c_str());
+			mGraphs["gOptPhotIneff_t" + thresh_str[i]]->GetYaxis()->SetTitle("Cerenkov photon inefficiency");
 
-			mGraphs["gOptPhotIneff_t" + to_string(thresholds[i])]->SetMarkerColor(colors[10]);
-			mGraphs["gOptPhotIneff_t" + to_string(thresholds[i])]->SetMarkerSize(mSize);
-			mGraphs["gOptPhotIneff_t" + to_string(thresholds[i])]->SetMarkerStyle(mStyle);
+			mGraphs["gOptPhotIneff_t" + thresh_str[i]]->SetMarkerColor(colors[10]);
+			mGraphs["gOptPhotIneff_t" + thresh_str[i]]->SetMarkerSize(mSize);
+			mGraphs["gOptPhotIneff_t" + thresh_str[i]]->SetMarkerStyle(mStyle);
 
-			mGraphs["gOptPhotIneff_t" + to_string(thresholds[i])]->Draw();
-			mGraphs["gOptPhotIneff_t" + to_string(thresholds[i])]->Write();
+			mGraphs["gOptPhotIneff_t" + thresh_str[i]]->Draw();
+			mGraphs["gOptPhotIneff_t" + thresh_str[i]]->Write();
+
+			if(thresh_str[i] == "150MeV" || thresh_str[i] == "5GeV" || thresh_str[i] == "10GeV" || thresh_str[i] == "15GeV")
+			{
+				mData["x_GeV"] = vector<double> {0.1, 0.2, 0.5, 1.0, 2.0, 5.0, 10.0, 20.0, 50.0, 100.0};
+				mCanvas["temp" + thresh_str[i]] = new TCanvas(("temp" + thresh_str[i]).c_str(),
+					("Cerenkov photon inefficiency, threshold = " + thresh_str[i]).c_str(), 800, 600);
+				mGraphs["temp" + thresh_str[i]] = new TGraph(numEnergies,
+					mData["x_GeV"].data(), mData["OptPhotIneff_t" + thresh_str[i]].data());
+
+				mGraphs["temp" + thresh_str[i]]->SetTitle(("Cerenkov photon inefficiency, threshold = " + thresh_str[i]).c_str());
+				mGraphs["temp" + thresh_str[i]]->GetXaxis()->SetTitle("incident energy (GeV)");
+				mGraphs["temp" + thresh_str[i]]->GetYaxis()->SetTitle("Cerenkov photon inefficiency");
+
+				mGraphs["temp" + thresh_str[i]]->SetMarkerColor(4);
+				mGraphs["temp" + thresh_str[i]]->SetMarkerSize(0.9);
+				mGraphs["temp" + thresh_str[i]]->SetMarkerStyle(mStyle);
+				mGraphs["temp" + thresh_str[i]]->Draw();
+
+				gPad->SetLogx(1);
+				gPad->SetLogy(1);
+				mCanvas["temp" + thresh_str[i]]->SaveAs(("OptPhot_threshold" + thresh_str[i] + ".pdf").c_str());
+				gPad->SetLogx(0);
+				gPad->SetLogy(0);
+			}
 		}
 	}
 	mFiles["fOut"]->Close();
+
+	// make other plots
+	gStyle->SetOptStat("mr");
+
+	TFile* f200MeV = new TFile("n100000_gamma/SAC_200MeV_gamma_n100000.root");
+	TCanvas* c200MeV = new TCanvas("c200MeV", "Cerenkov photon multiplicity per event / incident energy", 800, 600);
+	TH1D* h200MeV = (TH1D*) ((f200MeV->Get("hOptPhot_PerEvent_Mult"))->Clone());
+	h200MeV->SetTitle("Cerenkov photon multiplicity per event / incident energy");
+	h200MeV->GetXaxis()->SetTitle("incident energy (MeV)");
+	h200MeV->SetLineColor(4);
+	h200MeV->Draw("hist");
+	c200MeV->SaveAs("OptPhot_Mult_200MeV_n100000.pdf");
+	f200MeV->Close();
+
+	TFile* f20GeV = new TFile("n100000_gamma/SAC_20GeV_gamma_n100000.root");
+	TCanvas* c20GeV = new TCanvas("c20GeV", "Cerenkov photon multiplicity per event / incident energy", 800, 600);
+	TH1D* h20GeV = (TH1D*) ((f20GeV->Get("hOptPhot_PerEvent_Mult"))->Clone());
+	h20GeV->SetTitle("Cerenkov photon multiplicity per event / incident energy");
+	h20GeV->GetXaxis()->SetTitle("incident energy (MeV)");
+	h20GeV->SetLineColor(4);
+	h20GeV->Draw("hist");
+	c20GeV->SaveAs("OptPhot_Mult_20GeV_n100000.pdf");
+	f20GeV->Close();
+
+
+	TFile* fGamma = new TFile("n100000_gamma/SAC_100MeV_gamma_n100000.root");
+	TH1D* hGammaTemp = (TH1D*) (fGamma->Get("hOptPhot_PerEvent_Mult"));
+	TCanvas* cGamma = new TCanvas("cGamma", "Cerenkov photon multiplicity per event", 800, 600);
+	TH1D* hGamma = new TH1D("hGamma", "Cerenkov photon multiplicity per event", 500, 0, 20000);
+	for(int i = 0; i < hGammaTemp->GetNbinsX(); i++)
+		hGamma->Fill(i * 40.0, hGammaTemp->GetBinContent(i));
+	hGamma->GetXaxis()->SetTitle("incident energy (MeV)");
+	hGamma->SetLineColor(4);
+	hGamma->Draw("hist");
+	TLine* lGamma = new TLine(2000, 0, 2000, 4630);
+	lGamma->SetLineColor(2);
+	lGamma->Draw();
+	cGamma->SaveAs("OptPhot_Mult_Gamma.pdf");
+	fGamma->Close();
+
+	TFile* fNeutron = new TFile("n100000_neutron/SAC_100MeV_neutron_n100000.root");
+	TH1D* hNeutronTemp = (TH1D*) (fNeutron->Get("hOptPhot_PerEvent_Mult"));
+	TCanvas* cNeutron = new TCanvas("cNeutron", "Cerenkov photon multiplicity per event", 800, 600);
+	TH1D* hNeutron = new TH1D("hNeutron", "Cerenkov photon multiplicity per event", 500, 0, 20000);
+	for(int i = 0; i < hNeutronTemp->GetNbinsX(); i++)
+		hNeutron->Fill(i * 40.0, hNeutronTemp->GetBinContent(i));
+	hNeutron->GetXaxis()->SetTitle("incident energy (MeV)");
+	hNeutron->SetLineColor(4);
+	hNeutron->Draw("hist");
+	TLine* lNeutron = new TLine(2000, 0, 2000, 3110);
+	lNeutron->SetLineColor(2);
+	lNeutron->Draw();
+	cNeutron->SaveAs("OptPhot_Mult_Neutron.pdf");
+	fNeutron->Close();
 
 	// unset batch mode
 	gROOT->SetBatch(0);
