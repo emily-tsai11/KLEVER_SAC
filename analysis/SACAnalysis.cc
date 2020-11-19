@@ -70,6 +70,9 @@ int lStyle = 1;
 vector<double> zoomRangeGamma {-0.01, 0.18, -0.05, 1.0, -20.0, 560.0};
 vector<double> zoomRangeNeutron {-0.02, 0.257, -0.02, 0.23, -100.0, 2400.0};
 
+// file type
+string fType = ".png";
+
 // data structures
 map<string, TFile*> mFiles;
 map<string, vector<double>> mData;
@@ -90,9 +93,8 @@ void SACAnalysis()
 		mData["x_GeV"] = vector<double> {0.1, 0.2, 0.5, 1.0, 2.0, 5.0, 10.0, 20.0, 50.0, 100.0};
 		mData["x_stddev"] = vector<double>(mData["x"].size(), 0.0);
 
-		// optical photon stddev / mean energy resolution
-		mData["y_OptPhot_Mult_nStdDev_dMean_mean"] = vector<double>(numEnergies, 0.0);
-		mData["y_OptPhot_Mult_nStdDev_dMean_stddev"] = vector<double>(numEnergies, 0.0);
+		// optical photon stddev / mean
+		mData["y_OptPhot_Mult_nStdDev_dMean"] = vector<double>(numEnergies, 0.0);
 
 		// fill attr
 		for(int i = 0; i < numAttr; i++)
@@ -115,21 +117,8 @@ void SACAnalysis()
 						tempHist->Fit("func", "RQ");
 						TF1* fit = tempHist->GetFunction("func");
 
-						// fill optical photon stddev / mean energy resolution
 						m = fit->GetParameter(1);
 						sd = fit->GetParameter(2);
-						double dm = fit->GetParError(1);
-						double dsd = fit->GetParError(2);
-
-						double m_new = sd / m;
-						double a = dm / m;
-						double b = dsd / sd;
-						double sd_new = m_new * sqrt(a * a + b * b);
-
-						mData["y_" + partType[j] + "_" + attr[i] + "_mean"][k] = m;
-						mData["y_" + partType[j] + "_" + attr[i] + "_stddev"][k] = sd;
-						mData["y_OptPhot_Mult_nStdDev_dMean_mean"][k] = m_new;
-						mData["y_OptPhot_Mult_nStdDev_dMean_stddev"][k] = sd_new;
 					}
 					else
 					{
@@ -140,6 +129,12 @@ void SACAnalysis()
 
 					mData["y_" + partType[j] + "_" + attr[i] + "_mean"][k] = m;
 					mData["y_" + partType[j] + "_" + attr[i] + "_stddev"][k] = sd;
+
+					// make stddev / mean
+					if(attr[i] == "Mult")
+					{
+						mData["y_OptPhot_Mult_nStdDev_dMean"][k] = sd / m;
+					}
 				}
 			}
 		}
@@ -378,7 +373,7 @@ void SACAnalysis()
 			// save plots
 			gPad->SetLogx(1);
 			attr_legend->Draw();
-			mCanvas["c" + attr[i]]->SaveAs(("plots/" + initPart + "_mg" + attr[i] + ".pdf").c_str());
+			mCanvas["c" + attr[i]]->SaveAs(("plots/" + initPart + "_mg" + attr[i] + fType).c_str());
 
 			// zoomed version of plots
 			mCanvas["c" + attr[i] + "_zoomed"] = new TCanvas(("c" + attr[i] + "_zoomed").c_str(),
@@ -400,7 +395,7 @@ void SACAnalysis()
 			}
 			gPad->SetLogx(1);
 			attr_legend->Draw();
-			mCanvas["c" + attr[i] + "_zoomed"]->SaveAs(("plots/" + initPart + "_mg" + attr[i] + "_zoomed.pdf").c_str());
+			mCanvas["c" + attr[i] + "_zoomed"]->SaveAs(("plots/" + initPart + "_mg" + attr[i] + "_zoomed" + fType).c_str());
 		}
 
 		// optical photon mean -- stability
@@ -413,7 +408,7 @@ void SACAnalysis()
 			mGraphs["gOptPhot_Mult_mean"]->SetName("gOptPhot_Mult_mean");
 			mGraphs["gOptPhot_Mult_mean"]->SetTitle("Cerenkov photon multiplicity mean -- stability");
 			mGraphs["gOptPhot_Mult_mean"]->GetXaxis()->SetTitle(x_axis.c_str());
-			mGraphs["gOptPhot_Mult_mean"]->GetYaxis()->SetTitle("Cerenkov photon multiplicity mean");
+			mGraphs["gOptPhot_Mult_mean"]->GetYaxis()->SetTitle("Cerenkov photon multiplicity mean (1 / MeV)");
 
 			mGraphs["gOptPhot_Mult_mean"]->SetMarkerColor(colors[10]);
 			mGraphs["gOptPhot_Mult_mean"]->SetMarkerSize(mSize);
@@ -425,7 +420,9 @@ void SACAnalysis()
 			mGraphs["gOptPhot_Mult_mean"]->Write();
 		}
 		gPad->SetLogx(1);
-		mCanvas["cOptPhot_Mult_mean"]->SaveAs(("plots/" + initPart + "_gOptPhot_Mult_mean.pdf").c_str());
+		// mGraphs["gOptPhot_Mult_mean"]->SetMinimum(0.0);
+		// mGraphs["gOptPhot_Mult_mean"]->SetMaximum(90.0);
+		mCanvas["cOptPhot_Mult_mean"]->SaveAs(("plots/" + initPart + "_gOptPhot_Mult_mean" + fType).c_str());
 
 		// optical photon stddev -- energy resolution
 		mCanvas["cOptPhot_Mult_stddev"] = new TCanvas("cOptPhot_Mult_stddev",
@@ -437,7 +434,7 @@ void SACAnalysis()
 			mGraphs["gOptPhot_Mult_stddev"]->SetName("gOptPhot_Mult_stddev");
 			mGraphs["gOptPhot_Mult_stddev"]->SetTitle("Cerenkov photon multiplicity stddev -- energy resolution");
 			mGraphs["gOptPhot_Mult_stddev"]->GetXaxis()->SetTitle(x_axis.c_str());
-			mGraphs["gOptPhot_Mult_stddev"]->GetYaxis()->SetTitle("Cerenkov photon multiplicity stddev");
+			mGraphs["gOptPhot_Mult_stddev"]->GetYaxis()->SetTitle("Cerenkov photon multiplicity stddev (1 / MeV)");
 
 			mGraphs["gOptPhot_Mult_stddev"]->SetMarkerColor(colors[10]);
 			mGraphs["gOptPhot_Mult_stddev"]->SetMarkerSize(mSize);
@@ -449,15 +446,16 @@ void SACAnalysis()
 			mGraphs["gOptPhot_Mult_stddev"]->Write();
 		}
 		gPad->SetLogx(1);
-		mCanvas["cOptPhot_Mult_stddev"]->SaveAs(("plots/" + initPart + "_gOptPhot_Mult_stddev.pdf").c_str());
+		// mGraphs["gOptPhot_Mult_stddev"]->SetMinimum(0.0);
+		// mGraphs["gOptPhot_Mult_stddev"]->SetMaximum(13.0);
+		mCanvas["cOptPhot_Mult_stddev"]->SaveAs(("plots/" + initPart + "_gOptPhot_Mult_stddev"+ fType).c_str());
 
 		// optical photon stddev / mean
 		mCanvas["cOptPhot_Mult_nStdDev_dMean"] = new TCanvas("cOptPhot_Mult_nStdDev_dMean",
 			"optical photon multiplicity std / mean", 800, 600);
 		{
-			mGraphs["gOptPhot_Mult_nStdDev_dMean"] = new TGraphErrors(numEnergies,
-				mData["x"].data(), mData["y_OptPhot_Mult_nStdDev_dMean_mean"].data(),
-				mData["x_stddev"].data(), mData["y_OptPhot_Mult_nStdDev_dMean_stddev"].data());
+			mGraphs["gOptPhot_Mult_nStdDev_dMean"] = new TGraph(numEnergies,
+				mData["x"].data(), mData["y_OptPhot_Mult_nStdDev_dMean"].data());
 
 			mGraphs["gOptPhot_Mult_nStdDev_dMean"]->SetName("gOptPhot_Mult_nStdDev_dMean");
 			mGraphs["gOptPhot_Mult_nStdDev_dMean"]->SetTitle("Cerenkov photon multiplicity stddev / mean");
@@ -474,7 +472,9 @@ void SACAnalysis()
 			mGraphs["gOptPhot_Mult_nStdDev_dMean"]->Write();
 		}
 		gPad->SetLogx(1);
-		mCanvas["cOptPhot_Mult_nStdDev_dMean"]->SaveAs(("plots/" + initPart + "_gOptPhot_Mult_nStdDev_dMean.pdf").c_str());
+		// mGraphs["gOptPhot_Mult_nStdDev_dMean"]->SetMinimum(0.0);
+		// mGraphs["gOptPhot_Mult_nStdDev_dMean"]->SetMaximum(1.8);
+		mCanvas["cOptPhot_Mult_nStdDev_dMean"]->SaveAs(("plots/" + initPart + "_gOptPhot_Mult_nStdDev_dMean" + fType).c_str());
 
 		// threshold graphs
 		for(int i = 0; i < numThresholds; i++)
@@ -501,7 +501,9 @@ void SACAnalysis()
 			}
 			gPad->SetLogx(1);
 			gPad->SetLogy(1);
-			mCanvas["cOptPhotIneff_t" + thresh_str[i]]->SaveAs(("plots/" + initPart + "_OptPhot_threshold" + thresh_str[i] + ".pdf").c_str());
+			mGraphs["gOptPhotIneff_t" + thresh_str[i]]->SetMinimum(1.0 / 1.0e5 - 5.0 / 1.0e6);
+			mGraphs["gOptPhotIneff_t" + thresh_str[i]]->SetMaximum(1.5);
+			mCanvas["cOptPhotIneff_t" + thresh_str[i]]->SaveAs(("plots/" + initPart + "_OptPhot_threshold" + thresh_str[i] + fType).c_str());
 		}
 	}
 	mFiles["fOut"]->Close();
@@ -520,7 +522,9 @@ void SACAnalysis()
 		hGamma->GetXaxis()->SetTitle("number of Cerenkov photons");
 		hGamma->SetLineColor(4);
 		hGamma->Draw("hist");
-		cGamma->SaveAs(("plots/Gamma" + energies_str[i] + ".pdf").c_str());
+		hGamma->SetMinimum(0.0);
+		hGamma->SetMaximum(10500.0);
+		cGamma->SaveAs(("plots/Gamma" + energies_str[i] + fType).c_str());
 		fGamma->Close();
 	}
 
@@ -535,7 +539,9 @@ void SACAnalysis()
 		hNeutron->GetXaxis()->SetTitle("number of Cerenkov photons");
 		hNeutron->SetLineColor(4);
 		hNeutron->Draw("hist");
-		cNeutron->SaveAs(("plots/Neutron" + energies_str[i] + ".pdf").c_str());
+		hNeutron->SetMinimum(0.0);
+		hNeutron->SetMaximum(10500.0);
+		cNeutron->SaveAs(("plots/Neutron" + energies_str[i] + fType).c_str());
 		fNeutron->Close();
 	}
 
