@@ -15,6 +15,7 @@
 #include "G4SDManager.hh"
 #include "G4Material.hh"
 #include "G4VisAttributes.hh"
+#include "G4SubtractionSolid.hh"
 
 #include "SACMessenger.hh"
 #include "SACGeometry.hh"
@@ -55,7 +56,8 @@ void SACDetector::CreateGeometry()
 
 	G4Box* solidSAC = new G4Box("SAC", 0.5 * sacSizeX, 0.5 * sacSizeY, 0.5 * sacSizeZ);
 	fSACVolume = new G4LogicalVolume(solidSAC, fMaterial, "SAC", 0, 0, 0);
-	fSACVolume->SetVisAttributes(G4VisAttributes::Invisible);
+	// fSACVolume->SetVisAttributes(G4VisAttributes::Invisible);
+	fSACVolume->SetVisAttributes(G4VisAttributes(G4Colour::White()));
 
 	G4RotationMatrix* Rot = new G4RotationMatrix;
 	Rot->rotateY(0.1 * rad);
@@ -76,7 +78,7 @@ void SACDetector::CreateGeometry()
 
 	G4Box* solidCry = new G4Box("SACCry", 0.5 * crySizeX, 0.5 * crySizeY, 0.5 * crySizeZ);
 	fCrystalVolume = new G4LogicalVolume(solidCry, G4Material::GetMaterial("PbF2"), "SACCry", 0, 0, 0);
-	fCrystalVolume->SetVisAttributes(G4VisAttributes(G4Colour::Grey()));
+	fCrystalVolume->SetVisAttributes(G4VisAttributes(G4Colour::Blue()));
 
 	// make crystal a sensitive detector
 	G4SDManager* sdMan = G4SDManager::GetSDMpointer();
@@ -93,22 +95,48 @@ void SACDetector::CreateGeometry()
 	G4double cellSizeZ = geo->GetCellSizeZ();
 	printf("SAC cell size is %f %f %f\n", cellSizeX, cellSizeY, cellSizeZ);
 
+
+
+
+
 	G4Box* solidCell = new G4Box("SACCell", 0.5 * cellSizeX, 0.5 * cellSizeY, 0.5 * cellSizeZ);
 	fCellVolume = new G4LogicalVolume(solidCell, G4Material::GetMaterial("EJ510Paint"), "SACCell", 0, 0, 0);
-	fCellVolume->SetVisAttributes(G4VisAttributes(G4Colour::Grey()));
+	fCellVolume->SetVisAttributes(G4VisAttributes(G4Colour::Magenta()));
 
 	// position SAC crystal inside cell
 	new G4PVPlacement(0, G4ThreeVector(0.0, 0.0, 0.0), fCrystalVolume, "SACCry", fCellVolume, false, 0, false);
 
-	// get number of rows and columns of crystals and position all crystals
+
+
+
+
+	// make solid to subtract from crystal coating & make it non-reflective
+	G4Box* solidBack = new G4Box("SACBack", 0.525 * cellSizeX, 0.525 * cellSizeY, 0.525 * geo->GetCrystalCoating());
+
+	// combine cell w/paint and non-reflective back
+	G4VSolid* nonRefCell = new G4SubtractionSolid("SACNonRefCell", solidCell, solidBack, 0, G4ThreeVector(0.0, 0.0, -0.5 * (cellSizeZ - geo->GetCrystalCoating())));
+
+	// make logical volume for cell w/non-reflective back
+	fNonRefCellVolume = new G4LogicalVolume(nonRefCell, fMaterial, "SACNonRefCell", 0, 0, 0);
+	fNonRefCellVolume->SetVisAttributes(G4VisAttributes(G4Colour::Cyan()));
+
+	// position SAC crystal inside cell w/non-reflective back
+	new G4PVPlacement(0, G4ThreeVector(0.0, 0.0, 0.0), fCrystalVolume, "SACCry", fNonRefCellVolume, false, 0, false);
+
+
+
+
+
+	// get number of rows and columns of crystals
 	G4int nRow = geo->GetSACNRows();
 	G4int nCol = geo->GetSACNCols();
 	G4int nLayers = geo->GetSACNLayers();
 
-	G4double Zoffset = -1.5 * geo->GetCellSizeZ();
+	G4double Zoffset = -0.5 * geo->GetCellSizeZ();
 
 	// i should repeat the structure for different layers
-	for(G4int layer = 0; layer < nLayers; layer++)
+	// position all crystals
+	for(G4int layer = 0; layer < nLayers - 1; layer++)
 	{
 		for(G4int row = 0; row < nRow; row++)
 		{
@@ -135,5 +163,25 @@ void SACDetector::CreateGeometry()
 			}
 		}
 		Zoffset += geo->GetCellSizeZ();
+	}
+
+	// add last layer with non-reflective back
+	Zoffset = -1.5 * geo->GetCellSizeZ();
+	for(G4int row = 0; row < nRow; row++)
+	{
+		for(G4int col = 0; col < nCol; col++)
+		{
+			if(geo->ExistsCrystalAt(row, col))
+			{
+				G4ThreeVector positionCry = G4ThreeVector(geo->GetCrystalPosX(row, col), geo->GetCrystalPosY(row, col), geo->GetCrystalPosZ(row, col) + Zoffset);
+				G4int idxCell = row * SACGEOMETRY_N_COLS_MAX + col + (nLayers - 1) * nRow * nCol;
+				if(idxCell % 100 == 0)
+				{
+					printf("Crystal position %f %f %f\n", geo->GetCrystalPosX(row, col), geo->GetCrystalPosY(row, col), geo->GetCrystalPosZ(row, col) + Zoffset);
+					printf("*******idxCell %d\n", idxCell);
+				}
+				new G4PVPlacement(0, positionCry, fNonRefCellVolume, "SACNonRefCell", fSACVolume, false, idxCell, false);
+			}
+		}
 	}
 }

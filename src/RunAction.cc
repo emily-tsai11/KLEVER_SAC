@@ -200,7 +200,19 @@ void RunAction::BeginOfRunAction(const G4Run* aRun)
 	// total untracked energy deposition in event -- 100
 	fAnalysisManager->CreateH1("hPerEvent_UntrackedE",
 		"untracked energy deposition from other particles per event",
-		500, 0.0 * CLHEP::GeV, fMessenger->GetPerEventUntrackedEBound() * CLHEP::MeV);
+		500, 0.0 * CLHEP::MeV, fMessenger->GetPerEventUntrackedEBound() * CLHEP::MeV);
+	for(G4int i = 0; i < 4; i++) // 4 for number of layers in SAC -- start at 101
+	{
+		for(G4int j = 0; j < 100; j++) // 100 for 10 x 10 cells in each layer
+		{
+			G4String x = std::to_string(j / 10);
+			G4String y = std::to_string(j % 10);
+			G4String z = std::to_string(i);
+			fAnalysisManager->CreateH1("h" + z + "_" + y + x + "_arrTime",
+				"arrival time of Cerenkov photons",
+				1000, 0.0 * CLHEP::ns, 10.0 * CLHEP::ns);
+		}
+	}
 
 	// -------------------- CREATE 2D HISTOGRAMS --------------------
 	// NOTE: number of cells in SAC are hard coded...

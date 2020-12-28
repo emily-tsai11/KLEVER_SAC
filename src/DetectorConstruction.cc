@@ -3,7 +3,7 @@
 // History:
 //
 // Created by Emily Tsai (emily.tsai11@gmail.com) 2020-7-8
-//		optical properties based on OpNovice
+//		optical properties taken from NA62 LAVs
 // --------------------------------------------------------------
 
 #include "DetectorConstruction.hh"
@@ -27,6 +27,7 @@
 #include "G4VisAttributes.hh"
 
 #include "SACDetector.hh"
+// #include "PMTDetector.hh"
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -40,6 +41,10 @@ DetectorConstruction::DetectorConstruction() : solidWorld(0), logicalWorld(0), p
 DetectorConstruction::~DetectorConstruction()
 {
 	delete fSAC;
+	delete fSACNonRefCellVolume;
+
+	// delete fPMT;
+	// delete fPMTCellVolume;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -159,8 +164,18 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 	fSAC->SetMotherVolume(logicalWorld);
 	fSAC->CreateGeometry();
 
+	// create PMT detector
+	// fPMT->SetMaterial(G4Material::GetMaterial("G4_Galactic"));
+	// fPMT->SetMotherVolume(logicalWorld);
+	// fPMT->CreateGeometry();
+
+	// make surface between SAC and PMT an optical surface???
+	// G4LogicalVolume* tempSAC = fSAC->GetNonRefCellLogicalVolume();
+	// G4LogicalVolume* tempPMT = fPMT->GetCellLogicalVolume();
+
 	// make world invisible
-	logicalWorld->SetVisAttributes(G4VisAttributes::Invisible);
+	// SetVisAttributes(G4VisAttributes::Invisible);
+	logicalWorld->SetVisAttributes(G4VisAttributes(G4Colour::Cyan()));
 
 	// return physical world
 	return physicalWorld;

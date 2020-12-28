@@ -52,9 +52,9 @@ class SACGeometry
 		G4double GetSACPosZ() { return 0.0 * cm; } // debug
 
 		// size of SAC box
-		G4double GetSACSizeX() { return (GetCellSizeX() + fCrystalGap) * fSACNCols; }
-		G4double GetSACSizeY() { return (GetCellSizeY() + fCrystalGap) * fSACNRows; }
-		G4double GetSACSizeZ() { return (GetCellSizeZ() + fCrystalGap) * fSACNLayers; }
+		G4double GetSACSizeX() { return (GetCellSizeX() + fCrystalGap) * fSACNCols - fCrystalGap; }
+		G4double GetSACSizeY() { return (GetCellSizeY() + fCrystalGap) * fSACNRows - fCrystalGap; }
+		G4double GetSACSizeZ() { return (GetCellSizeZ() + fCrystalGap) * fSACNLayers - fCrystalGap; }
 
 		// number of rows and columns of crystals in SAC
 		G4int GetSACNRows() { return fSACNRows; }

@@ -145,11 +145,14 @@ void SACSD::EndOfEvent(G4HCofThisEvent*)
 		SACHit* currentHit = (*fSACCollection)[i];
 
 		G4int channelID = currentHit->GetChannelId();
+		G4double time = currentHit->GetTime();
 		G4double initE = currentHit->GetInitialEnergy();
 		G4double eDep = currentHit->GetEnergyDep();
 		G4int trackID = currentHit->GetTrackId();
 		G4int partType = currentHit->GetPType();
 		G4double trLen = currentHit->GetTrackLen();
+
+		// G4cout << "time: " << G4BestUnit(currentHit->GetTime(), "Time") << G4endl;
 
 		if(partType == -1)
 		{
@@ -166,11 +169,9 @@ void SACSD::EndOfEvent(G4HCofThisEvent*)
 		// fill track length per hit
 		fAnalysisManager->FillH1(partType + 2 * nParticles, trLen, 1.0);
 
-		G4int x = channelID % 10;
-		channelID /= 10;
-		G4int y = channelID % 10;
-		channelID /= 10;
-		G4int z = channelID;
+		G4int x = channelID % 10;		// x = x-coord in layer (0-9)
+		G4int y = channelID / 10 % 10;	// y = y-coord in layer (0-9)
+		G4int z = channelID / 100;		// z = which layer (0, 1, 2, 3)
 
 		// only do this if the particle hasn't been seen before
 		if(trackedHits[trackID] == false)
@@ -194,6 +195,10 @@ void SACSD::EndOfEvent(G4HCofThisEvent*)
 
 			// increment multiplicity of particle
 			NPerEvent[partType]++;
+
+			// TEMPORARY, UNTIL BACK OF SAC IS MADE NON-REFLECTIVE
+			if(partType == 10)
+				fAnalysisManager->FillH1(101 + x * 10 + y + z * 100, time, 1.0);
 		}
 
 		// increment energy deposition of particle
