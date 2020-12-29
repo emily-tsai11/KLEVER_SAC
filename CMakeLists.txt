@@ -31,9 +31,9 @@ include_directories(${PROJECT_SOURCE_DIR}/Physics/include) # specify Physics inc
 target_link_libraries(KLMC_SAC Physics) # link with KLMC_SAC libraries
 
 # add PMT to build
-# add_subdirectory(${PROJECT_SOURCE_DIR}/PMT) # add PMT subdirectory to build
-# include_directories(${PROJECT_SOURCE_DIR}/PMT/include) # specify PMT include directory
-# target_link_libraries(KLMC_SAC PMT) # link with KLMC_SAC libraries
+add_subdirectory(${PROJECT_SOURCE_DIR}/PMT) # add PMT subdirectory to build
+include_directories(${PROJECT_SOURCE_DIR}/PMT/include) # specify PMT include directory
+target_link_libraries(KLMC_SAC PMT) # link with KLMC_SAC libraries
 
 # add SAC to build
 add_subdirectory(${PROJECT_SOURCE_DIR}/SAC) # add SAC subdirectory to build
