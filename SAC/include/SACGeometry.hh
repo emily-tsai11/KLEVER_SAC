@@ -25,7 +25,6 @@ class G4LogicalVolume;
 
 class SACGeometry
 {
-
 	public:
 
 		~SACGeometry();

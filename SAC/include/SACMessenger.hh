@@ -19,6 +19,7 @@
 class G4UIdirectory;
 class G4UIcmdWithAnInteger;
 class G4UIcmdWithADoubleAndUnit;
+
 class SACDetector;
 class SACGeometry;
 class SACSD;

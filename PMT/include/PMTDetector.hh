@@ -16,7 +16,7 @@
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 class G4LogicalVolume;
-// class PMTMessenger;
+class PMTMessenger;
 
 class PMTDetector
 {
@@ -32,6 +32,9 @@ class PMTDetector
 		G4LogicalVolume* GetPMTLogicalVolume() { return fPMTVolume; }
 		G4LogicalVolume* GetCellLogicalVolume() { return fCellVolume; }
 
+		void SetVerboseLevel(G4int v) { fVerbose = v; }
+		G4int GetVerboseLevel() { return fVerbose; }
+
 	private:
 
 		G4Material* fMaterial;
@@ -39,7 +42,9 @@ class PMTDetector
 		G4LogicalVolume* fPMTVolume;
 		G4LogicalVolume* fCellVolume;
 
-		// PMTMessenger* fPMTMessenger;
+		G4int fVerbose; // verbose level
+
+		PMTMessenger* fPMTMessenger;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

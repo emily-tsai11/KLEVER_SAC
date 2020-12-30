@@ -35,8 +35,6 @@ class SACHit : public G4VHit
 		void Draw();
 		void Print();
 
-	public:
-
 		void SetChannelId(G4int c) { fChannelId = c; }
 		G4int GetChannelId() { return fChannelId; }
 
