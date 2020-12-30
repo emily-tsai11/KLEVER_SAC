@@ -21,7 +21,7 @@ class G4VSolid;
 class G4Box;
 
 class SACDetector;
-// class PMTDetector;
+class PMTDetector;
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -63,7 +63,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction
 		SACDetector* fSAC;
 		G4LogicalVolume* fSACNonRefCellVolume;
 
-		// PMTDetector* fPMT;
+		PMTDetector* fPMT;
 		G4LogicalVolume* fPMTCellVolume;
 
 		void DefineMaterials();

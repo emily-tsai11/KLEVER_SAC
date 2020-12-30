@@ -27,13 +27,14 @@
 #include "G4VisAttributes.hh"
 
 #include "SACDetector.hh"
-// #include "PMTDetector.hh"
+#include "PMTDetector.hh"
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 DetectorConstruction::DetectorConstruction() : solidWorld(0), logicalWorld(0), physicalWorld(0)
 {
 	fSAC = new SACDetector(0, 0);
+	fPMT = new PMTDetector(0, 0);
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -41,10 +42,7 @@ DetectorConstruction::DetectorConstruction() : solidWorld(0), logicalWorld(0), p
 DetectorConstruction::~DetectorConstruction()
 {
 	delete fSAC;
-	delete fSACNonRefCellVolume;
-
-	// delete fPMT;
-	// delete fPMTCellVolume;
+	delete fPMT;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -165,9 +163,9 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 	fSAC->CreateGeometry();
 
 	// create PMT detector
-	// fPMT->SetMaterial(G4Material::GetMaterial("G4_Galactic"));
-	// fPMT->SetMotherVolume(logicalWorld);
-	// fPMT->CreateGeometry();
+	fPMT->SetMaterial(G4Material::GetMaterial("G4_Galactic"));
+	fPMT->SetMotherVolume(logicalWorld);
+	fPMT->CreateGeometry();
 
 	// make surface between SAC and PMT an optical surface???
 	// G4LogicalVolume* tempSAC = fSAC->GetNonRefCellLogicalVolume();
