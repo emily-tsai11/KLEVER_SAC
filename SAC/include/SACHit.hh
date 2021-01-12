@@ -16,6 +16,9 @@
 #include "G4Allocator.hh"
 #include "G4ThreeVector.hh"
 
+// trial
+#include "G4VPhysicalVolume.hh"
+
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 class SACHit : public G4VHit
@@ -40,6 +43,10 @@ class SACHit : public G4VHit
 
 		void SetTime(G4double t) { fTime = t; };
 		G4double GetTime() { return fTime; };
+
+		// trial
+		void SetVolume(G4VPhysicalVolume* v) { fVolume = v; }
+		G4VPhysicalVolume* GetVolume() { return fVolume; }
 
 		void SetInitialEnergy(G4double e) { fInitialEnergy = e; }
 		G4double GetInitialEnergy() { return fInitialEnergy; }
@@ -75,6 +82,8 @@ class SACHit : public G4VHit
 
 		G4int fChannelId;
 		G4double fTime;
+		//trial
+		G4VPhysicalVolume* fVolume;
 		G4double fInitialEnergy;
 		G4double fFinalEnergy;
 		G4double fEnergyDep;

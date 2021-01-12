@@ -22,41 +22,76 @@ SACGeometry* SACGeometry::GetInstance()
 
 SACGeometry::SACGeometry()
 {
-	// initialize default parameters
-	fVerbose = 0; // do not show debug output
-
+	// size of PbF2 crystal
 	fCrystalSizeX = 2.0 * cm;
 	fCrystalSizeY = 2.0 * cm;
 	fCrystalSizeZ = 3.75 * cm;
 
+	// thickness of paint coating around each crystal
+	fCrystalCoating = 100.0 * um;
+
+	// size of SAC cell (crystal + coating)
+	fCellSizeX = fCrystalSizeX + 2.0 * fCrystalCoating;
+	fCellSizeY = fCrystalSizeY + 2.0 * fCrystalCoating;
+	fCellSizeZ = fCrystalSizeZ + 2.0 * fCrystalCoating;
+
+	// size of gap between cells
+	fCellGap = 50.0 * um;
+
+	// number of rows, columns, layers of cells in SAC
 	fSACNRows = 10;
 	fSACNCols = 10;
 	fSACNLayers = 4;
 
-	fCrystalGap = 50.0 * um;
+	// size of SAC box
+	fSACSizeX = (fCellSizeX + fCellGap) * fSACNCols - fCellGap;
+	fSACSizeY = (fCellSizeY + fCellGap) * fSACNRows - fCellGap;
+	fSACSizeZ = (fCellSizeZ + fCellGap) * fSACNLayers - fCellGap;
 
-	fCrystalCoating = 100.0 * um;
+	// position of center of SAC box
+	fSACPosX = 1.0 * cm;
+	fSACPosY = 1.0 * cm;
+	// fSACPosZ = fSACFrontFacePosZ + (fCellSizeZ * fSACNLayers) * 0.5 * cm
+	fSACPosZ = 0.0 * cm; // debug
 
-	fSACFrontFacePosZ = 300.0 * cm; // from center of yoke, i.e. 370cm from target, 70cm from front of ECal
+	// PMT parameters
+	fEnablePMT = 0;
+	fPMTDiameter = 8.0 * mm;
+	fPMTThickness = 1.0 * mm;
+	fPMTRound = 2.0 * M_PI * rad;
 
-	fDigiAvgLightSpeed = (2.998E8 * m/s) / 1.85; // average light speed inside SAC crystal for Cherenkov spectrum
+	// SiPM parameters (square)
+	fEnableSiPM = 1;
+	fSiPMSize = 7.08 * mm;
+	fSiPMThickness = 0.3 * mm;
 
+	// --------------- DIGITIZATION PARAMETERS ---------------
+	// average light speed inside SAC crystal for Cherenkov spectrum
+	fDigiAvgLightSpeed = (2.998E8 * m/s) / 1.85;
 	// number of photoelectrons produced by photocathode per MeV of hit energy
 	fDigiEtoNPEConversion = 0.5 / MeV; // wild guess: fix it!!!
-
-	fDigiPEtoSignalConversion = 1.0; // contribution of 1 p.e. to integral ADC signal
-
+	// contribution of 1 p.e. to integral ADC signal
+	fDigiPEtoSignalConversion = 1.0;
 	// relative collection efficiency as function of Z along the crystal (bin 0: front face, bin N: readout face)
 	static const G4double cmap[] = {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0};
 	G4int nbins = 20;
 	fDigiPECollectionMap.assign(cmap, cmap + nbins);
+	// Hamamatsu R13478 PMT transit time from photocathode to anode
+	fDigiPMTTransitTime = 9.1 * ns;
+	// delay due to connection cables
+	fDigiPMTCableDelay = 0.0 * ns;
 
-	fDigiPMTTransitTime = 9.1 * ns; // Hamamatsu R13478 PMT transit time from photocathode to anode
-	fDigiPMTCableDelay = 0.0 * ns; // delay due to connection cables
-
+	// SAC SD name
 	fSACSensitiveDetectorName = "SACSD";
 
+	// verbose level -- do not show debug output
+	fVerbose = 0;
+
+	// incident particle energy
 	fIncidentE = 1.0;
+
+	// from center of yoke, i.e. 370cm from target, 70cm from front of ECal
+	// fSACFrontFacePosZ = 300.0 * cm;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -65,82 +100,10 @@ SACGeometry::~SACGeometry() {}
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-G4int SACGeometry::ExistsCrystalAt(G4int row, G4int col)
-{
-	// verify we are within SAC box
-	if(row < 0 || row >= fSACNRows || col < 0 || col >= fSACNCols) return 0;
-
-	// remove central crystal (assumes an odd number of crystals per row/column)
-	// if(row == fSACNRows / 2 && col == fSACNCols / 2) return 0;
-
-	// all other crystals are there
-	return 1;
-}
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
-G4double SACGeometry::GetCrystalPosX(G4int row, G4int col)
-{
-	// verify we are within SAC box
-	if(!ExistsCrystalAt(row, col))
-	{
-		printf("SACGeometry::GetCrystalPosX - ERROR - Requested crystal at row %d col %d\n", row, col);
-		return 0.0;
-	}
-	// return X position of center of crystal
-	return (GetCellSizeX() + fCrystalGap) * (-fSACNCols * 0.5 + col + 0.5);
-}
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
-G4double SACGeometry::GetCrystalPosY(G4int row, G4int col)
-{
-	// verify we are within SAC box
-	if(!ExistsCrystalAt(row, col))
-	{
-		printf("SACGeometry::GetCrystalPosY - ERROR - Requested crystal at row %d col %d\n", row, col);
-		return 0.0;
-	}
-	// return Y position of center of crystal
-	return (GetCellSizeY() + fCrystalGap) * (-fSACNRows * 0.5 + row + 0.5);
-}
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
-G4double SACGeometry::GetCrystalPosZ(G4int row, G4int col)
-{
-	// verify we are within SAC box
-	if(!ExistsCrystalAt(row, col))
-	{
-		printf("SACGeometry::GetCrystalPosZ - ERROR - Requested crystal at row %d col %d\n", row, col);
-		return 0.0;
-	}
-	// return Z position of center of crystal in local SAC coordinate system
-	return 0.0 * cm;
-}
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
 std::vector<G4String> SACGeometry::GetHashTable()
 {
 	std::vector<G4String> hash;
 	std::ostringstream buffer;
-
-	buffer << "fSACNRows " << fSACNRows;
-	hash.push_back(buffer.str());
-	buffer.str("");
-
-	buffer << "fSACNCols " << fSACNCols;
-	hash.push_back(buffer.str());
-	buffer.str("");
-
-	buffer << "fSACNLayers " << fSACNLayers;
-	hash.push_back(buffer.str());
-	buffer.str("");
-
-	buffer << "fSACFrontFacePosZ " << fSACFrontFacePosZ;
-	hash.push_back(buffer.str());
-	buffer.str("");
 
 	buffer << "fCrystalSizeX " << fCrystalSizeX;
 	hash.push_back(buffer.str());
@@ -154,11 +117,23 @@ std::vector<G4String> SACGeometry::GetHashTable()
 	hash.push_back(buffer.str());
 	buffer.str("");
 
-	buffer << "fCrystalGap " << fCrystalGap;
+	buffer << "fCrystalCoating " << fCrystalCoating;
 	hash.push_back(buffer.str());
 	buffer.str("");
 
-	buffer << "fCrystalCoating " << fCrystalCoating;
+	buffer << "fCellGap " << fCellGap;
+	hash.push_back(buffer.str());
+	buffer.str("");
+
+	buffer << "fSACNRows " << fSACNRows;
+	hash.push_back(buffer.str());
+	buffer.str("");
+
+	buffer << "fSACNCols " << fSACNCols;
+	hash.push_back(buffer.str());
+	buffer.str("");
+
+	buffer << "fSACNLayers " << fSACNLayers;
 	hash.push_back(buffer.str());
 	buffer.str("");
 
@@ -170,6 +145,11 @@ std::vector<G4String> SACGeometry::GetHashTable()
 	hash.push_back(buffer.str());
 	buffer.str("");
 
+	buffer << "fDigiPECollectionMap";
+	for(G4int i = 0; i < (G4int) fDigiPECollectionMap.size(); i++) buffer << " " << fDigiPECollectionMap[i];
+	hash.push_back(buffer.str());
+	buffer.str("");
+
 	buffer << "fDigiPMTTransitTime " << fDigiPMTTransitTime;
 	hash.push_back(buffer.str());
 	buffer.str("");
@@ -178,10 +158,9 @@ std::vector<G4String> SACGeometry::GetHashTable()
 	hash.push_back(buffer.str());
 	buffer.str("");
 
-	buffer << "fDigiPECollectionMap";
-	for(G4int i = 0; i < (G4int) fDigiPECollectionMap.size(); i++) buffer << " " << fDigiPECollectionMap[i];
-	hash.push_back(buffer.str());
-	buffer.str("");
+	// buffer << "fSACFrontFacePosZ " << fSACFrontFacePosZ;
+	// hash.push_back(buffer.str());
+	// buffer.str("")
 
 	return hash;
 }

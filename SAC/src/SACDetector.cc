@@ -8,31 +8,77 @@
 
 #include "SACDetector.hh"
 
-#include "G4PVPlacement.hh"
-#include "G4ThreeVector.hh"
-#include "G4RotationMatrix.hh"
-#include "G4Box.hh"
-#include "G4SDManager.hh"
 #include "G4Material.hh"
+#include "G4Box.hh"
 #include "G4VisAttributes.hh"
-#include "G4SubtractionSolid.hh"
+#include "G4RotationMatrix.hh"
+#include "G4ThreeVector.hh"
+#include "G4PVPlacement.hh"
+#include "G4SDManager.hh"
 
 #include "SACMessenger.hh"
-#include "SACGeometry.hh"
 #include "SACSD.hh"
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 SACDetector::SACDetector(G4Material* material, G4LogicalVolume* motherVolume) : fMaterial(material), fMotherVolume(motherVolume)
 {
-	// connect to SACMessenger to enable datacard configuration
-	fSACMessenger = new SACMessenger(this);
+	SACGeometry* Geo = SACGeometry::GetInstance();
+
+	fCellSizeX = Geo->GetCellSizeX();
+	fCellSizeY = Geo->GetCellSizeY();
+	fCellSizeZ = Geo->GetCellSizeZ();
+
+	fCellGap = Geo->GetCellGap();
+	printf("Gap between SAC cells is %f\n", fCellGap);
+
+	fNRows = Geo->GetSACNRows();
+	fNCols = Geo->GetSACNCols();
+	fNLayers = Geo->GetSACNLayers();
+	printf("SAC dimensions are %d %d %d\n", fNRows, fNCols, fNLayers);
+
+	fSACSizeX = Geo->GetSACSizeX();
+	fSACSizeY = Geo->GetSACSizeY();
+	fSACSizeZ = Geo->GetSACSizeZ();
+	printf("SAC size is %f %f %f\n", fSACSizeX, fSACSizeY, fSACSizeZ);
+
+	fSACPosX = Geo->GetSACPosX();
+	fSACPosY = Geo->GetSACPosY();
+	fSACPosZ = Geo->GetSACPosZ();
+	printf("SAC will be placed at %f %f %f\n", fSACPosX, fSACPosY, fSACPosZ);
+
+	fCell = new SACCell();
+	fNonRefCell = new SACCell();
+
+	fEnablePMT = Geo->GetEnablePMT();
+	fEnableSiPM = Geo->GetEnableSiPM();
+
+	if(fEnablePMT && !fEnableSiPM)
+	{
+		if(fEnablePMT) printf("PMTs are enabled and SiPMs are disabled\n");
+		fPMT = new SACPMT();
+	}
+	else if(fEnableSiPM && !fEnablePMT)
+	{
+		if(fEnableSiPM) printf("SiPMs are enabled and PMTs are disabled\n");
+		fSiPM = new SACSiPM();
+	}
+	else if(!fEnablePMT && !fEnableSiPM) printf("Both PMTs and SiPMS are disabled\n");
+	else printf("ERROR --- Both PMTs and SiPMS are disabled\n");
+
+	fSACMessenger = new SACMessenger();
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 SACDetector::~SACDetector()
 {
+	if(!fCell) delete fCell;
+	if(!fNonRefCell) delete fNonRefCell;
+
+	if(!fPMT) delete fPMT;
+	if(!fSiPM) delete fSiPM;
+
 	delete fSACMessenger;
 }
 
@@ -40,147 +86,116 @@ SACDetector::~SACDetector()
 
 void SACDetector::CreateGeometry()
 {
-	SACGeometry* geo = SACGeometry::GetInstance();
-
 	// create main SAC box
-	G4double sacPosX = geo->GetSACPosX();
-	G4double sacPosY = geo->GetSACPosY();
-	G4double sacPosZ = geo->GetSACPosZ();
-	G4ThreeVector sacPos = G4ThreeVector(sacPosX, sacPosY, sacPosZ);
-	printf("SAC will be placed at %f %f %f\n", sacPosX, sacPosY, sacPosZ);
+	G4Box* fSACSolid = new G4Box(
+		"SAC",
+		0.5 * fSACSizeX,
+		0.5 * fSACSizeY,
+		0.5 * fSACSizeZ);
 
-	G4double sacSizeX = geo->GetSACSizeX();
-	G4double sacSizeY = geo->GetSACSizeY();
-	G4double sacSizeZ = geo->GetSACSizeZ();
-	printf("SAC size is %f %f %f\n", sacSizeX, sacSizeY, sacSizeZ);
-
-	G4Box* solidSAC = new G4Box("SAC", 0.5 * sacSizeX, 0.5 * sacSizeY, 0.5 * sacSizeZ);
-	fSACVolume = new G4LogicalVolume(solidSAC, fMaterial, "SAC", 0, 0, 0);
-	// fSACVolume->SetVisAttributes(G4VisAttributes::Invisible);
+	fSACVolume = new G4LogicalVolume(
+		fSACSolid,
+		fMaterial,
+		"SAC",
+		0, 0, 0);
 	fSACVolume->SetVisAttributes(G4VisAttributes(G4Colour::White()));
 
-	G4RotationMatrix* Rot = new G4RotationMatrix;
-	Rot->rotateY(0.1 * rad);
-	Rot->rotateX(0.1 * rad);
-	new G4PVPlacement(Rot, sacPos, fSACVolume, "SAC", fMotherVolume, false, 0, false);
+	G4RotationMatrix* fRot = new G4RotationMatrix;
+	fRot->rotateY(0.1 * rad);
+	fRot->rotateX(0.1 * rad);
+	new G4PVPlacement(
+		fRot,
+		G4ThreeVector(fSACPosX, fSACPosY, fSACPosZ),
+		fSACVolume,
+		"SAC",
+		fMotherVolume,
+		false, 0, false);
 
-	// show size of gap between crystals
-	printf("Gap between SAC crystals is %f\n", geo->GetCrystalGap());
+	// create SAC cell
+	fCell->CreateGeometry(6);
 
-	// show thickness of coating around crystals
-	printf("Coating around SAC crystals is %f\n", geo->GetCrystalCoating());
+	// create SAC cell with no back coating
+	fNonRefCell->CreateGeometry(5);
 
-	// create standard PbF2 crystal
-	G4double crySizeX = geo->GetCrystalSizeX();
-	G4double crySizeY = geo->GetCrystalSizeY();
-	G4double crySizeZ = geo->GetCrystalSizeZ();
-	printf("SAC Crystal size is %f %f %f\n", crySizeX, crySizeY, crySizeZ);
+	// create SAC PMT or SiPM
+	if(fEnablePMT && !fEnableSiPM) fPMT->CreateGeometry();
+	else if(fEnableSiPM && !fEnablePMT) fSiPM->CreateGeometry();
 
-	G4Box* solidCry = new G4Box("SACCry", 0.5 * crySizeX, 0.5 * crySizeY, 0.5 * crySizeZ);
-	fCrystalVolume = new G4LogicalVolume(solidCry, G4Material::GetMaterial("PbF2"), "SACCry", 0, 0, 0);
-	fCrystalVolume->SetVisAttributes(G4VisAttributes(G4Colour::Blue()));
-
-	// make crystal a sensitive detector
-	G4SDManager* sdMan = G4SDManager::GetSDMpointer();
-	G4String sacSDName = geo->GetSACSensitiveDetectorName();
-	printf("Registering SAC SD %s\n", sacSDName.data());
-	SACSD* sacSD = new SACSD(sacSDName);
-	sdMan->AddNewDetector(sacSD);
-
-	fCrystalVolume->SetSensitiveDetector(sacSD);
-
-	// create SAC cell (PbF2 crystal + coating)
-	G4double cellSizeX = geo->GetCellSizeX();
-	G4double cellSizeY = geo->GetCellSizeY();
-	G4double cellSizeZ = geo->GetCellSizeZ();
-	printf("SAC cell size is %f %f %f\n", cellSizeX, cellSizeY, cellSizeZ);
-
-
-
-
-
-	G4Box* solidCell = new G4Box("SACCell", 0.5 * cellSizeX, 0.5 * cellSizeY, 0.5 * cellSizeZ);
-	fCellVolume = new G4LogicalVolume(solidCell, G4Material::GetMaterial("EJ510Paint"), "SACCell", 0, 0, 0);
-	fCellVolume->SetVisAttributes(G4VisAttributes(G4Colour::Magenta()));
-
-	// position SAC crystal inside cell
-	new G4PVPlacement(0, G4ThreeVector(0.0, 0.0, 0.0), fCrystalVolume, "SACCry", fCellVolume, false, 0, false);
-
-
-
-
-
-	// make solid to subtract from crystal coating & make it non-reflective
-	G4Box* solidBack = new G4Box("SACBack", 0.525 * cellSizeX, 0.525 * cellSizeY, 0.525 * geo->GetCrystalCoating());
-
-	// combine cell w/paint and non-reflective back
-	G4VSolid* nonRefCell = new G4SubtractionSolid("SACNonRefCell", solidCell, solidBack, 0, G4ThreeVector(0.0, 0.0, -0.5 * (cellSizeZ - geo->GetCrystalCoating())));
-
-	// make logical volume for cell w/non-reflective back
-	fNonRefCellVolume = new G4LogicalVolume(nonRefCell, fMaterial, "SACNonRefCell", 0, 0, 0);
-	fNonRefCellVolume->SetVisAttributes(G4VisAttributes(G4Colour::Cyan()));
-
-	// position SAC crystal inside cell w/non-reflective back
-	new G4PVPlacement(0, G4ThreeVector(0.0, 0.0, 0.0), fCrystalVolume, "SACCry", fNonRefCellVolume, false, 0, false);
-
-
-
-
-
-	// get number of rows and columns of crystals
-	G4int nRow = geo->GetSACNRows();
-	G4int nCol = geo->GetSACNCols();
-	G4int nLayers = geo->GetSACNLayers();
-
-	G4double Zoffset = -0.5 * geo->GetCellSizeZ();
-
-	// i should repeat the structure for different layers
 	// position all crystals
-	for(G4int layer = 0; layer < nLayers - 1; layer++)
+	G4double fCrystalPosX;
+	G4double fCrystalPosY;
+	G4double fCrystalPosZ;
+	for(G4int layer = 0; layer < fNLayers; layer++)
 	{
-		for(G4int row = 0; row < nRow; row++)
+		for(G4int row = 0; row < fNRows; row++)
 		{
-			for(G4int col = 0; col < nCol; col++)
+			for(G4int col = 0; col < fNCols; col++)
 			{
-				if(geo->ExistsCrystalAt(row, col))
+				// checking if crystal exists
+				if(row >= 0 && row < fNRows && col >= 0 && col < fNCols)
 				{
-					G4ThreeVector positionCry = G4ThreeVector(geo->GetCrystalPosX(row, col), geo->GetCrystalPosY(row, col), geo->GetCrystalPosZ(row, col) + Zoffset);
-					G4int idxCell = row * SACGEOMETRY_N_COLS_MAX + col + layer * nRow * nCol;
-					if(idxCell % 100 == 0)
-					{
-						printf("Crystal position %f %f %f\n", geo->GetCrystalPosX(row, col), geo->GetCrystalPosY(row, col), geo->GetCrystalPosZ(row, col) + Zoffset);
-						printf("*******idxCell %d\n", idxCell);
-					}
-					new G4PVPlacement(0, positionCry, fCellVolume, "SACCell", fSACVolume, false, idxCell, false);
-					// G4PVPlacement* daughter = new G4PVPlacement(0, positionCry, fCellVolume, "SACCell", fSACVolume, false, idxCell, false);
-					// G4LogicalVolume* daughter_log = daughter->GetLogicalVolume();
-					// if(daughter->CheckOverlaps(1000, false))
-					// {
-					// 	printf("WARNING - overlaps found in %s\n", daughter_log->GetName().data());
-					// 	return;
-					// }
-				}
-			}
-		}
-		Zoffset += geo->GetCellSizeZ();
-	}
+					// get crystal position coordinates
+					fCrystalPosX = (fCellSizeX + fCellGap) * (-fNCols * 0.5 + col + 0.5);
+					fCrystalPosY = (fCellSizeY + fCellGap) * (-fNRows * 0.5 + row + 0.5);
+					fCrystalPosZ = (1.5 - layer) * fCellSizeZ;
 
-	// add last layer with non-reflective back
-	Zoffset = -1.5 * geo->GetCellSizeZ();
-	for(G4int row = 0; row < nRow; row++)
-	{
-		for(G4int col = 0; col < nCol; col++)
-		{
-			if(geo->ExistsCrystalAt(row, col))
-			{
-				G4ThreeVector positionCry = G4ThreeVector(geo->GetCrystalPosX(row, col), geo->GetCrystalPosY(row, col), geo->GetCrystalPosZ(row, col) + Zoffset);
-				G4int idxCell = row * SACGEOMETRY_N_COLS_MAX + col + (nLayers - 1) * nRow * nCol;
-				if(idxCell % 100 == 0)
-				{
-					printf("Crystal position %f %f %f\n", geo->GetCrystalPosX(row, col), geo->GetCrystalPosY(row, col), geo->GetCrystalPosZ(row, col) + Zoffset);
-					printf("*******idxCell %d\n", idxCell);
+					G4int CellID = row * fNCols + col + layer * fNRows * fNCols;
+					if(CellID % 100 == 0)
+					{
+						printf("Crystal position %f %f %f\n", fCrystalPosX, fCrystalPosY, fCrystalPosZ);
+						printf("***** CellID %d *****\n", CellID);
+					}
+
+					// place the crystals and photomultipliers
+					G4ThreeVector fCrystalPos = G4ThreeVector(fCrystalPosX, fCrystalPosY, fCrystalPosZ);
+					if(layer != fNLayers - 1) // completely coated crystals
+					{
+						new G4PVPlacement(
+							0,
+							fCrystalPos,
+							fCell->GetCellLogicalVolume(),
+							"SACCell",
+							fSACVolume,
+							false, CellID, false);
+					}
+					else // crystals with no coating on back
+					{
+						new G4PVPlacement(
+							0,
+							fCrystalPos,
+							fNonRefCell->GetNonRefCellLogicalVolume(),
+							"SACNonRefCell",
+							fSACVolume,
+							false, CellID, false);
+
+						if(fEnablePMT && !fEnableSiPM)
+						{
+							new G4PVPlacement(
+								0,
+								// TODO: FIGURE OUT HOW TO PLACE PMT RIGHT UP AGAINST CELL
+								G4ThreeVector(fCrystalPosX, fCrystalPosY, -0.5 * fSACSizeZ),
+								fPMT->GetPMTLogicalVolume(),
+								"SACPMT",
+								fSACVolume,
+								false, 0, false);
+						}
+						else if(fEnableSiPM && !fEnablePMT)
+						{
+							new G4PVPlacement(
+								0,
+								// TODO: FIGURE OUT HOW TO PLACE SiPM RIGHT UP AGAINST CELL
+								G4ThreeVector(fCrystalPosX, fCrystalPosY, -0.5 * fSACSizeZ),
+								fSiPM->GetSiPMLogicalVolume(),
+								"SACSiPM",
+								fSACVolume,
+								false, 0, false);
+						}
+					}
 				}
-				new G4PVPlacement(0, positionCry, fNonRefCellVolume, "SACNonRefCell", fSACVolume, false, idxCell, false);
+				else
+				{
+					printf("SACDetector::CreateGeometry - ERROR - Requested crystal at row %d col %d\n", row, col);
+				}
 			}
 		}
 	}

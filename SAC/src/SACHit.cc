@@ -32,6 +32,7 @@ SACHit::SACHit(const SACHit& right) : G4VHit()
 {
 	fChannelId = right.fChannelId;
 	fTime = right.fTime;
+	fVolume = right.fVolume;
 	fInitialEnergy = right.fInitialEnergy;
 	fFinalEnergy = right.fFinalEnergy;
 	fEnergyDep = right.fEnergyDep;
@@ -48,6 +49,7 @@ const SACHit& SACHit::operator=(const SACHit& right)
 {
 	fChannelId = right.fChannelId;
 	fTime = right.fTime;
+	fVolume = right.fVolume;
 	fInitialEnergy = right.fInitialEnergy;
 	fFinalEnergy = right.fFinalEnergy;
 	fEnergyDep = right.fEnergyDep;
@@ -91,6 +93,7 @@ void SACHit::Print()
 	G4cout
 	<< "- channel: " << fChannelId
 	<< " time: " << G4BestUnit(fTime, "Time")
+	<< " volume: " << fVolume->GetName()
 	<< " initial energy: " << G4BestUnit(fInitialEnergy, "Energy")
 	<< " final energy: " << G4BestUnit(fFinalEnergy, "Energy")
 	<< " energy deposit: " << G4BestUnit(fEnergyDep, "Energy")

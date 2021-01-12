@@ -3,3 +3,8 @@
 /tracking/verbose 0
 
 /run/initialize
+
+/gun/particle gamma
+# /Detector/SAC/IncidentE 666 MeV
+/gun/energy 100 MeV
+/run/beamOn 1

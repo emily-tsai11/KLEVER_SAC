@@ -20,9 +20,7 @@ class G4UIdirectory;
 class G4UIcmdWithAnInteger;
 class G4UIcmdWithADoubleAndUnit;
 
-class SACDetector;
 class SACGeometry;
-class SACSD;
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -30,34 +28,36 @@ class SACMessenger : public G4UImessenger
 {
 	public:
 
-		SACMessenger(SACDetector*);
+		SACMessenger();
 		~SACMessenger();
 
 		void SetNewValue(G4UIcommand*, G4String);
+		// G4String GetCurrentValue(G4UIcommand*);
 
 	private:
 
-		SACDetector* fSACDetector;
 		SACGeometry* fSACGeometry;
-		SACSD* fSACSD;
 
 		G4UIdirectory* fSACDetectorDir;
+
+		G4UIcmdWithADoubleAndUnit* fSetCrystalSizeCmd;
+		G4UIcmdWithADoubleAndUnit* fSetCrystalLengthCmd;
+
+		G4UIcmdWithADoubleAndUnit* fSetCrystalCoatingCmd;
+		G4UIcmdWithADoubleAndUnit* fSetCellGapCmd;
 
 		G4UIcmdWithAnInteger* fSetSACNRowsCmd;
 		G4UIcmdWithAnInteger* fSetSACNColsCmd;
 		G4UIcmdWithAnInteger* fSetSACNLayersCmd;
 
-		G4UIcmdWithADoubleAndUnit* fSetCrystalSizeCmd;
-		G4UIcmdWithADoubleAndUnit* fSetCrystalLengthCmd;
+		// TODO: PMT stuff
 
-		G4UIcmdWithADoubleAndUnit* fSetCrystalGapCmd;
-		G4UIcmdWithADoubleAndUnit* fSetCrystalCoatingCmd;
-
-		G4UIcmdWithADoubleAndUnit* fSetSACFrontFaceZCmd;
+		// TODO: SiPM stuff
 
 		G4UIcmdWithAnInteger* fSetVerboseLevelCmd;
 
 		G4UIcmdWithADoubleAndUnit* fSetIncidentECmd;
+		// G4UIcmdWithADoubleAndUnit* fSetSACFrontFaceZCmd;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

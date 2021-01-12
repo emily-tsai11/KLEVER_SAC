@@ -59,15 +59,23 @@ G4bool SACSD::ProcessHits(G4Step* aStep, G4TouchableHistory*)
 {
 	SACHit* newHit = new SACHit();
 
+	SACGeometry* Geo = SACGeometry::GetInstance();
+	printf("THE SAC INCIDENT ENERGY IS: %f\n", Geo->GetIncidentE());
+
 	G4StepPoint* preStepPoint = aStep->GetPreStepPoint();
+	G4StepPoint* postStepPoint = aStep->GetPostStepPoint();
 	G4TouchableHandle touchHPre = preStepPoint->GetTouchableHandle();
+
 	newHit->SetChannelId(touchHPre->GetCopyNumber(1)); // copy number is that of the cell, not of the crystal
 
 	newHit->SetTime(preStepPoint->GetGlobalTime());
 
+	// trial
+	// newHit->SetVolume(postStepPoint->GetPhysicalVolume());
+	newHit->SetVolume(touchHPre->GetVolume());
+
 	newHit->SetInitialEnergy(preStepPoint->GetKineticEnergy());
 
-	G4StepPoint* postStepPoint = aStep->GetPostStepPoint();
 	newHit->SetFinalEnergy(postStepPoint->GetTotalEnergy());
 
 	G4double eDep = aStep->GetTotalEnergyDeposit();
@@ -143,6 +151,9 @@ void SACSD::EndOfEvent(G4HCofThisEvent*)
 	for(G4int i = 0; i < nHitEntries; i++)
 	{
 		SACHit* currentHit = (*fSACCollection)[i];
+
+		// print hit
+		// currentHit->Print();
 
 		G4int channelID = currentHit->GetChannelId();
 		G4double time = currentHit->GetTime();

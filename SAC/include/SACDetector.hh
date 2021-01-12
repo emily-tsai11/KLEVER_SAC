@@ -16,10 +16,15 @@
 
 #include "SACGeometry.hh"
 
+#include "SACCell.hh"
+#include "SACPMT.hh"
+#include "SACSiPM.hh"
+
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-class G4LogicalVolume;
 class SACMessenger;
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 class SACDetector
 {
@@ -27,26 +32,36 @@ class SACDetector
 
 		SACDetector(G4Material*, G4LogicalVolume*);
 		~SACDetector();
+		void CreateGeometry();
 
 		void SetMaterial(G4Material* v) { fMaterial = v; }
 		void SetMotherVolume(G4LogicalVolume* v) { fMotherVolume = v; }
-		void CreateGeometry();
 
 		G4LogicalVolume* GetSACLogicalVolume() { return fSACVolume; }
-		G4LogicalVolume* GetCrystalLogicalVolume() { return fCrystalVolume; }
-		G4LogicalVolume* GetCellLogicalVolume() { return fCellVolume; }
-		G4LogicalVolume* GetNonRefCellLogicalVolume() { return fNonRefCellVolume; }
 
-		G4double GetSACFrontFaceZ() { return SACGeometry::GetInstance()->GetSACFrontFacePosZ(); }
+		// G4double GetSACFrontFaceZ() { return SACGeometry::GetInstance()->GetSACFrontFacePosZ(); }
 
 	private:
 
 		G4Material* fMaterial;
 		G4LogicalVolume* fMotherVolume;
 		G4LogicalVolume* fSACVolume;
-		G4LogicalVolume* fCrystalVolume;
-		G4LogicalVolume* fCellVolume;
-		G4LogicalVolume* fNonRefCellVolume;
+
+		G4double fCellSizeX, fCellSizeY, fCellSizeZ;
+		G4double fCellGap;
+
+		G4int fNRows, fNCols, fNLayers;
+		G4double fSACSizeX, fSACSizeY, fSACSizeZ;
+		G4double fSACPosX, fSACPosY, fSACPosZ;
+
+		G4bool fEnablePMT;
+		G4bool fEnableSiPM;
+
+		SACCell* fCell;
+		SACCell* fNonRefCell;
+
+		SACPMT* fPMT;
+		SACSiPM* fSiPM;
 
 		SACMessenger* fSACMessenger;
 };
