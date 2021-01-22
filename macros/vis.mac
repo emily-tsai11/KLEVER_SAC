@@ -25,6 +25,8 @@
 # /Detector/SAC/CellGap 50.0 um
 # /Detector/SAC/CrystalCoating 100.0 um
 # /Detector/SAC/FrontFaceZ 300.0 cm
+/Detector/SAC/EnablePMT 0
+/Detector/SAC/EnableSiPM 0
 
 # --------------------------------------------------
 

@@ -60,7 +60,7 @@ G4bool SACSD::ProcessHits(G4Step* aStep, G4TouchableHistory*)
 	SACHit* newHit = new SACHit();
 
 	SACGeometry* Geo = SACGeometry::GetInstance();
-	printf("THE SAC INCIDENT ENERGY IS: %f\n", Geo->GetIncidentE());
+	// printf("THE SAC INCIDENT ENERGY IS: %f\n", Geo->GetIncidentE());
 
 	G4StepPoint* preStepPoint = aStep->GetPreStepPoint();
 	G4StepPoint* postStepPoint = aStep->GetPostStepPoint();

@@ -48,17 +48,16 @@ class SACDetector
 		G4LogicalVolume* fSACVolume;
 
 		G4double fCellSizeX, fCellSizeY, fCellSizeZ;
-		G4double fCellGap;
+		G4double fCellGap, fLayerGap;
 
 		G4int fNRows, fNCols, fNLayers;
 		G4double fSACSizeX, fSACSizeY, fSACSizeZ;
 		G4double fSACPosX, fSACPosY, fSACPosZ;
 
-		G4bool fEnablePMT;
-		G4bool fEnableSiPM;
+		G4int fEnablePMT, fEnableSiPM;
+		G4double fPMTThickness, fSiPMThickness;
 
 		SACCell* fCell;
-		SACCell* fNonRefCell;
 
 		SACPMT* fPMT;
 		SACSiPM* fSiPM;

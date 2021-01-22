@@ -4,7 +4,12 @@
 
 /run/initialize
 
-/gun/particle gamma
+# /gun/particle gamma
 # /Detector/SAC/IncidentE 666 MeV
-/gun/energy 100 MeV
+# /gun/energy 100 MeV
+
+# /Detector/UpdateGeometry
+
+# /gps/ene
+
 /run/beamOn 1

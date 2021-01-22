@@ -32,6 +32,9 @@ SACDetector::SACDetector(G4Material* material, G4LogicalVolume* motherVolume) : 
 	fCellGap = Geo->GetCellGap();
 	printf("Gap between SAC cells is %f\n", fCellGap);
 
+	fLayerGap = Geo->GetLayerGap();
+	printf("Gap between SAC layers is %f\n", fLayerGap);
+
 	fNRows = Geo->GetSACNRows();
 	fNCols = Geo->GetSACNCols();
 	fNLayers = Geo->GetSACNLayers();
@@ -48,10 +51,12 @@ SACDetector::SACDetector(G4Material* material, G4LogicalVolume* motherVolume) : 
 	printf("SAC will be placed at %f %f %f\n", fSACPosX, fSACPosY, fSACPosZ);
 
 	fCell = new SACCell();
-	fNonRefCell = new SACCell();
 
 	fEnablePMT = Geo->GetEnablePMT();
 	fEnableSiPM = Geo->GetEnableSiPM();
+
+	fPMTThickness = Geo->GetPMTThickness();
+	fSiPMThickness = Geo->GetSiPMThickness();
 
 	if(fEnablePMT && !fEnableSiPM)
 	{
@@ -74,7 +79,6 @@ SACDetector::SACDetector(G4Material* material, G4LogicalVolume* motherVolume) : 
 SACDetector::~SACDetector()
 {
 	if(!fCell) delete fCell;
-	if(!fNonRefCell) delete fNonRefCell;
 
 	if(!fPMT) delete fPMT;
 	if(!fSiPM) delete fSiPM;
@@ -112,10 +116,7 @@ void SACDetector::CreateGeometry()
 		false, 0, false);
 
 	// create SAC cell
-	fCell->CreateGeometry(6);
-
-	// create SAC cell with no back coating
-	fNonRefCell->CreateGeometry(5);
+	fCell->CreateGeometry();
 
 	// create SAC PMT or SiPM
 	if(fEnablePMT && !fEnableSiPM) fPMT->CreateGeometry();
@@ -137,7 +138,7 @@ void SACDetector::CreateGeometry()
 					// get crystal position coordinates
 					fCrystalPosX = (fCellSizeX + fCellGap) * (-fNCols * 0.5 + col + 0.5);
 					fCrystalPosY = (fCellSizeY + fCellGap) * (-fNRows * 0.5 + row + 0.5);
-					fCrystalPosZ = (1.5 - layer) * fCellSizeZ;
+					fCrystalPosZ = (1.5 - layer) * (fCellSizeZ + fLayerGap);
 
 					G4int CellID = row * fNCols + col + layer * fNRows * fNCols;
 					if(CellID % 100 == 0)
@@ -146,50 +147,38 @@ void SACDetector::CreateGeometry()
 						printf("***** CellID %d *****\n", CellID);
 					}
 
-					// place the crystals and photomultipliers
+					// place the crystals
 					G4ThreeVector fCrystalPos = G4ThreeVector(fCrystalPosX, fCrystalPosY, fCrystalPosZ);
-					if(layer != fNLayers - 1) // completely coated crystals
-					{
-						new G4PVPlacement(
-							0,
-							fCrystalPos,
-							fCell->GetCellLogicalVolume(),
-							"SACCell",
-							fSACVolume,
-							false, CellID, false);
-					}
-					else // crystals with no coating on back
-					{
-						new G4PVPlacement(
-							0,
-							fCrystalPos,
-							fNonRefCell->GetNonRefCellLogicalVolume(),
-							"SACNonRefCell",
-							fSACVolume,
-							false, CellID, false);
+					new G4PVPlacement(
+						0,
+						fCrystalPos,
+						fCell->GetCellLogicalVolume(),
+						"SACCell",
+						fSACVolume,
+						false, CellID, false);
 
-						if(fEnablePMT && !fEnableSiPM)
-						{
-							new G4PVPlacement(
-								0,
-								// TODO: FIGURE OUT HOW TO PLACE PMT RIGHT UP AGAINST CELL
-								G4ThreeVector(fCrystalPosX, fCrystalPosY, -0.5 * fSACSizeZ),
-								fPMT->GetPMTLogicalVolume(),
-								"SACPMT",
-								fSACVolume,
-								false, 0, false);
-						}
-						else if(fEnableSiPM && !fEnablePMT)
-						{
-							new G4PVPlacement(
-								0,
-								// TODO: FIGURE OUT HOW TO PLACE SiPM RIGHT UP AGAINST CELL
-								G4ThreeVector(fCrystalPosX, fCrystalPosY, -0.5 * fSACSizeZ),
-								fSiPM->GetSiPMLogicalVolume(),
-								"SACSiPM",
-								fSACVolume,
-								false, 0, false);
-						}
+					// place the photomultipliers
+					if(fEnablePMT && !fEnableSiPM)
+					{
+						new G4PVPlacement(
+							0,
+							// TODO: FIGURE OUT HOW TO PLACE PMT RIGHT UP AGAINST CELL
+							G4ThreeVector(fCrystalPosX, fCrystalPosY, fCrystalPosZ - 0.5 * (fCellSizeZ + fPMTThickness)),
+							fPMT->GetPMTLogicalVolume(),
+							"SACPMT",
+							fSACVolume,
+							false, 0, false);
+					}
+					else if(fEnableSiPM && !fEnablePMT)
+					{
+						new G4PVPlacement(
+							0,
+							// TODO: FIGURE OUT HOW TO PLACE SiPM RIGHT UP AGAINST CELL
+							G4ThreeVector(fCrystalPosX, fCrystalPosY, fCrystalPosZ - 0.5 * (fCellSizeZ + fSiPMThickness)),
+							fSiPM->GetSiPMLogicalVolume(),
+							"SACSiPM",
+							fSACVolume,
+							false, 0, false);
 					}
 				}
 				else

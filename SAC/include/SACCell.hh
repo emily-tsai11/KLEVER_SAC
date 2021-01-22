@@ -19,11 +19,10 @@ class SACCell
 	public:
 
 		explicit SACCell();
-		void CreateGeometry(G4int sides);
+		void CreateGeometry();
 
 		G4LogicalVolume* GetCrystalLogicalVolume() { return fCrystalVolume; }
 		G4LogicalVolume* GetCellLogicalVolume() { return fCellVolume; }
-		G4LogicalVolume* GetNonRefCellLogicalVolume() { return fNonRefCellVolume; }
 
 	private:
 
@@ -35,7 +34,6 @@ class SACCell
 
 		G4LogicalVolume* fCrystalVolume;
 		G4LogicalVolume* fCellVolume;
-		G4LogicalVolume* fNonRefCellVolume;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

@@ -13,6 +13,7 @@
 #include "G4UIcmdWithADoubleAndUnit.hh"
 
 #include "SACGeometry.hh"
+#include "SACDetector.hh"
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -73,10 +74,17 @@ SACMessenger::SACMessenger()
 	fSetSACNLayersCmd->AvailableForStates(G4State_PreInit, G4State_Idle);
 
 
-	// TODO: PMT stuff
+	fEnablePMTCmd = new G4UIcmdWithAnInteger("/Detector/SAC/EnablePMT", this);
+	fEnablePMTCmd->SetGuidance("Enable PMTs on SAC.");
+	fEnablePMTCmd->SetParameterName("EP", false);
+	fEnablePMTCmd->SetRange("EP >= 0 && EP <= 1");
+	fEnablePMTCmd->AvailableForStates(G4State_PreInit, G4State_Idle);
 
-
-	// TODO: SiPM stuff
+	fEnableSiPMCmd = new G4UIcmdWithAnInteger("/Detector/SAC/EnableSiPM", this);
+	fEnableSiPMCmd->SetGuidance("Enable SiPMs on SAC.");
+	fEnableSiPMCmd->SetParameterName("ES", false);
+	fEnableSiPMCmd->SetRange("ES >= 0 && ES <= 1");
+	fEnableSiPMCmd->AvailableForStates(G4State_PreInit, G4State_Idle);
 
 
 	fSetVerboseLevelCmd = new G4UIcmdWithAnInteger("/Detector/SAC/VerboseLevel", this);
@@ -115,9 +123,8 @@ SACMessenger::~SACMessenger()
 	delete fSetSACNColsCmd;
 	delete fSetSACNLayersCmd;
 
-	// TODO: PMT stuff
-
-	// TODO: SiPM stuff
+	delete fEnablePMTCmd;
+	delete fEnableSiPMCmd;
 
 	delete fSetVerboseLevelCmd;
 
@@ -145,9 +152,13 @@ void SACMessenger::SetNewValue(G4UIcommand* cmd, G4String par)
 	if(cmd == fSetSACNColsCmd) fSACGeometry->SetSACNCols(fSetSACNColsCmd->GetNewIntValue(par));
 	if(cmd == fSetSACNLayersCmd) fSACGeometry->SetSACNLayers(fSetSACNLayersCmd->GetNewIntValue(par));
 
-	// TODO: PMT stuff
-
-	// TODO: SiPM stuff
+	if(cmd == fEnablePMTCmd)
+	{
+		fSACGeometry->SetEnablePMT(fEnablePMTCmd->GetNewIntValue(par));
+		// printf("-----------> reached here!\n");
+		// ~SACDetector();
+	}
+	if(cmd == fEnableSiPMCmd) fSACGeometry->SetEnableSiPM(fEnableSiPMCmd->GetNewIntValue(par));
 
 	if(cmd == fSetVerboseLevelCmd) fSACGeometry->SetVerboseLevel(fSetVerboseLevelCmd->GetNewIntValue(par));
 

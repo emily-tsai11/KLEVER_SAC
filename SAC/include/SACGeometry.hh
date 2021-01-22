@@ -49,6 +49,10 @@ class SACGeometry
 		void SetCellGap(G4double gap) { fCellGap = gap; }
 		G4double GetCellGap() { return fCellGap; }
 
+		// size of gap between layers
+		void SetLayerGap(G4double gap) { fLayerGap = gap; }
+		G4double GetLayerGap() { return fLayerGap; }
+
 		// number of rows, columns, layers of cells in SAC
 		void SetSACNRows(G4int r) { fSACNRows = r; }
 		G4int GetSACNRows() { return fSACNRows; }
@@ -69,7 +73,7 @@ class SACGeometry
 
 		// PMT parameters
 		void SetEnablePMT(G4int b) { fEnablePMT = b; }
-		G4bool GetEnablePMT() { return fEnablePMT; }
+		G4int GetEnablePMT() { return fEnablePMT; }
 		void SetPMTDiameter(G4double d) { fPMTDiameter = d; }
 		G4double GetPMTDiameter() { return fPMTDiameter; }
 		void SetPMTThickness(G4double t) { fPMTThickness = t; }
@@ -78,7 +82,7 @@ class SACGeometry
 
 		// SiPM parameters (square)
 		void SetEnableSiPM(G4int b) { fEnableSiPM = b; }
-		G4bool GetEnableSiPM() { return fEnableSiPM; }
+		G4int GetEnableSiPM() { return fEnableSiPM; }
 		void SetSiPMSize(G4double d) { fSiPMSize = d; }
 		G4double GetSiPMSize() { return fSiPMSize; }
 		void SetSiPMThickness(G4double t) { fSiPMThickness = t; }
@@ -126,8 +130,8 @@ class SACGeometry
 		// size of SAC cell (crystal + coating)
 		G4double fCellSizeX, fCellSizeY, fCellSizeZ;
 
-		// size of gap between cells
-		G4double fCellGap;
+		// size of gap between cells and layers
+		G4double fCellGap, fLayerGap;
 
 		// number of rows, columns, layers of cells in SAC
 		G4int fSACNRows, fSACNCols, fSACNLayers;
@@ -139,11 +143,11 @@ class SACGeometry
 		G4double fSACPosX, fSACPosY, fSACPosZ;
 
 		// PMT parameters
-		G4bool fEnablePMT;
+		G4int fEnablePMT;
 		G4double fPMTDiameter, fPMTThickness, fPMTRound;
 
 		// SiPM parameters (square)
-		G4bool fEnableSiPM;
+		G4int fEnableSiPM;
 		G4double fSiPMSize, fSiPMThickness;
 
 		// --------------- DIGITIZATION PARAMETERS ---------------

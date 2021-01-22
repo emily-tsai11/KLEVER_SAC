@@ -50,9 +50,8 @@ class SACMessenger : public G4UImessenger
 		G4UIcmdWithAnInteger* fSetSACNColsCmd;
 		G4UIcmdWithAnInteger* fSetSACNLayersCmd;
 
-		// TODO: PMT stuff
-
-		// TODO: SiPM stuff
+		G4UIcmdWithAnInteger* fEnablePMTCmd;
+		G4UIcmdWithAnInteger* fEnableSiPMCmd;
 
 		G4UIcmdWithAnInteger* fSetVerboseLevelCmd;
 

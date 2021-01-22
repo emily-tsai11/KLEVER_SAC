@@ -33,10 +33,13 @@ SACGeometry::SACGeometry()
 	// size of SAC cell (crystal + coating)
 	fCellSizeX = fCrystalSizeX + 2.0 * fCrystalCoating;
 	fCellSizeY = fCrystalSizeY + 2.0 * fCrystalCoating;
-	fCellSizeZ = fCrystalSizeZ + 2.0 * fCrystalCoating;
+	fCellSizeZ = fCrystalSizeZ + fCrystalCoating;
 
 	// size of gap between cells
 	fCellGap = 50.0 * um;
+
+	// size of gap between layers
+	fLayerGap = 2.0 * cm;
 
 	// number of rows, columns, layers of cells in SAC
 	fSACNRows = 10;
@@ -46,7 +49,7 @@ SACGeometry::SACGeometry()
 	// size of SAC box
 	fSACSizeX = (fCellSizeX + fCellGap) * fSACNCols - fCellGap;
 	fSACSizeY = (fCellSizeY + fCellGap) * fSACNRows - fCellGap;
-	fSACSizeZ = (fCellSizeZ + fCellGap) * fSACNLayers - fCellGap;
+	fSACSizeZ = (fCellSizeZ + fLayerGap) * fSACNLayers - fLayerGap;
 
 	// position of center of SAC box
 	fSACPosX = 1.0 * cm;
@@ -61,7 +64,7 @@ SACGeometry::SACGeometry()
 	fPMTRound = 2.0 * M_PI * rad;
 
 	// SiPM parameters (square)
-	fEnableSiPM = 1;
+	fEnableSiPM = 0;
 	fSiPMSize = 7.08 * mm;
 	fSiPMThickness = 0.3 * mm;
 
@@ -122,6 +125,10 @@ std::vector<G4String> SACGeometry::GetHashTable()
 	buffer.str("");
 
 	buffer << "fCellGap " << fCellGap;
+	hash.push_back(buffer.str());
+	buffer.str("");
+
+	buffer << "fLayerGap " << fLayerGap;
 	hash.push_back(buffer.str());
 	buffer.str("");
 

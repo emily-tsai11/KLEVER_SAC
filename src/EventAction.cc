@@ -22,6 +22,7 @@
 
 #include "PrimaryGeneratorAction.hh"
 #include "Analysis.hh"
+#include "RandomGenerator.hh"
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -29,7 +30,9 @@ EventAction::EventAction(int seedNum)
 {
 	fTimer = new G4Timer;
 	fCurrentEventCount = 0;
+	// fRandomEngineStateFileExist = true;
 	CLHEP::HepRandom::setTheSeed(seedNum);
+	fCommandLineSeed = seedNum;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -37,6 +40,12 @@ EventAction::EventAction(int seedNum)
 EventAction::~EventAction()
 {
 	delete fTimer;
+	// if(fRandomEngineStateFileExist)
+	// {
+	// 	delete fRandomDecayState;
+	// 	fRandomEngineStateFile->Close();
+	// 	delete fRandomEngineStateFile;
+	// }
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -80,4 +89,55 @@ void EventAction::EndOfEventAction(const G4Event* evt)
 	{
 		G4cout << "Event " << eventID << " processed" << G4endl;
 	}
+}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+void EventAction::FillRandomEnginesStates()
+{
+	if(fCurrentEventCount == 0) fRandomDecayState = new TRandom3();
+
+	// if((fRandomEngineStateFileExist) && (fRandomEngineStateTree->GetEntries() == fCurrentEventCount)) G4cout << "###### ##### ##### Processing of the randomstate.root finished. Switching to pseudorandom event generation. ########## ######### #######" << G4endl;
+
+	// if((!fRandomEngineStateFileExist) || (fRandomEngineStateFileExist && (fRandomEngineStateTree->GetEntries() <= fCurrentEventCount)))
+	// {
+		if(fCurrentEventCount == 0)
+		{
+			// unsigned int iSeed = DatacardManager::GetInstance()->GetRandDecaySeed();
+			unsigned int iSeed = 10;
+			if(fCommandLineSeed != -1) iSeed = fCommandLineSeed; // not sure why fCommandLineSeed = seedNum would be -1, but that's a problem for future me
+			G4cout << "[EventAction::FillRandomEnginesStates] Random seed = " << iSeed << G4endl;
+			RandomGenerator::GetInstance()->Init(iSeed);
+			// set the seeds for GPS particles to generate different events from run to run
+			// PrimaryGeneratorAction *PGA = (PrimaryGeneratorAction*) G4RunManager::GetRunManager()->GetUserPrimaryGeneratorAction();
+			// G4int BeamType = PGA->GetBeamType();
+			// if(BeamType == 1)
+			// {
+			// 	G4cout << "===> GPS beam is used!" << G4endl;
+			// 	long gps_seeds[2];
+			// 	gps_seeds[0] = iSeed;
+			// 	gps_seeds[1] = iSeed + 62;
+			// 	CLHEP::HepRandom::setTheSeeds(gps_seeds);
+			// }
+		}
+
+		*fRandomDecayState = *RandomGenerator::GetInstance()->GetRandomDecay();
+		const long *table = CLHEP::HepRandom::getTheSeeds();
+		fRanecuState[0] = table[0];
+		fRanecuState[1] = table[1];
+	// }
+	// else
+	// {
+	// 	if(fRandomEngineStateTree->GetEntries() > fCurrentEventCount)
+	// 	{
+	// 		fRandomEngineStateTree->GetEntry(fCurrentEventCount);
+	// 		fRanecuState[0] = fRandEvent->GetRanecuState()[0];
+	// 		fRanecuState[1] = fRandEvent->GetRanecuState()[1];
+	// 		CLHEP::HepRandom::setTheSeeds(fRanecuState);
+	// 		*fRandomDecayState = *fRandEvent->GetRandomDecayState();
+	// 		RandomGenerator::GetInstance()->Init(fRandomDecayState);
+	// 	}
+	// 	else G4RunManager::GetRunManager()->AbortRun();
+	// }
+	fCurrentEventCount++;
 }

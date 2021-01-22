@@ -42,7 +42,7 @@ SACCell::SACCell()
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-void SACCell::CreateGeometry(G4int sides)
+void SACCell::CreateGeometry()
 {
 	// create PbF2 crystal
 	G4Box* fCrystalSolid = new G4Box(
@@ -58,12 +58,12 @@ void SACCell::CreateGeometry(G4int sides)
 		0, 0, 0);
 	fCrystalVolume->SetVisAttributes(G4VisAttributes(G4Colour::Blue()));
 
-	// create SAC cell (PbF2 crystal + coating)
+	// create paint coating
 	G4Box* fCellSolid = new G4Box(
 		"SACCell",
 		0.5 * fCellSizeX,
 		0.5 * fCellSizeY,
-		0.5 * fCellSizeZ); // PROBABLY NEED TO FIX THESE AT SOME POINT
+		0.5 * fCellSizeZ);
 
 	fCellVolume = new G4LogicalVolume(
 		fCellSolid,
@@ -72,50 +72,14 @@ void SACCell::CreateGeometry(G4int sides)
 		0, 0, 0);
 	fCellVolume->SetVisAttributes(G4VisAttributes(G4Colour::Magenta()));
 
-	if(sides == 6) // coating on all sides
-	{
-		new G4PVPlacement(
-			0,
-			G4ThreeVector(),
-			fCrystalVolume,
-			"SACCrystal",
-			fCellVolume,
-			false, 0, false);
-	}
-	else if(sides == 5) // no coating on back
-	{
-		// create SAC cell with no back (PbF2 crystal + coating)
-		G4Box* fZCoating = new G4Box(
-			"SACBack",
-			0.525 * fCellSizeX,
-			0.525 * fCellSizeY,
-			0.525 * fCrystalCoating);
-		G4VSolid* fNonRefCellSolid = new G4SubtractionSolid(
-			"SACNonRefCell",
-			fCellSolid,
-			fZCoating,
-			0,
-			G4ThreeVector(0.0, 0.0, -0.5 * (fCellSizeZ - fCrystalCoating)));
-
-		fNonRefCellVolume = new G4LogicalVolume(
-			fNonRefCellSolid,
-			G4Material::GetMaterial("EJ510Paint"),
-			"SACNonRefCell",
-			0, 0, 0);
-		fNonRefCellVolume->SetVisAttributes(G4VisAttributes(G4Colour::Cyan()));
-
-		new G4PVPlacement(
-			0,
-			G4ThreeVector(), // PROBABLY NOT SUPPOSED TO BE IN THE MIDDLE, FIX THIS???
-			fCrystalVolume,
-			"SACCrystal",
-			fNonRefCellVolume,
-			false, 0, false);
-	}
-	else // incorrect input
-	{
-		printf("I don't think anything will break, but the code probably won't work properly...");
-	}
+	// place crystal inside paint coating
+	new G4PVPlacement(
+		0,
+		G4ThreeVector(0.0, 0.0, -0.5 * fCrystalCoating),
+		fCrystalVolume,
+		"SACCrystal",
+		fCellVolume,
+		false, 0, false);
 
 	// make PbF2 crystal a sensitive detector
 	G4SDManager* SDMan = G4SDManager::GetSDMpointer();
