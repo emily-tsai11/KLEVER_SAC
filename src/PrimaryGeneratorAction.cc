@@ -28,17 +28,17 @@ PrimaryGeneratorAction::PrimaryGeneratorAction(DetectorConstruction* detector, E
 	fEventAction = &eventAction;
 	fParticleTable = G4ParticleTable::GetParticleTable();
 
-	fBeamType = 1; // 1: KL
-
-	// default particle type
-	fNeutralParticleName = "gamma";
+	fBeamType = 0; // 1: KL
 
 	// Atherton momentum constants
-	fNeutralPrimaryMomentum = 400.0 * GeV;
-	fNeutralProductionAngle = 8.0 * mrad;
-	fNeutralProductionAzimuth = -0.5 * pi * radian;
-	fNeutralOpeningAngle = 0.4 * mrad;
+	fKaonPrimaryMomentum = 400.0 * GeV;
+	fKaonProductionAngle = 8.0 * mrad;
+	fKaonProductionAzimuth = -0.5 * pi * radian;
+	fKaonOpeningAngle = 0.4 * mrad;
 	fDecayZMin = 102425.0;
+
+	// default particle type
+	fParticleName = "gamma";
 
 	G4int nParticles = 1;
 	fParticleGun = new G4ParticleGun(nParticles);
@@ -60,12 +60,12 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 	{
 		case 1: // KL
 		{
-			fNeutralParticleName = "kaon0L";
+			fParticleName = "kaon0L";
 			fEventAction->FillRandomEnginesStates();
 			GenerateAthertonMomentum(); // fills f4Momentum
-			G4LorentzVector PosTime = GenerateNeutralPositionTime(); // gets values from f4Momentum
+			G4LorentzVector PosTime = GenerateKaonPositionTime(); // gets values from f4Momentum
 
-			fParticleGun->SetParticleDefinition(fParticleTable->FindParticle(fNeutralParticleName));
+			fParticleGun->SetParticleDefinition(fParticleTable->FindParticle(fParticleName));
 			fParticleGun->SetParticleEnergy(f4Momentum.e());
 			G4cout << "PARTICLE ENERGY: " << fParticleGun->GetParticleEnergy() << G4endl;
 			fParticleGun->SetParticleTime(PosTime.t());
@@ -78,7 +78,7 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 		}
 		default: // gamma
 		{
-			fParticleGun->SetParticleDefinition(fParticleTable->FindParticle(fNeutralParticleName));
+			fParticleGun->SetParticleDefinition(fParticleTable->FindParticle(fParticleName));
 			fParticleGun->SetParticleEnergy(100.0 * MeV);
 			fParticleGun->SetParticleTime(0.0 * ns);
 			fParticleGun->SetParticlePosition(G4ThreeVector(0.0 * m, 0.0 * m, 1.0 * m));
@@ -94,15 +94,15 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 
 void PrimaryGeneratorAction::GenerateAthertonMomentum()
 {
-	if(fNeutralParticleName != "kaon0L")
+	if(fParticleName != "kaon0L")
 	{
-		G4cerr << "Invalid neutral beam particle specified for Atherton generator: " << fNeutralParticleName << G4endl;
+		G4cerr << "Invalid neutral beam particle specified for Atherton generator: " << fParticleName << G4endl;
 		G4RunManager::GetRunManager()->AbortRun();
 	}
 
-	G4ThreeVector dirPrimary(sin(fNeutralProductionAngle) * cos(fNeutralProductionAzimuth),
-		sin(fNeutralProductionAngle) * sin(fNeutralProductionAzimuth), cos(fNeutralProductionAngle));
-	G4double deltaCosThetaGen = 1 - cos(fNeutralOpeningAngle);
+	G4ThreeVector dirPrimary(sin(fKaonProductionAngle) * cos(fKaonProductionAzimuth),
+		sin(fKaonProductionAngle) * sin(fKaonProductionAzimuth), cos(fKaonProductionAngle));
+	G4double deltaCosThetaGen = 1 - cos(fKaonOpeningAngle);
 
 	TRandom3* RandomDecay = (RandomGenerator::GetInstance())->GetRandomDecay();
 
@@ -133,7 +133,7 @@ void PrimaryGeneratorAction::GenerateAthertonMomentum()
 		const G4double Cm = 3.5;
 
 		// Flux distribution from Atherton et al.
-		G4double p0 = fNeutralPrimaryMomentum;
+		G4double p0 = fKaonPrimaryMomentum;
 		G4double p0r = 0.001 * p0;
 		const G4double Ath_max = 10.0;
 
@@ -151,7 +151,7 @@ void PrimaryGeneratorAction::GenerateAthertonMomentum()
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-G4LorentzVector PrimaryGeneratorAction::GenerateNeutralPositionTime()
+G4LorentzVector PrimaryGeneratorAction::GenerateKaonPositionTime()
 {
 	TRandom3* RandomDecay = (RandomGenerator::GetInstance())->GetRandomDecay();
 

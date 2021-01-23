@@ -20,7 +20,24 @@ G4Allocator<SACHit> SACHitAllocator;
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-SACHit::SACHit() {}
+SACHit::SACHit() : G4VHit() {}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+SACHit::SACHit(const SACHit& right) : G4VHit()
+{
+	fCellID = right.fCellID;
+	fTrackID = right.fTrackID;
+	fParticleName = right.fParticleName;
+	fVolumeName = right.fVolumeName;
+	fSDName = right.fSDName;
+	fCreatorProcessName = right.fCreatorProcessName;
+	fEnergyDeposition = right.fEnergyDeposition;
+	fTime = right.fTime;
+	fTrackLength = right.fTrackLength;
+	fPosition = right.fPosition;
+	fLocalPosition = right.fLocalPosition;
+}
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -28,36 +45,19 @@ SACHit::~SACHit() {}
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-SACHit::SACHit(const SACHit& right) : G4VHit()
-{
-	fChannelId = right.fChannelId;
-	fTime = right.fTime;
-	fVolume = right.fVolume;
-	fInitialEnergy = right.fInitialEnergy;
-	fFinalEnergy = right.fFinalEnergy;
-	fEnergyDep = right.fEnergyDep;
-	fPosition = right.fPosition;
-	fLocalPosition = right.fLocalPosition;
-	fTrackId = right.fTrackId;
-	fTrackType = right.fTrackType;
-	fTrackLength = right.fTrackLength;
-}
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
 const SACHit& SACHit::operator=(const SACHit& right)
 {
-	fChannelId = right.fChannelId;
+	fCellID = right.fCellID;
+	fTrackID = right.fTrackID;
+	fParticleName = right.fParticleName;
+	fVolumeName = right.fVolumeName;
+	fSDName = right.fSDName;
+	fCreatorProcessName = right.fCreatorProcessName;
+	fEnergyDeposition = right.fEnergyDeposition;
 	fTime = right.fTime;
-	fVolume = right.fVolume;
-	fInitialEnergy = right.fInitialEnergy;
-	fFinalEnergy = right.fFinalEnergy;
-	fEnergyDep = right.fEnergyDep;
+	fTrackLength = right.fTrackLength;
 	fPosition = right.fPosition;
 	fLocalPosition = right.fLocalPosition;
-	fTrackId = right.fTrackId;
-	fTrackType = right.fTrackType;
-	fTrackLength = right.fTrackLength;
 
 	return *this;
 }
@@ -91,16 +91,16 @@ void SACHit::Draw()
 void SACHit::Print()
 {
 	G4cout
-	<< "- channel: " << fChannelId
-	<< " time: " << G4BestUnit(fTime, "Time")
-	<< " volume: " << fVolume->GetName()
-	<< " initial energy: " << G4BestUnit(fInitialEnergy, "Energy")
-	<< " final energy: " << G4BestUnit(fFinalEnergy, "Energy")
-	<< " energy deposit: " << G4BestUnit(fEnergyDep, "Energy")
-	<< " global position: " << G4BestUnit(fPosition, "Length")
-	<< " local position: " << G4BestUnit(fLocalPosition, "Length")
-	<< " track: " << fTrackId
-	<< " track type: " << fTrackType
-	<< " track length: " << G4BestUnit(fTrackLength, "Length")
-	<< G4endl;
+	<< "--- Cell ID: " << fCellID
+	<< "\t| Track ID: " << fTrackID
+	<< "\t| Particle: " << fParticleName
+	<< "\t| Volume: " << fVolumeName
+	<< "\t| SD: " << fSDName
+	<< "\t| Creator Process: " << fCreatorProcessName
+	<< "\t| Energy Deposited: " << G4BestUnit(fEnergyDeposition, "Energy")
+	<< "\t| Time: " << G4BestUnit(fTime, "Time")
+	<< "\t| Track Length: " << G4BestUnit(fTrackLength, "Length")
+	<< "\t| Position: " << G4BestUnit(fPosition, "Length")
+	<< "\t| Local Position: " << G4BestUnit(fLocalPosition, "Length")
+	<< " ---" << G4endl;
 }

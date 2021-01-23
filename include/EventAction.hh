@@ -43,7 +43,7 @@ class EventAction : public G4UserEventAction
 		long fRanecuState[2];
 		G4int fCommandLineSeed;
 		// G4bool fRandomEngineStateFileExist;
-		// TFile *fRandomEngineStateFile;
+		// TFile* fRandomEngineStateFile;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

@@ -109,7 +109,7 @@ void EventAction::FillRandomEnginesStates()
 			G4cout << "[EventAction::FillRandomEnginesStates] Random seed = " << iSeed << G4endl;
 			RandomGenerator::GetInstance()->Init(iSeed);
 			// set the seeds for GPS particles to generate different events from run to run
-			// PrimaryGeneratorAction *PGA = (PrimaryGeneratorAction*) G4RunManager::GetRunManager()->GetUserPrimaryGeneratorAction();
+			// PrimaryGeneratorAction* PGA = (PrimaryGeneratorAction*) G4RunManager::GetRunManager()->GetUserPrimaryGeneratorAction();
 			// G4int BeamType = PGA->GetBeamType();
 			// if(BeamType == 1)
 			// {
@@ -122,7 +122,7 @@ void EventAction::FillRandomEnginesStates()
 		}
 
 		*fRandomDecayState = *RandomGenerator::GetInstance()->GetRandomDecay();
-		const long *table = CLHEP::HepRandom::getTheSeeds();
+		const long* table = CLHEP::HepRandom::getTheSeeds();
 		fRanecuState[0] = table[0];
 		fRanecuState[1] = table[1];
 	// }

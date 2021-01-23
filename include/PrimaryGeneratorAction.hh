@@ -37,24 +37,20 @@ class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
 
 		void GeneratePrimaries(G4Event* anEvent); // called at the beginning of each event
 		void GenerateAthertonMomentum();
-		G4LorentzVector GenerateNeutralPositionTime();
+		G4LorentzVector GenerateKaonPositionTime();
 
-		// G4String GetParticleName() { return fParticleName; }
-		// void SetParticleName(G4String v) { fParticleName = v; }
-
-		G4String GetNeutralParticleName() { return fNeutralParticleName; }
-		void SetNeutralParticleName(G4String v) { fNeutralParticleName = v; }
+		G4String GetParticleName() { return fParticleName; }
+		void SetParticleName(G4String v) { fParticleName = v; }
 
 	private:
 
 		G4int fBeamType;
-		// G4String fParticleName;
-		G4String fNeutralParticleName;
+		G4String fParticleName;
 
-		G4double fNeutralPrimaryMomentum;
-		G4double fNeutralProductionAngle;
-		G4double fNeutralProductionAzimuth;
-		G4double fNeutralOpeningAngle;
+		G4double fKaonPrimaryMomentum;
+		G4double fKaonProductionAngle;
+		G4double fKaonProductionAzimuth;
+		G4double fKaonOpeningAngle;
 		G4double fDecayZMin;
 
 		G4LorentzVector f4Momentum;
