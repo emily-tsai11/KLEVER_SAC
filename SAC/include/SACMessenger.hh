@@ -19,7 +19,6 @@
 class G4UIdirectory;
 class G4UIcmdWithAnInteger;
 class G4UIcmdWithADoubleAndUnit;
-
 class SACGeometry;
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -30,9 +29,7 @@ class SACMessenger : public G4UImessenger
 
 		SACMessenger();
 		~SACMessenger();
-
 		void SetNewValue(G4UIcommand*, G4String);
-		// G4String GetCurrentValue(G4UIcommand*);
 
 	private:
 

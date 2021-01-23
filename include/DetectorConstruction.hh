@@ -20,6 +20,7 @@ class G4VPhysicalVolume;
 class G4VSolid;
 class G4Box;
 
+class DetectorConstructionMessenger;
 class SACDetector;
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -32,37 +33,43 @@ class DetectorConstruction : public G4VUserDetectorConstruction
 		~DetectorConstruction();
 
 		G4VPhysicalVolume* Construct();
+		void UpdateGeometry();
 
-		// G4VSolid* GetSolidWorld() { return solidWorld; };
-	    // G4LogicalVolume* GetLogicalWorld() { return logicalWorld; };
-	    // G4VPhysicalVolume* GetPhysicalWorld() { return physicalWorld; };
 
-		// void SetSolidWorld(G4VSolid* v) { solidWorld = v; };
-		// void SetLogicalWorld(G4LogicalVolume* v) { logicalWorld = v; };
-	    // void SetPhysicalWorld(G4VPhysicalVolume* v) { physicalWorld = v; };
+		void SetSolidWorld(G4VSolid* v) { fSolidWorld = v; }
+		G4VSolid* GetSolidWorld() { return fSolidWorld; }
 
-	    G4double GetWorldXLength() { return fWorldXLength; };
-	    G4double GetWorldYLength() { return fWorldYLength; };
-		G4double GetWorldZLength() { return fWorldZLength; };
+		void SetLogicalWorld(G4LogicalVolume* v) { fLogicalWorld = v; }
+	    G4LogicalVolume* GetLogicalWorld() { return fLogicalWorld; }
 
-		// void SetWorldXLength(G4double v) { fWorldXLength = v; };
-		// void SetWorldYLength(G4double v) { fWorldYLength = v; };
-		// void SetWorldZLength(G4double v) { fWorldZLength = v; };
+		void SetPhysicalWorld(G4VPhysicalVolume* v) { fPhysicalWorld = v; }
+	    G4VPhysicalVolume* GetPhysicalWorld() { return fPhysicalWorld; }
+
+
+		void SetWorldLengthX(G4double v) { fWorldLengthX = v; }
+	    G4double GetWorldLengthX() { return fWorldLengthX; }
+
+		void SetWorldLengthY(G4double v) { fWorldLengthY = v; }
+	    G4double GetWorldLengthY() { return fWorldLengthY; }
+
+		void SetWorldLengthZ(G4double v) { fWorldLengthZ = v; }
+		G4double GetWorldLengthZ() { return fWorldLengthZ; }
 
 	private:
 
-		G4VSolid* solidWorld;
-	    G4LogicalVolume* logicalWorld;
-	    G4VPhysicalVolume* physicalWorld;
+		G4VSolid* fSolidWorld;
+	    G4LogicalVolume* fLogicalWorld;
+	    G4VPhysicalVolume* fPhysicalWorld;
 
-		G4double fWorldZLength;
-	    G4double fWorldXLength;
-	    G4double fWorldYLength;
+		G4double fWorldLengthX;
+	    G4double fWorldLengthY;
+	    G4double fWorldLengthZ;
 
 		SACDetector* fSAC;
-		G4LogicalVolume* fSACNonRefCellVolume;
+		DetectorConstructionMessenger* fMessenger;
 
 		void DefineMaterials();
+		void CleanGeometry();
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

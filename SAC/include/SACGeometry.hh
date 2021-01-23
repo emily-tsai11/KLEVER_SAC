@@ -20,6 +20,8 @@
 
 class G4LogicalVolume;
 
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
 class SACGeometry
 {
 	public:

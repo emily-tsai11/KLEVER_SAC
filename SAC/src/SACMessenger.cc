@@ -22,7 +22,7 @@ SACMessenger::SACMessenger()
 	fSACGeometry = SACGeometry::GetInstance();
 
 	fSACDetectorDir = new G4UIdirectory("/Detector/SAC/");
-	fSACDetectorDir->SetGuidance("UI commands to control SAC detector geometry");
+	fSACDetectorDir->SetGuidance("UI commands to control the SAC detector");
 
 
 	fSetCrystalSizeCmd = new G4UIcmdWithADoubleAndUnit("/Detector/SAC/CrystalSize", this);
@@ -152,12 +152,7 @@ void SACMessenger::SetNewValue(G4UIcommand* cmd, G4String par)
 	if(cmd == fSetSACNColsCmd) fSACGeometry->SetSACNCols(fSetSACNColsCmd->GetNewIntValue(par));
 	if(cmd == fSetSACNLayersCmd) fSACGeometry->SetSACNLayers(fSetSACNLayersCmd->GetNewIntValue(par));
 
-	if(cmd == fEnablePMTCmd)
-	{
-		fSACGeometry->SetEnablePMT(fEnablePMTCmd->GetNewIntValue(par));
-		// printf("-----------> reached here!\n");
-		// ~SACDetector();
-	}
+	if(cmd == fEnablePMTCmd) fSACGeometry->SetEnablePMT(fEnablePMTCmd->GetNewIntValue(par));
 	if(cmd == fEnableSiPMCmd) fSACGeometry->SetEnableSiPM(fEnableSiPMCmd->GetNewIntValue(par));
 
 	if(cmd == fSetVerboseLevelCmd) fSACGeometry->SetVerboseLevel(fSetVerboseLevelCmd->GetNewIntValue(par));
@@ -165,10 +160,3 @@ void SACMessenger::SetNewValue(G4UIcommand* cmd, G4String par)
 	if(cmd == fSetIncidentECmd) fSACGeometry->SetIncidentE(fSetIncidentECmd->GetNewDoubleValue(par));
 	// if(cmd == fSetSACFrontFaceZCmd) fSACGeometry->SetSACFrontFacePosZ(fSetSACFrontFaceZCmd->GetNewDoubleValue(par));
 }
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
-// G4String SACMessenger::GetCurrentValue(G4UIcommand* cmd)
-// {
-// 	// TODO
-// }

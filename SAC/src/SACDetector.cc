@@ -52,24 +52,8 @@ SACDetector::SACDetector(G4Material* material, G4LogicalVolume* motherVolume) : 
 
 	fCell = new SACCell();
 
-	fEnablePMT = Geo->GetEnablePMT();
-	fEnableSiPM = Geo->GetEnableSiPM();
-
 	fPMTThickness = Geo->GetPMTThickness();
 	fSiPMThickness = Geo->GetSiPMThickness();
-
-	if(fEnablePMT && !fEnableSiPM)
-	{
-		if(fEnablePMT) printf("PMTs are enabled and SiPMs are disabled\n");
-		fPMT = new SACPMT();
-	}
-	else if(fEnableSiPM && !fEnablePMT)
-	{
-		if(fEnableSiPM) printf("SiPMs are enabled and PMTs are disabled\n");
-		fSiPM = new SACSiPM();
-	}
-	else if(!fEnablePMT && !fEnableSiPM) printf("Both PMTs and SiPMS are disabled\n");
-	else printf("ERROR --- Both PMTs and SiPMS are disabled\n");
 
 	fSACMessenger = new SACMessenger();
 }
@@ -119,8 +103,26 @@ void SACDetector::CreateGeometry()
 	fCell->CreateGeometry();
 
 	// create SAC PMT or SiPM
-	if(fEnablePMT && !fEnableSiPM) fPMT->CreateGeometry();
-	else if(fEnableSiPM && !fEnablePMT) fSiPM->CreateGeometry();
+	{
+		SACGeometry* Geo = SACGeometry::GetInstance();
+		fEnablePMT = Geo->GetEnablePMT();
+		fEnableSiPM = Geo->GetEnableSiPM();
+	}
+
+	if(fEnablePMT && !fEnableSiPM)
+	{
+		if(fEnablePMT) printf("PMTs are enabled and SiPMs are disabled\n");
+		fPMT = new SACPMT();
+		fPMT->CreateGeometry();
+	}
+	else if(fEnableSiPM && !fEnablePMT)
+	{
+		if(fEnableSiPM) printf("SiPMs are enabled and PMTs are disabled\n");
+		fSiPM = new SACSiPM();
+		fSiPM->CreateGeometry();
+	}
+	else if(!fEnablePMT && !fEnableSiPM) printf("Both PMTs and SiPMS are disabled\n");
+	else printf("ERROR --- Both PMTs and SiPMS are disabled\n");
 
 	// position all crystals
 	G4double fCrystalPosX;

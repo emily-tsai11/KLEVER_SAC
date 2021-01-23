@@ -29,7 +29,6 @@ class G4UIcmdWithADoubleAndUnit;
 class G4UIcmdWithAString;
 class G4UIcmdWithoutParameter;
 class G4UIcmdWithABool;
-class PhysicsList;
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -43,25 +42,34 @@ class PhysicsListMessenger : public G4UImessenger
 		static PhysicsListMessenger* GetInstance();
 		void SetNewValue(G4UIcommand*, G4String);
 
+
 		void SetCutForGamma(G4double value) { fCutGamma = value; }
 		G4double GetCutForGamma() { return fCutGamma; }
+
 		void SetCutForElectron(G4double value) { fCutElectron = value; }
 		G4double GetCutForElectron() { return fCutElectron; }
+
 		void SetCutForPositron(G4double value) { fCutPositron = value; }
 		G4double GetCutForPositron() { return fCutPositron; }
+
 		void SetCutForProton(G4double value) { fCutProton = value; }
 		G4double GetCutForProton() { return fCutProton; }
+
 
 		void SetPhysicsList(G4String name) { fPhysicsListName = name; }
 		G4String GetPhysicsList() { return fPhysicsListName; }
 
+
 		void SetAddParameterisation(G4bool value) { fAddParameterisation = value; }
 		G4bool GetAddParameterisation() { return fAddParameterisation; }
 
+
 		void SetBrPie2(G4double value) { fBrPie2 = value; }
 		G4double GetBrPie2() const { return fBrPie2; }
+
 		void SetMuonDecay(G4int value) { fMuonDecayMode = value; } // set muon decay mode
 		G4double GetMuonDecay() { return fMuonDecayMode; } // set muon decay mode
+
 		void SetListPhysList(G4bool value) { fListPhysList = value; }
 		G4bool GetListPhysList() { return fListPhysList; }
 
@@ -70,6 +78,7 @@ class PhysicsListMessenger : public G4UImessenger
 		static PhysicsListMessenger* fInstance;
 
 		G4UIdirectory* fSimulationDir;
+		G4UIdirectory* fDecayDir;
 
 		G4UIcmdWithADoubleAndUnit* fGammaCutCmd;
 		G4UIcmdWithADoubleAndUnit* fElectCutCmd;
@@ -79,8 +88,6 @@ class PhysicsListMessenger : public G4UImessenger
 		G4UIcmdWithAString* fPListCmd;
 		G4UIcmdWithoutParameter* fListCmd;
 		G4UIcmdWithoutParameter* fFastCmd;
-
-		G4UIdirectory* fDecayDir;
 
 		G4UIcmdWithADouble* fDecayPiplusDecayCmd;
 		G4UIcmdWithAnInteger* fMuonDecayCmd;

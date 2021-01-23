@@ -19,6 +19,7 @@
 #include "G4PhysicalConstants.hh"
 #include "RandomGenerator.hh"
 
+#include "PrimaryGeneratorActionMessenger.hh"
 #include "PhysicsList.hh"
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -28,7 +29,7 @@ PrimaryGeneratorAction::PrimaryGeneratorAction(DetectorConstruction* detector, E
 	fEventAction = &eventAction;
 	fParticleTable = G4ParticleTable::GetParticleTable();
 
-	fBeamType = 0; // 1: KL
+	fBeamType = -1; // 1: KL
 
 	// Atherton momentum constants
 	fKaonPrimaryMomentum = 400.0 * GeV;
@@ -42,6 +43,8 @@ PrimaryGeneratorAction::PrimaryGeneratorAction(DetectorConstruction* detector, E
 
 	G4int nParticles = 1;
 	fParticleGun = new G4ParticleGun(nParticles);
+
+	fMessenger = new PrimaryGeneratorActionMessenger();
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -56,6 +59,8 @@ PrimaryGeneratorAction::~PrimaryGeneratorAction()
 // called at the beginning of each event
 void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 {
+	fBeamType = fMessenger->GetBeamType();
+
 	switch(fBeamType)
 	{
 		case 1: // KL

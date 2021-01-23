@@ -17,14 +17,17 @@
 #include "globals.hh"
 
 #include "EventAction.hh"
+#include "DetectorConstruction.hh"
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-class DetectorConstruction;
+// class DetectorConstruction;
+// class EventAction;
 class G4ParticleTable;
-class G4ParticleDefinition;
+// class G4ParticleDefinition;
 class G4ParticleGun;
 class G4Event;
+class PrimaryGeneratorActionMessenger;
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -39,8 +42,11 @@ class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
 		void GenerateAthertonMomentum();
 		G4LorentzVector GenerateKaonPositionTime();
 
+		void SetBeamType(G4int type) { fBeamType = type; }
+		G4int GetBeamType() { return fBeamType; }
+
+		void SetParticleName(G4String name) { fParticleName = name; }
 		G4String GetParticleName() { return fParticleName; }
-		void SetParticleName(G4String v) { fParticleName = v; }
 
 	private:
 
@@ -56,10 +62,12 @@ class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
 		G4LorentzVector f4Momentum;
 
 		G4ParticleTable* fParticleTable;
-		G4ParticleDefinition* fParticleDef;
+		// G4ParticleDefinition* fParticleDef;
 		G4ParticleGun* fParticleGun;
 		DetectorConstruction* fDetector;
 		EventAction* fEventAction;
+
+		PrimaryGeneratorActionMessenger* fMessenger;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

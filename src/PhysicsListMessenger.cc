@@ -15,7 +15,6 @@
 #include "PhysicsListMessenger.hh"
 
 #include "G4RunManager.hh"
-
 #include "G4UIcmdWithADouble.hh"
 #include "G4UIcmdWithAnInteger.hh"
 #include "G4UIcmdWithADoubleAndUnit.hh"
@@ -139,10 +138,10 @@ void PhysicsListMessenger::SetNewValue(G4UIcommand* command, G4String val)
 {
 	G4cout << command->GetCommandPath() << " " << val << G4endl;
 
-	if(command == fGammaCutCmd)					fCutGamma = fGammaCutCmd->GetNewDoubleValue(val);
-	else if(command == fElectCutCmd)			fCutElectron = fElectCutCmd->GetNewDoubleValue(val);
-	else if(command == fPosCutCmd)				fCutPositron = fPosCutCmd->GetNewDoubleValue(val);
-	else if(command == fCutCmd)					fCutProton = fCutCmd->GetNewDoubleValue(val);
+	if(command == fGammaCutCmd) fCutGamma = fGammaCutCmd->GetNewDoubleValue(val);
+	else if(command == fElectCutCmd) fCutElectron = fElectCutCmd->GetNewDoubleValue(val);
+	else if(command == fPosCutCmd) fCutPositron = fPosCutCmd->GetNewDoubleValue(val);
+	else if(command == fCutCmd) fCutProton = fCutCmd->GetNewDoubleValue(val);
 	else if(command == fAllCutCmd)
 	{
 		G4double cut = fAllCutCmd->GetNewDoubleValue(val);
@@ -166,8 +165,8 @@ void PhysicsListMessenger::SetNewValue(G4UIcommand* command, G4String val)
 		}
 		fPhysicsListName = name;
 	}
-	else if(command == fListCmd)				fListPhysList = true;
-	else if(command == fFastCmd)				fAddParameterisation = true;
-	else if(command == fDecayPiplusDecayCmd)	fBrPie2 = fDecayPiplusDecayCmd->GetNewDoubleValue(val);
-	else if(command == fMuonDecayCmd)			fMuonDecayMode = fMuonDecayCmd->GetNewIntValue(val);
+	else if(command == fListCmd) fListPhysList = true;
+	else if(command == fFastCmd) fAddParameterisation = true;
+	else if(command == fDecayPiplusDecayCmd) fBrPie2 = fDecayPiplusDecayCmd->GetNewDoubleValue(val);
+	else if(command == fMuonDecayCmd) fMuonDecayMode = fMuonDecayCmd->GetNewIntValue(val);
 }

@@ -27,12 +27,18 @@
 #include "G4VisAttributes.hh"
 
 #include "SACDetector.hh"
+#include "DetectorConstructionMessenger.hh"
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-DetectorConstruction::DetectorConstruction() : solidWorld(0), logicalWorld(0), physicalWorld(0)
+DetectorConstruction::DetectorConstruction() : fSolidWorld(0), fLogicalWorld(0), fPhysicalWorld(0)
 {
+	fWorldLengthX = 1.0 * m;
+	fWorldLengthY = 1.0 * m;
+	fWorldLengthZ = 1.0 * m;
+
 	fSAC = new SACDetector(0, 0);
+	fMessenger = new DetectorConstructionMessenger(this);
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -46,14 +52,57 @@ DetectorConstruction::~DetectorConstruction()
 
 G4VPhysicalVolume* DetectorConstruction::Construct()
 {
-	// clean old geometry if it exists
+	// clean old geometry (if it exists)
+	CleanGeometry();
+
+	// define materials
+	DefineMaterials();
+
+	// create world
+	fSolidWorld = new G4Box("World", 0.5 * fWorldLengthX, 0.5 * fWorldLengthY, 0.5 * fWorldLengthZ);
+	fLogicalWorld = new G4LogicalVolume(
+		fSolidWorld,							// solid
+		G4Material::GetMaterial("G4_Galactic"),	// material
+		"World",								// name
+		0,										// field manager
+		0,										// sensitive detector
+		0);										// user limits
+	fPhysicalWorld = new G4PVPlacement(
+		0,										// no rotation
+		G4ThreeVector(),						// at (0, 0, 0)
+		fLogicalWorld,							// logical volume
+		"World",								// name
+		0,										// mother volume
+		false,									// no boolean operations
+		0);										// copy number
+	// fLogicalWorld->SetVisAttributes(G4VisAttributes::Invisible);
+	fLogicalWorld->SetVisAttributes(G4VisAttributes(G4Colour::Cyan()));
+
+	// create SAC detector
+	fSAC->SetMaterial(G4Material::GetMaterial("G4_Galactic"));
+	fSAC->SetMotherVolume(fLogicalWorld);
+	fSAC->CreateGeometry();
+
+	// return world
+	return fPhysicalWorld;
+}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+void DetectorConstruction::CleanGeometry()
+{
 	G4GeometryManager::GetInstance()->OpenGeometry();
 	G4PhysicalVolumeStore::GetInstance()->Clean();
 	G4LogicalVolumeStore::GetInstance()->Clean();
 	G4SolidStore::GetInstance()->Clean();
 	G4LogicalBorderSurface::CleanSurfaceTable();
 	G4LogicalSkinSurface::CleanSurfaceTable();
+}
 
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+void DetectorConstruction::DefineMaterials()
+{
 	// ------------------------- DEFINE MATERIALS -------------------------
 	// standard materials
 	G4NistManager* nistMgr = G4NistManager::Instance();
@@ -129,40 +178,12 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 
 	G4cout << "PbF2 G4MaterialPropertiesTable:" << G4endl;
 	MPTPbF2->DumpTable();
+}
 
-	// ------------------------- DEFINE VOLUMES -------------------------
-	fWorldXLength = 1.0 * m;
-	fWorldYLength = 1.0 * m;
-	fWorldZLength = 1.0 * m;
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-	solidWorld = new G4Box("World", 0.5 * fWorldXLength, 0.5 * fWorldYLength, 0.5 * fWorldZLength);
-
-	logicalWorld = new G4LogicalVolume(
-		solidWorld,								// solid
-		G4Material::GetMaterial("G4_Galactic"),	// material
-		"World",								// name
-		0,										// field manager
-		0,										// sensitive detector
-		0);										// user limits
-
-	physicalWorld = new G4PVPlacement(
-		0,										// no rotation
-		G4ThreeVector(),						// at (0, 0, 0)
-		logicalWorld,							// logical volume
-		"World",								// name
-		0,										// mother volume
-		false,									// no boolean operations
-		0);										// copy number
-
-	// create SAC detector
-	fSAC->SetMaterial(G4Material::GetMaterial("G4_Galactic"));
-	fSAC->SetMotherVolume(logicalWorld);
-	fSAC->CreateGeometry();
-
-	// make world invisible
-	// SetVisAttributes(G4VisAttributes::Invisible);
-	logicalWorld->SetVisAttributes(G4VisAttributes(G4Colour::Cyan()));
-
-	// return physical world
-	return physicalWorld;
+void DetectorConstruction::UpdateGeometry()
+{
+	G4RunManager::GetRunManager()->GeometryHasBeenModified();
+	G4RunManager::GetRunManager()->DefineWorldVolume(Construct());
 }

@@ -13,3 +13,6 @@
 # /gps/ene
 
 /run/beamOn 1
+
+# /PrimaryGeneratorAction/BeamType 1
+# /run/beamOn 1

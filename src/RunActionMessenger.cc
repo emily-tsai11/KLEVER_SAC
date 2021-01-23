@@ -52,7 +52,7 @@ RunActionMessenger::RunActionMessenger() : G4UImessenger(), fFileName("SACRun"),
 	fPerEventEDepBound(1.0), fPerEventUntrackedEBound(1.0)
 {
 	fRunActionDir = new G4UIdirectory("/RunAction/");
-	fRunActionDir->SetGuidance("UI commands to control RunAction");
+	fRunActionDir->SetGuidance("UI commands to control the Run Action");
 
 	fSetFileNameCmd = new G4UIcmdWithAString("/RunAction/FileName", this);
 	fSetFileNameCmd->SetGuidance("Specify output root file name");
