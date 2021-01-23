@@ -8,16 +8,15 @@
 #include "RunAction.hh"
 
 #include "G4RunManager.hh"
-
 #include "G4Run.hh"
 #include "G4Timer.hh"
 #include "G4UnitsTable.hh"
+#include "g4analysis.hh"
 
 #include <string>
 
 #include "PrimaryGeneratorAction.hh"
 #include "RunActionMessenger.hh"
-#include "Analysis.hh"
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -40,128 +39,135 @@ RunAction::~RunAction()
 void RunAction::BeginOfRunAction(const G4Run* aRun)
 {
 	G4cout << "RunAction::BeginOfRunAction(): Run " << aRun->GetRunID() << " begins!" << G4endl;
+
 	fTimer->Start();
 
 	G4RunManager::GetRunManager()->SetRandomNumberStore(false);
 
-	// get analysis manager and open output file
-	fAnalysisManager = G4AnalysisManager::Instance();
+	fAnalysisManager = G4Analysis::ManagerInstance("root");
+	// fAnalysisManager = G4AnalysisManager::Instance();
 	fAnalysisManager->SetVerboseLevel(1);
 	fAnalysisManager->OpenFile(fMessenger->GetFileName());
 
-	// get histogram bounds
-	const G4int nParticles = 11;
+	ReadHistogramBounds();
+	CreateHistograms();
+}
 
-	G4double PerHitEDepBound[nParticles];
-	{
-		PerHitEDepBound[0] = fMessenger->GetGammaPerHitEDepBound();
-		PerHitEDepBound[1] = fMessenger->GetPositronPerHitEDepBound();
-		PerHitEDepBound[2] = fMessenger->GetElectronPerHitEDepBound();
-		PerHitEDepBound[3] = fMessenger->GetProtonPerHitEDepBound();
-		PerHitEDepBound[4] = fMessenger->GetNeutronPerHitEDepBound();
-		PerHitEDepBound[5] = fMessenger->GetPionPlusPerHitEDepBound();
-		PerHitEDepBound[6] = fMessenger->GetPionMinusPerHitEDepBound();
-		PerHitEDepBound[7] = fMessenger->GetPionZeroPerHitEDepBound();
-		PerHitEDepBound[8] = fMessenger->GetMuonPlusPerHitEDepBound();
-		PerHitEDepBound[9] = fMessenger->GetMuonMinusPerHitEDepBound();
-		PerHitEDepBound[10] = fMessenger->GetOptPhotPerHitEDepBound();
-	}
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-	G4double PerHitTrLenBound[nParticles];
-	{
-		PerHitTrLenBound[0] = fMessenger->GetGammaPerHitTrLenBound();
-		PerHitTrLenBound[1] = fMessenger->GetPositronPerHitTrLenBound();
-		PerHitTrLenBound[2] = fMessenger->GetElectronPerHitTrLenBound();
-		PerHitTrLenBound[3] = fMessenger->GetProtonPerHitTrLenBound();
-		PerHitTrLenBound[4] = fMessenger->GetNeutronPerHitTrLenBound();
-		PerHitTrLenBound[5] = fMessenger->GetPionPlusPerHitTrLenBound();
-		PerHitTrLenBound[6] = fMessenger->GetPionMinusPerHitTrLenBound();
-		PerHitTrLenBound[7] = fMessenger->GetPionZeroPerHitTrLenBound();
-		PerHitTrLenBound[8] = fMessenger->GetMuonPlusPerHitTrLenBound();
-		PerHitTrLenBound[9] = fMessenger->GetMuonMinusPerHitTrLenBound();
-		PerHitTrLenBound[10] = fMessenger->GetOptPhotPerHitTrLenBound();
-	}
+void RunAction::EndOfRunAction(const G4Run* aRun)
+{
+	fTimer->Stop();
+	G4cout << "RunAction::EndOfRunAction(): Run " << aRun->GetRunID() << " completed!" << G4endl;
 
-	G4int PerEventMultMinBound[nParticles];
-	G4int PerEventMultMaxBound[nParticles];
-	{
-		PerEventMultMinBound[0] = fMessenger->GetGammaPerEventMultMinBound();
-		PerEventMultMaxBound[0] = fMessenger->GetGammaPerEventMultMaxBound();
-		PerEventMultMinBound[1] = fMessenger->GetPositronPerEventMultMinBound();
-		PerEventMultMaxBound[1] = fMessenger->GetPositronPerEventMultMaxBound();
-		PerEventMultMinBound[2] = fMessenger->GetElectronPerEventMultMinBound();
-		PerEventMultMaxBound[2] = fMessenger->GetElectronPerEventMultMaxBound();
-		PerEventMultMinBound[3] = fMessenger->GetProtonPerEventMultMinBound();
-		PerEventMultMaxBound[3] = fMessenger->GetProtonPerEventMultMaxBound();
-		PerEventMultMinBound[4] = fMessenger->GetNeutronPerEventMultMinBound();
-		PerEventMultMaxBound[4] = fMessenger->GetNeutronPerEventMultMaxBound();
-		PerEventMultMinBound[5] = fMessenger->GetPionPlusPerEventMultMinBound();
-		PerEventMultMaxBound[5] = fMessenger->GetPionPlusPerEventMultMaxBound();
-		PerEventMultMinBound[6] = fMessenger->GetPionMinusPerEventMultMinBound();
-		PerEventMultMaxBound[6] = fMessenger->GetPionMinusPerEventMultMaxBound();
-		PerEventMultMinBound[7] = fMessenger->GetPionZeroPerEventMultMinBound();
-		PerEventMultMaxBound[7] = fMessenger->GetPionZeroPerEventMultMaxBound();
-		PerEventMultMinBound[8] = fMessenger->GetMuonPlusPerEventMultMinBound();
-		PerEventMultMaxBound[8] = fMessenger->GetMuonPlusPerEventMultMaxBound();
-		PerEventMultMinBound[9] = fMessenger->GetMuonMinusPerEventMultMinBound();
-		PerEventMultMaxBound[9] = fMessenger->GetMuonMinusPerEventMultMaxBound();
-		PerEventMultMinBound[10] = fMessenger->GetOptPhotPerEventMultMinBound();
-		PerEventMultMaxBound[10] = fMessenger->GetOptPhotPerEventMultMaxBound();
-	}
+	// save histograms
+	fAnalysisManager = G4AnalysisManager::Instance();
+	fAnalysisManager->Write();
+	fAnalysisManager->CloseFile();
+}
 
-	G4double PerEventEDepBound[nParticles];
-	{
-		PerEventEDepBound[0] = fMessenger->GetGammaPerEventEDepBound();
-		PerEventEDepBound[1] = fMessenger->GetPositronPerEventEDepBound();
-		PerEventEDepBound[2] = fMessenger->GetElectronPerEventEDepBound();
-		PerEventEDepBound[3] = fMessenger->GetProtonPerEventEDepBound();
-		PerEventEDepBound[4] = fMessenger->GetNeutronPerEventEDepBound();
-		PerEventEDepBound[5] = fMessenger->GetPionPlusPerEventEDepBound();
-		PerEventEDepBound[6] = fMessenger->GetPionMinusPerEventEDepBound();
-		PerEventEDepBound[7] = fMessenger->GetPionZeroPerEventEDepBound();
-		PerEventEDepBound[8] = fMessenger->GetMuonPlusPerEventEDepBound();
-		PerEventEDepBound[9] = fMessenger->GetMuonMinusPerEventEDepBound();
-		PerEventEDepBound[10] = fMessenger->GetOptPhotPerEventEDepBound();
-	}
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-	G4double PerEventInitEBound[nParticles];
-	{
-		PerEventInitEBound[0] = fMessenger->GetGammaPerEventInitEBound();
-		PerEventInitEBound[1] = fMessenger->GetPositronPerEventInitEBound();
-		PerEventInitEBound[2] = fMessenger->GetElectronPerEventInitEBound();
-		PerEventInitEBound[3] = fMessenger->GetProtonPerEventInitEBound();
-		PerEventInitEBound[4] = fMessenger->GetNeutronPerEventInitEBound();
-		PerEventInitEBound[5] = fMessenger->GetPionPlusPerEventInitEBound();
-		PerEventInitEBound[6] = fMessenger->GetPionMinusPerEventInitEBound();
-		PerEventInitEBound[7] = fMessenger->GetPionZeroPerEventInitEBound();
-		PerEventInitEBound[8] = fMessenger->GetMuonPlusPerEventInitEBound();
-		PerEventInitEBound[9] = fMessenger->GetMuonMinusPerEventInitEBound();
-		PerEventInitEBound[10] = fMessenger->GetOptPhotPerEventInitEBound();
-	}
+void RunAction::ReadHistogramBounds()
+{
+	PerHitEDepBound[0] = fMessenger->GetGammaPerHitEDepBound();
+	PerHitEDepBound[1] = fMessenger->GetPositronPerHitEDepBound();
+	PerHitEDepBound[2] = fMessenger->GetElectronPerHitEDepBound();
+	PerHitEDepBound[3] = fMessenger->GetProtonPerHitEDepBound();
+	PerHitEDepBound[4] = fMessenger->GetNeutronPerHitEDepBound();
+	PerHitEDepBound[5] = fMessenger->GetPionPlusPerHitEDepBound();
+	PerHitEDepBound[6] = fMessenger->GetPionMinusPerHitEDepBound();
+	PerHitEDepBound[7] = fMessenger->GetPionZeroPerHitEDepBound();
+	PerHitEDepBound[8] = fMessenger->GetMuonPlusPerHitEDepBound();
+	PerHitEDepBound[9] = fMessenger->GetMuonMinusPerHitEDepBound();
+	PerHitEDepBound[10] = fMessenger->GetOptPhotPerHitEDepBound();
 
-	// list particle names
+	PerHitTrLenBound[0] = fMessenger->GetGammaPerHitTrLenBound();
+	PerHitTrLenBound[1] = fMessenger->GetPositronPerHitTrLenBound();
+	PerHitTrLenBound[2] = fMessenger->GetElectronPerHitTrLenBound();
+	PerHitTrLenBound[3] = fMessenger->GetProtonPerHitTrLenBound();
+	PerHitTrLenBound[4] = fMessenger->GetNeutronPerHitTrLenBound();
+	PerHitTrLenBound[5] = fMessenger->GetPionPlusPerHitTrLenBound();
+	PerHitTrLenBound[6] = fMessenger->GetPionMinusPerHitTrLenBound();
+	PerHitTrLenBound[7] = fMessenger->GetPionZeroPerHitTrLenBound();
+	PerHitTrLenBound[8] = fMessenger->GetMuonPlusPerHitTrLenBound();
+	PerHitTrLenBound[9] = fMessenger->GetMuonMinusPerHitTrLenBound();
+	PerHitTrLenBound[10] = fMessenger->GetOptPhotPerHitTrLenBound();
+
+	PerEventMultMinBound[0] = fMessenger->GetGammaPerEventMultMinBound();
+	PerEventMultMaxBound[0] = fMessenger->GetGammaPerEventMultMaxBound();
+	PerEventMultMinBound[1] = fMessenger->GetPositronPerEventMultMinBound();
+	PerEventMultMaxBound[1] = fMessenger->GetPositronPerEventMultMaxBound();
+	PerEventMultMinBound[2] = fMessenger->GetElectronPerEventMultMinBound();
+	PerEventMultMaxBound[2] = fMessenger->GetElectronPerEventMultMaxBound();
+	PerEventMultMinBound[3] = fMessenger->GetProtonPerEventMultMinBound();
+	PerEventMultMaxBound[3] = fMessenger->GetProtonPerEventMultMaxBound();
+	PerEventMultMinBound[4] = fMessenger->GetNeutronPerEventMultMinBound();
+	PerEventMultMaxBound[4] = fMessenger->GetNeutronPerEventMultMaxBound();
+	PerEventMultMinBound[5] = fMessenger->GetPionPlusPerEventMultMinBound();
+	PerEventMultMaxBound[5] = fMessenger->GetPionPlusPerEventMultMaxBound();
+	PerEventMultMinBound[6] = fMessenger->GetPionMinusPerEventMultMinBound();
+	PerEventMultMaxBound[6] = fMessenger->GetPionMinusPerEventMultMaxBound();
+	PerEventMultMinBound[7] = fMessenger->GetPionZeroPerEventMultMinBound();
+	PerEventMultMaxBound[7] = fMessenger->GetPionZeroPerEventMultMaxBound();
+	PerEventMultMinBound[8] = fMessenger->GetMuonPlusPerEventMultMinBound();
+	PerEventMultMaxBound[8] = fMessenger->GetMuonPlusPerEventMultMaxBound();
+	PerEventMultMinBound[9] = fMessenger->GetMuonMinusPerEventMultMinBound();
+	PerEventMultMaxBound[9] = fMessenger->GetMuonMinusPerEventMultMaxBound();
+	PerEventMultMinBound[10] = fMessenger->GetOptPhotPerEventMultMinBound();
+	PerEventMultMaxBound[10] = fMessenger->GetOptPhotPerEventMultMaxBound();
+
+	PerEventEDepBound[0] = fMessenger->GetGammaPerEventEDepBound();
+	PerEventEDepBound[1] = fMessenger->GetPositronPerEventEDepBound();
+	PerEventEDepBound[2] = fMessenger->GetElectronPerEventEDepBound();
+	PerEventEDepBound[3] = fMessenger->GetProtonPerEventEDepBound();
+	PerEventEDepBound[4] = fMessenger->GetNeutronPerEventEDepBound();
+	PerEventEDepBound[5] = fMessenger->GetPionPlusPerEventEDepBound();
+	PerEventEDepBound[6] = fMessenger->GetPionMinusPerEventEDepBound();
+	PerEventEDepBound[7] = fMessenger->GetPionZeroPerEventEDepBound();
+	PerEventEDepBound[8] = fMessenger->GetMuonPlusPerEventEDepBound();
+	PerEventEDepBound[9] = fMessenger->GetMuonMinusPerEventEDepBound();
+	PerEventEDepBound[10] = fMessenger->GetOptPhotPerEventEDepBound();
+
+	PerEventInitEBound[0] = fMessenger->GetGammaPerEventInitEBound();
+	PerEventInitEBound[1] = fMessenger->GetPositronPerEventInitEBound();
+	PerEventInitEBound[2] = fMessenger->GetElectronPerEventInitEBound();
+	PerEventInitEBound[3] = fMessenger->GetProtonPerEventInitEBound();
+	PerEventInitEBound[4] = fMessenger->GetNeutronPerEventInitEBound();
+	PerEventInitEBound[5] = fMessenger->GetPionPlusPerEventInitEBound();
+	PerEventInitEBound[6] = fMessenger->GetPionMinusPerEventInitEBound();
+	PerEventInitEBound[7] = fMessenger->GetPionZeroPerEventInitEBound();
+	PerEventInitEBound[8] = fMessenger->GetMuonPlusPerEventInitEBound();
+	PerEventInitEBound[9] = fMessenger->GetMuonMinusPerEventInitEBound();
+	PerEventInitEBound[10] = fMessenger->GetOptPhotPerEventInitEBound();
+}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+void RunAction::CreateHistograms()
+{
 	G4String ParticleNames[] = {"Gamma", "Positron", "Electron", "Proton", "Neutron",
 		"PionPlus", "PionMinus", "PionZero", "MuonPlus", "MuonMinus", "OptPhot"};
 
 	// -------------------- CREATE 1D HISTOGRAMS --------------------
 
 	// energy deposition per hit, unweighted -- 0
-	for(G4int i = 0; i < nParticles; i++)
+	for(G4int i = 0; i < N_PARTICLES; i++)
 		fAnalysisManager->CreateH1("h" + ParticleNames[i] + "_PerHit_EDep",
 			ParticleNames[i] + " energy deposition per hit",
 			500, 0.0 * CLHEP::MeV, PerHitEDepBound[i] * CLHEP::MeV);
 	// energy deposition per hit, weighted by energy deposition -- 1
-	for(G4int i = 0; i < nParticles; i++)
+	for(G4int i = 0; i < N_PARTICLES; i++)
 		fAnalysisManager->CreateH1("h" + ParticleNames[i] + "_PerHit_wEDep",
 			ParticleNames[i] + " weighted energy deposition per hit",
 			500, 0.0 * CLHEP::MeV, PerHitEDepBound[i] * CLHEP::MeV);
 	// track length per hit -- 2
-	for(G4int i = 0; i < nParticles; i++)
+	for(G4int i = 0; i < N_PARTICLES; i++)
 		fAnalysisManager->CreateH1("h" + ParticleNames[i] + "_PerHit_TrLen",
 			ParticleNames[i] + " track length per hit",
 			500, 0.0 * CLHEP::cm, PerHitTrLenBound[i] * CLHEP::cm);
 	// multiplicity per event -- 3
-	for(G4int i = 0; i < nParticles - 1; i++)
+	for(G4int i = 0; i < N_PARTICLES - 1; i++)
 		fAnalysisManager->CreateH1("h" + ParticleNames[i] + "_PerEvent_Mult",
 			ParticleNames[i] + " multiplicity per event / incident energy",
 			500, 0, 5.0);
@@ -169,27 +175,27 @@ void RunAction::BeginOfRunAction(const G4Run* aRun)
 		"OptPhot multiplicity per event / incident energy",
 		500, 0, 200.0);
 	// multiplicity per event for threshold plots -- 4
-	for(G4int i = 0; i < nParticles; i++)
+	for(G4int i = 0; i < N_PARTICLES; i++)
 		fAnalysisManager->CreateH1("h" + ParticleNames[i] + "_PerEvent_lowMult",
 			ParticleNames[i] + " multiplicity per event / incident energy",
 			1500, PerEventMultMinBound[i], PerEventMultMaxBound[i]);
 	// energy deposition per event -- 5
-	for(G4int i = 0; i < nParticles; i++)
+	for(G4int i = 0; i < N_PARTICLES; i++)
 		fAnalysisManager->CreateH1("h" + ParticleNames[i] + "_PerEvent_EDep",
 			ParticleNames[i] + " energy deposition per event / incident energy",
 			500, 0.0 * CLHEP::MeV, PerEventEDepBound[i] * CLHEP::MeV);
 	// initial (PreStepPoint) energy, unweighted -- 6
-	for(G4int i = 0; i < nParticles; i++)
+	for(G4int i = 0; i < N_PARTICLES; i++)
 		fAnalysisManager->CreateH1("h" + ParticleNames[i] + "_PerEvent_InitE",
 			ParticleNames[i] + " initial energy",
 			500, 0.0 * CLHEP::MeV, PerEventInitEBound[i] * CLHEP::MeV);
 	// initial (PreStepPoint) energy, weighted by initial energy -- 7
-	for(G4int i = 0; i < nParticles; i++)
+	for(G4int i = 0; i < N_PARTICLES; i++)
 		fAnalysisManager->CreateH1("h" + ParticleNames[i] + "_PerEvent_wInitE",
 			ParticleNames[i] + " weighted initial energy",
 			500, 0.0 * CLHEP::MeV, PerEventInitEBound[i] * CLHEP::MeV);
 	// initial particle hits in SAC per layer -- 8
-	for(G4int i = 0; i < nParticles; i++)
+	for(G4int i = 0; i < N_PARTICLES; i++)
 		fAnalysisManager->CreateH1("h" + ParticleNames[i] + "_SAC_Mult",
 			"number of " + ParticleNames[i] + " in SAC layers",
 			4, 0, 4);
@@ -218,31 +224,31 @@ void RunAction::BeginOfRunAction(const G4Run* aRun)
 	// NOTE: number of cells in SAC are hard coded...
 
 	// energy deposition vs. track length per hit -- 0
-	for(G4int i = 0; i < nParticles; i++)
+	for(G4int i = 0; i < N_PARTICLES; i++)
 		fAnalysisManager->CreateH2("h" + ParticleNames[i] + "_PerHit_EDep_TrLen",
 			ParticleNames[i] + " track length vs. energy deposition per hit",
 			500, 0.0 * CLHEP::MeV, PerHitEDepBound[i] * CLHEP::MeV,
 			500, 0.0 * CLHEP::cm, PerHitTrLenBound[i] * CLHEP::cm);
 	// x-y plane of SAC for each particle, z = 0 (BACK) -- 1
-	for(G4int i = 0; i < nParticles; i++)
+	for(G4int i = 0; i < N_PARTICLES; i++)
 		fAnalysisManager->CreateH2("hSACz0_" + ParticleNames[i],
 			"x-y plane of " + ParticleNames[i] + " SAC hits, z = 0 (BACK)",
 			10, 0, 10,
 			10, 0, 10);
 	// x-y plane of SAC for each particle, z = 1 -- 2
-	for(G4int i = 0; i < nParticles; i++)
+	for(G4int i = 0; i < N_PARTICLES; i++)
 		fAnalysisManager->CreateH2("hSACz1_" + ParticleNames[i],
 			"x-y plane of " + ParticleNames[i] + " SAC hits, z = 1",
 			10, 0, 10,
 			10, 0, 10);
 	// x-y plane of SAC for each particle, z = 2 -- 3
-	for(G4int i = 0; i < nParticles; i++)
+	for(G4int i = 0; i < N_PARTICLES; i++)
 		fAnalysisManager->CreateH2("hSACz2_" + ParticleNames[i],
 			"x-y plane of " + ParticleNames[i] + " SAC hits, z = 2",
 			10, 0, 10,
 			10, 0, 10);
 	// x-y plane of SAC for each particle, z = 3 (FRONT) -- 4
-	for(G4int i = 0; i < nParticles; i++)
+	for(G4int i = 0; i < N_PARTICLES; i++)
 		fAnalysisManager->CreateH2("hSACz3_" + ParticleNames[i],
 			"x-y plane of " + ParticleNames[i] + " SAC hits, z = 3 (FRONT)",
 			10, 0, 10,
@@ -268,7 +274,7 @@ void RunAction::BeginOfRunAction(const G4Run* aRun)
 	// NOTE: number of cells in SAC are hard coded...
 
 	// particle hits on the SAC -- 0
-	for(G4int i = 0; i < nParticles; i++)
+	for(G4int i = 0; i < N_PARTICLES; i++)
 		fAnalysisManager->CreateH3("hSACHits_" + ParticleNames[i],
 			ParticleNames[i] + " SAC hits",
 			10, 0, 10,
@@ -279,17 +285,4 @@ void RunAction::BeginOfRunAction(const G4Run* aRun)
 		10, 0, 10,
 		10, 0, 10,
 		4, 0, 4);
-}
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
-void RunAction::EndOfRunAction(const G4Run* aRun)
-{
-	fTimer->Stop();
-	G4cout << "RunAction::EndOfRunAction(): Run " << aRun->GetRunID() << " completed!" << G4endl;
-
-	// save histograms
-	fAnalysisManager = G4AnalysisManager::Instance();
-	fAnalysisManager->Write();
-	fAnalysisManager->CloseFile();
 }
