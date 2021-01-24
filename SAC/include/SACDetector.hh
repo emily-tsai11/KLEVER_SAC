@@ -11,17 +11,16 @@
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-#include "G4Material.hh"
 #include "globals.hh"
-
-#include "SACGeometry.hh"
-
-#include "SACCell.hh"
-#include "SACPMT.hh"
-#include "SACSiPM.hh"
+// #include "SACGeometry.hh"
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
+class G4Material;
+class G4LogicalVolume;
+class SACCell;
+class SACPMT;
+class SACSiPM;
 class SACMessenger;
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

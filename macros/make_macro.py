@@ -49,8 +49,8 @@ with open(filename + ".mac", "w") as f:
 	f.write("/gun/particle " + incidentP + "\n")
 	f.write("/gun/energy " + str(incidentE) + " " + incidentEUnit + "\n")
 	f.write("\n")
-	f.write("/Detector/SAC/IncidentE " + str(incidentE) + " " + incidentEUnit + "\n")
-	f.write("\n")
+	# f.write("/Detector/SAC/IncidentE " + str(incidentE) + " " + incidentEUnit + "\n")
+	# f.write("\n")
 	if args.r == None:
 		f.write("/RunAction/FileName SAC_" + str(int(incidentE)) + incidentEUnit + "_" + incidentP + "_n" + str(numEvents) + "\n")
 	else:

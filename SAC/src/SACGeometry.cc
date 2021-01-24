@@ -7,6 +7,7 @@
 // --------------------------------------------------------------
 
 #include "SACGeometry.hh"
+#include "G4SystemOfUnits.hh"
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -16,7 +17,7 @@ SACGeometry* SACGeometry::fInstance = 0;
 
 SACGeometry* SACGeometry::GetInstance()
 {
-	if(fInstance == 0) { fInstance = new SACGeometry(); }
+	if(fInstance == 0) fInstance = new SACGeometry();
 	return fInstance;
 }
 

@@ -15,9 +15,15 @@
 #include "G4ThreeVector.hh"
 #include "G4PVPlacement.hh"
 #include "G4SDManager.hh"
+#include "G4SystemOfUnits.hh"
 
 #include "SACMessenger.hh"
+#include "SACCell.hh"
+#include "SACPMT.hh"
+#include "SACSiPM.hh"
 #include "SACSD.hh"
+
+#include "SACGeometry.hh" // take this out if included in SACDetector.hh
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 

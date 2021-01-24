@@ -16,15 +16,11 @@
 #include "G4Event.hh"
 #include "globals.hh"
 
-#include "EventAction.hh"
-#include "DetectorConstruction.hh"
-
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-// class DetectorConstruction;
-// class EventAction;
+class DetectorConstruction;
+class EventAction;
 class G4ParticleTable;
-// class G4ParticleDefinition;
 class G4ParticleGun;
 class G4Event;
 class PrimaryGeneratorActionMessenger;
@@ -52,6 +48,10 @@ class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
 
 		G4int fBeamType;
 		G4String fParticleName;
+		G4int fBeamEnergy;
+		G4double fTime;
+		G4ThreeVector fPosition;
+		G4ThreeVector fMomentum;
 
 		G4double fKaonPrimaryMomentum;
 		G4double fKaonProductionAngle;
@@ -62,11 +62,10 @@ class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
 		G4LorentzVector f4Momentum;
 
 		G4ParticleTable* fParticleTable;
-		// G4ParticleDefinition* fParticleDef;
 		G4ParticleGun* fParticleGun;
+
 		DetectorConstruction* fDetector;
 		EventAction* fEventAction;
-
 		PrimaryGeneratorActionMessenger* fMessenger;
 };
 

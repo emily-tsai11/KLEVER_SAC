@@ -34,6 +34,7 @@ class SACSD : public G4VSensitiveDetector
 	private:
 
 		SACHitsCollection* fSACCollection;
+		G4int fHCID;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

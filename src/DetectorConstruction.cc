@@ -25,6 +25,7 @@
 #include "G4ThreeVector.hh"
 #include "G4PVPlacement.hh"
 #include "G4VisAttributes.hh"
+#include "G4SystemOfUnits.hh"
 
 #include "SACDetector.hh"
 #include "DetectorConstructionMessenger.hh"

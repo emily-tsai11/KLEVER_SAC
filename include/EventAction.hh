@@ -11,13 +11,13 @@
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 #include "G4UserEventAction.hh"
-#include "TRandom3.h"
 #include "globals.hh"
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 class G4Event;
 class G4Timer;
+class TRandom3;
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -30,8 +30,11 @@ class EventAction : public G4UserEventAction
 
 		void BeginOfEventAction(const G4Event*);
 		void EndOfEventAction(const G4Event*);
-		void FillRandomEnginesStates();
 
+		void FillRandomEnginesStates();
+		void FillHistograms(const G4Event*);
+
+		void SetEventID(G4int id) { fEventID = id; }
 		G4long GetEventID() { return fEventID; }
 
 	private:
@@ -42,8 +45,6 @@ class EventAction : public G4UserEventAction
 		TRandom3* fRandomDecayState;
 		long fRanecuState[2];
 		G4int fCommandLineSeed;
-		// G4bool fRandomEngineStateFileExist;
-		// TFile* fRandomEngineStateFile;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

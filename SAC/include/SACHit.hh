@@ -93,22 +93,21 @@ class SACHit : public G4VHit
 
 typedef G4THitsCollection<SACHit> SACHitsCollection;
 
-extern G4Allocator<SACHit> SACHitAllocator;
+extern G4Allocator<SACHit>* SACHitAllocator;
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 inline void* SACHit::operator new(size_t)
 {
-	void* aHit;
-	aHit = (void*) SACHitAllocator.MallocSingle();
-	return aHit;
+	if(!SACHitAllocator) SACHitAllocator = new G4Allocator<SACHit>;
+	return (void*) SACHitAllocator->MallocSingle();
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 inline void SACHit::operator delete(void* aHit)
 {
-	SACHitAllocator.FreeSingle((SACHit*) aHit);
+	SACHitAllocator->FreeSingle((SACHit*) aHit);
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

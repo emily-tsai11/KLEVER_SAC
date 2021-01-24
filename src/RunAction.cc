@@ -49,7 +49,7 @@ void RunAction::BeginOfRunAction(const G4Run* aRun)
 	fAnalysisManager->SetVerboseLevel(1);
 	fAnalysisManager->OpenFile(fMessenger->GetFileName());
 
-	ReadHistogramBounds();
+	GetHistogramBounds();
 	CreateHistograms();
 }
 
@@ -68,7 +68,7 @@ void RunAction::EndOfRunAction(const G4Run* aRun)
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-void RunAction::ReadHistogramBounds()
+void RunAction::GetHistogramBounds()
 {
 	PerHitEDepBound[0] = fMessenger->GetGammaPerHitEDepBound();
 	PerHitEDepBound[1] = fMessenger->GetPositronPerHitEDepBound();

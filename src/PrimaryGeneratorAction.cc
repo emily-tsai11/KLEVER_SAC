@@ -15,21 +15,28 @@
 #include "G4ParticleGun.hh"
 #include "G4DecayTable.hh"
 #include "G4ParticleTable.hh"
-#include "G4ParticleDefinition.hh"
 #include "G4PhysicalConstants.hh"
 #include "RandomGenerator.hh"
 
 #include "PrimaryGeneratorActionMessenger.hh"
 #include "PhysicsList.hh"
+#include "EventAction.hh"
+#include "DetectorConstruction.hh"
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-PrimaryGeneratorAction::PrimaryGeneratorAction(DetectorConstruction* detector, EventAction& eventAction) : fDetector(detector)
+PrimaryGeneratorAction::PrimaryGeneratorAction(DetectorConstruction* detector, EventAction& eventAction) : G4VUserPrimaryGeneratorAction(), fDetector(detector)
 {
 	fEventAction = &eventAction;
 	fParticleTable = G4ParticleTable::GetParticleTable();
+	fMessenger = new PrimaryGeneratorActionMessenger();
 
-	fBeamType = -1; // 1: KL
+	// Gun and default constants
+	fParticleGun = new G4ParticleGun(1);
+	fParticleName = "gamma";
+	fTime = 0.0 * ns;
+	fPosition = G4ThreeVector(0.0 * m, 0.0 * m, 1.0 * m);
+	fMomentum = G4ThreeVector(0.0, 0.0, -1.0);
 
 	// Atherton momentum constants
 	fKaonPrimaryMomentum = 400.0 * GeV;
@@ -37,14 +44,6 @@ PrimaryGeneratorAction::PrimaryGeneratorAction(DetectorConstruction* detector, E
 	fKaonProductionAzimuth = -0.5 * pi * radian;
 	fKaonOpeningAngle = 0.4 * mrad;
 	fDecayZMin = 102425.0;
-
-	// default particle type
-	fParticleName = "gamma";
-
-	G4int nParticles = 1;
-	fParticleGun = new G4ParticleGun(nParticles);
-
-	fMessenger = new PrimaryGeneratorActionMessenger();
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -60,38 +59,47 @@ PrimaryGeneratorAction::~PrimaryGeneratorAction()
 void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 {
 	fBeamType = fMessenger->GetBeamType();
+	fBeamEnergy = fMessenger->GetBeamEnergy();
 
 	switch(fBeamType)
 	{
-		case 1: // KL
+		case 1: // KL with Atherton momentum
 		{
 			fParticleName = "kaon0L";
+
 			fEventAction->FillRandomEnginesStates();
 			GenerateAthertonMomentum(); // fills f4Momentum
 			G4LorentzVector PosTime = GenerateKaonPositionTime(); // gets values from f4Momentum
 
-			fParticleGun->SetParticleDefinition(fParticleTable->FindParticle(fParticleName));
-			fParticleGun->SetParticleEnergy(f4Momentum.e());
-			G4cout << "PARTICLE ENERGY: " << fParticleGun->GetParticleEnergy() << G4endl;
-			fParticleGun->SetParticleTime(PosTime.t());
-			G4cout << "PARTICLE TIME: " << fParticleGun->GetParticleTime() << G4endl;
-			fParticleGun->SetParticlePosition(PosTime.vect());
-			G4cout << "PARTICLE POSITION: " << fParticleGun->GetParticlePosition() << G4endl;
-			fParticleGun->SetParticleMomentumDirection(G4ThreeVector(f4Momentum.px(), f4Momentum.py(), -f4Momentum.pz()));
-			G4cout << "PARTICLE MOMENTUM DIRECTION: " << fParticleGun->GetParticleMomentumDirection() << G4endl;
+			fBeamEnergy = f4Momentum.e();
+			fTime = PosTime.t();
+			fPosition = PosTime.vect();
+			fMomentum = G4ThreeVector(f4Momentum.px(), f4Momentum.py(), -f4Momentum.pz());
+
+			G4cout << "PARTICLE ENERGY: " << fBeamEnergy << G4endl;
+			G4cout << "PARTICLE TIME: " << fTime << G4endl;
+			G4cout << "PARTICLE POSITION: " << fPosition << G4endl;
+			G4cout << "PARTICLE MOMENTUM DIRECTION: " << fMomentum << G4endl;
+
 			break;
 		}
-		default: // gamma
+		case 2: // KL with user-specified input energy
 		{
-			fParticleGun->SetParticleDefinition(fParticleTable->FindParticle(fParticleName));
-			fParticleGun->SetParticleEnergy(100.0 * MeV);
-			fParticleGun->SetParticleTime(0.0 * ns);
-			fParticleGun->SetParticlePosition(G4ThreeVector(0.0 * m, 0.0 * m, 1.0 * m));
-			fParticleGun->SetParticleMomentumDirection(G4ThreeVector(0.0, 0.0, -1.0));
+			fParticleName = "kaon0L";
+			break;
+		}
+		case 3: // neutrons
+		{
+			fParticleName = "neutron";
 			break;
 		}
 	}
 
+	fParticleGun->SetParticleDefinition(fParticleTable->FindParticle(fParticleName));
+	fParticleGun->SetParticleEnergy(fBeamEnergy);
+	fParticleGun->SetParticleTime(fTime);
+	fParticleGun->SetParticlePosition(fPosition);
+	fParticleGun->SetParticleMomentumDirection(fMomentum);
 	fParticleGun->GeneratePrimaryVertex(anEvent);
 }
 
