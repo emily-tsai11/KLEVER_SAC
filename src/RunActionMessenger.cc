@@ -16,40 +16,7 @@
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-RunActionMessenger::RunActionMessenger() : G4UImessenger(), fFileName("SACRun"),
-	fGammaPerHitEDepBound(0.5), fPositronPerHitEDepBound(20.0), fElectronPerHitEDepBound(20.0),
-	fProtonPerHitEDepBound(20.0), fNeutronPerHitEDepBound(20.0), fPionPlusPerHitEDepBound(20.0),
-	fPionMinusPerHitEDepBound(20.0), fPionZeroPerHitEDepBound(20.0), fMuonPlusPerHitEDepBound(20.0),
-	fMuonMinusPerHitEDepBound(20.0), fOptPhotPerHitEDepBound(0.000005),
-
-	fGammaPerHitTrLenBound(202.5), fPositronPerHitTrLenBound(202.5), fElectronPerHitTrLenBound(202.5),
-	fProtonPerHitTrLenBound(202.5), fNeutronPerHitTrLenBound(202.5), fPionPlusPerHitTrLenBound(202.5),
-	fPionMinusPerHitTrLenBound(202.5), fPionZeroPerHitTrLenBound(202.5), fMuonPlusPerHitTrLenBound(202.5),
-	fMuonMinusPerHitTrLenBound(202.5), fOptPhotPerHitTrLenBound(202.5),
-
-	fGammaPerEventMultMinBound(0.0), fGammaPerEventMultMaxBound(5.0),
-	fPositronPerEventMultMinBound(0.0), fPositronPerEventMultMaxBound(5.0),
-	fElectronPerEventMultMinBound(0.0), fElectronPerEventMultMaxBound(5.0),
-	fProtonPerEventMultMinBound(0.0), fProtonPerEventMultMaxBound(5.0),
-	fNeutronPerEventMultMinBound(0.0), fNeutronPerEventMultMaxBound(5.0),
-	fPionPlusPerEventMultMinBound(0.0), fPionPlusPerEventMultMaxBound(5.0),
-	fPionMinusPerEventMultMinBound(0.0), fPionMinusPerEventMultMaxBound(5.0),
-	fPionZeroPerEventMultMinBound(0.0), fPionZeroPerEventMultMaxBound(5.0),
-	fMuonPlusPerEventMultMinBound(0.0), fMuonPlusPerEventMultMaxBound(5.0),
-	fMuonMinusPerEventMultMinBound(0.0), fMuonMinusPerEventMultMaxBound(5.0),
-	fOptPhotPerEventMultMinBound(0.0), fOptPhotPerEventMultMaxBound(200.0),
-
-	fGammaPerEventEDepBound(1.0), fPositronPerEventEDepBound(1.0), fElectronPerEventEDepBound(1.0),
-	fProtonPerEventEDepBound(1.0), fNeutronPerEventEDepBound(1.0), fPionPlusPerEventEDepBound(1.0),
-	fPionMinusPerEventEDepBound(1.0), fPionZeroPerEventEDepBound(1.0), fMuonPlusPerEventEDepBound(1.0),
-	fMuonMinusPerEventEDepBound(1.0), fOptPhotPerEventEDepBound(1.0),
-
-	fGammaPerEventInitEBound(1.0), fPositronPerEventInitEBound(1.0), fElectronPerEventInitEBound(1.0),
-	fProtonPerEventInitEBound(1.0), fNeutronPerEventInitEBound(1.0), fPionPlusPerEventInitEBound(1.0),
-	fPionMinusPerEventInitEBound(1.0), fPionZeroPerEventInitEBound(1.0), fMuonPlusPerEventInitEBound(1.0),
-	fMuonMinusPerEventInitEBound(1.0), fOptPhotPerEventInitEBound(1.0),
-
-	fPerEventEDepBound(1.0), fPerEventUntrackedEBound(1.0)
+RunActionMessenger::RunActionMessenger() : G4UImessenger()
 {
 	fRunActionDir = new G4UIdirectory("/RunAction/");
 	fRunActionDir->SetGuidance("UI commands to control the Run Action");

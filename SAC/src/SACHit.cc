@@ -98,9 +98,9 @@ void SACHit::Print()
 	<< "\t| SD: " << fSDName
 	<< "\t| Creator Process: " << fCreatorProcessName
 	<< "\t| Energy Deposited: " << G4BestUnit(fEnergyDeposition, "Energy")
-	<< "\t| Time: " << G4BestUnit(fTime, "Time")
-	<< "\t| Track Length: " << G4BestUnit(fTrackLength, "Length")
-	<< "\t| Position: " << G4BestUnit(fPosition, "Length")
-	<< "\t| Local Position: " << G4BestUnit(fLocalPosition, "Length")
+	// << "\t| Time: " << G4BestUnit(fTime, "Time")
+	// << "\t| Track Length: " << G4BestUnit(fTrackLength, "Length")
+	// << "\t| Position: " << G4BestUnit(fPosition, "Length")
+	// << "\t| Local Position: " << G4BestUnit(fLocalPosition, "Length")
 	<< " ---" << G4endl;
 }

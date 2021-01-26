@@ -12,6 +12,7 @@
 
 #include "G4UserEventAction.hh"
 #include "globals.hh"
+#include "SACSD.hh"
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -45,6 +46,7 @@ class EventAction : public G4UserEventAction
 		TRandom3* fRandomDecayState;
 		long fRanecuState[2];
 		G4int fCommandLineSeed;
+		SACHitsCollection* fSACCollection;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

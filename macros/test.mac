@@ -7,9 +7,9 @@
 /PrimaryGeneratorAction/BeamEnergy 666 MeV
 /run/beamOn 1
 
-/PrimaryGeneratorAction/BeamType 1
+# /PrimaryGeneratorAction/BeamType 1
 # /PrimaryGeneratorAction/BeamEnergy 100 MeV
-/run/beamOn 1
+# /run/beamOn 1
 
 # /Detector/SAC/EnablePMT 1
 # /Detector/UpdateGeometry

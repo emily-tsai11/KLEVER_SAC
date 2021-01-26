@@ -10,12 +10,8 @@
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-#define N_PARTICLES 11
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
-#include "G4VAnalysisManager.hh"
 #include "G4UserRunAction.hh"
+#include "G4VAnalysisManager.hh"
 #include "globals.hh"
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -23,6 +19,7 @@
 class G4Timer;
 class G4Run;
 class RunActionMessenger;
+class HistManager;
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -38,18 +35,11 @@ class RunAction : public G4UserRunAction
 
 	private:
 
-		G4double PerHitEDepBound[N_PARTICLES];
-		G4double PerHitTrLenBound[N_PARTICLES];
-		G4int PerEventMultMinBound[N_PARTICLES];
-		G4int PerEventMultMaxBound[N_PARTICLES];
-		G4double PerEventEDepBound[N_PARTICLES];
-		G4double PerEventInitEBound[N_PARTICLES];
-
 		G4Timer* fTimer;
-		G4VAnalysisManager* fAnalysisManager;
 		RunActionMessenger* fMessenger;
+		G4VAnalysisManager* fAnalysisManager;
+		HistManager* fHistManager;
 
-		void ReadHistogramBounds();
 		void CreateHistograms();
 };
 
