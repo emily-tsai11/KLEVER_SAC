@@ -4,12 +4,14 @@
 
 /run/initialize
 
-/PrimaryGeneratorAction/BeamEnergy 666 MeV
-/run/beamOn 1
+# /Detector/SAC/EnablePMT 1
+# /Detector/UpdateGeometry
 
-# /PrimaryGeneratorAction/BeamType 1
+/HistManager/FileName 100filename
+
 # /PrimaryGeneratorAction/BeamEnergy 100 MeV
 # /run/beamOn 1
 
-# /Detector/SAC/EnablePMT 1
-# /Detector/UpdateGeometry
+/PrimaryGeneratorAction/BeamType 1
+/PrimaryGeneratorAction/BeamEnergy 100 MeV
+/run/beamOn 10

@@ -18,7 +18,6 @@
 
 class G4Timer;
 class G4Run;
-class RunActionMessenger;
 class HistManager;
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -36,9 +35,8 @@ class RunAction : public G4UserRunAction
 	private:
 
 		G4Timer* fTimer;
-		RunActionMessenger* fMessenger;
-		G4VAnalysisManager* fAnalysisManager;
 		HistManager* fHistManager;
+		G4VAnalysisManager* fAnalysisManager;
 
 		void CreateHistograms();
 };

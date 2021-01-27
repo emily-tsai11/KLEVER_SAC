@@ -30,9 +30,9 @@ PrimaryGeneratorAction::PrimaryGeneratorAction(DetectorConstruction* detector, E
 	fEventAction = &eventAction;
 	fParticleTable = G4ParticleTable::GetParticleTable();
 	fMessenger = new PrimaryGeneratorActionMessenger();
-
-	// Gun and default constants
 	fParticleGun = new G4ParticleGun(1);
+
+	// default constants not defined in messenger
 	fParticleName = "gamma";
 	fTime = 0.0 * ns;
 	fPosition = G4ThreeVector(0.0 * m, 0.0 * m, 1.0 * m);
@@ -51,6 +51,7 @@ PrimaryGeneratorAction::PrimaryGeneratorAction(DetectorConstruction* detector, E
 PrimaryGeneratorAction::~PrimaryGeneratorAction()
 {
 	delete fParticleGun;
+	delete fMessenger;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

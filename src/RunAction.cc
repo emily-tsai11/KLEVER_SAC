@@ -10,19 +10,15 @@
 #include "G4RunManager.hh"
 #include "G4Run.hh"
 #include "G4Timer.hh"
-#include "G4UnitsTable.hh"
 
-#include "RunActionMessenger.hh"
 #include "HistManager.hh"
-#include "PrimaryGeneratorAction.hh"
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 RunAction::RunAction()
 {
-	fTimer = new G4Timer();
-	fMessenger = new RunActionMessenger();
 	fHistManager = HistManager::GetInstance();
+	fTimer = new G4Timer();
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -30,7 +26,6 @@ RunAction::RunAction()
 RunAction::~RunAction()
 {
 	delete fTimer;
-	delete fMessenger;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -39,8 +34,8 @@ void RunAction::BeginOfRunAction(const G4Run* aRun)
 {
 	G4cout << "RunAction::BeginOfRunAction(): Run " << aRun->GetRunID() << " begins!" << G4endl;
 	fTimer->Start();
-
 	G4RunManager::GetRunManager()->SetRandomNumberStore(false);
+
 	fAnalysisManager = G4Analysis::ManagerInstance("root");
 	fAnalysisManager->SetVerboseLevel(1);
 	fAnalysisManager->OpenFile(fHistManager->GetFileName());
@@ -55,7 +50,7 @@ void RunAction::EndOfRunAction(const G4Run* aRun)
 	fTimer->Stop();
 	G4cout << "RunAction::EndOfRunAction(): Run " << aRun->GetRunID() << " completed!" << G4endl;
 
-	// save histograms
+	// save output file
 	fAnalysisManager = G4AnalysisManager::Instance();
 	fAnalysisManager->Write();
 	fAnalysisManager->CloseFile();
@@ -65,20 +60,30 @@ void RunAction::EndOfRunAction(const G4Run* aRun)
 
 void RunAction::CreateHistograms()
 {
-	G4int nBins = fHistManager->GetNBins();
-	std::map<G4String, G4int> fN = fHistManager->GetHistogramNames();
-	std::map<G4String, std::pair<G4double, G4double>> fB = fHistManager->GetHistogramBounds();
-
-	// TODO: FIX 2D AND 3D PLOTS
-	G4String histName;
-	G4double low;
-	G4double high;
-	std::map<G4String, G4int>::iterator iterN;
-	for(iterN = fN.begin(); iterN != fN.end(); iterN++)
+	std::map<G4String, f1DHistInfo> f1DH = fHistManager->Get1DHistInfo();
+	std::map<G4String, f1DHistInfo>::iterator iter1;
+	for(iter1 = f1DH.begin(); iter1 != f1DH.end(); iter1++)
 	{
-		histName = iterN->first;
-		low = fB.at(histName).first;
-		high = fB.at(histName).second;
-		fAnalysisManager->CreateH1(histName, histName, nBins, low, high);
+		fAnalysisManager->CreateH1(iter1->first, iter1->second.description,
+			iter1->second.nBinsX, iter1->second.lowX, iter1->second.highX);
+	}
+
+	std::map<G4String, f2DHistInfo> f2DH = fHistManager->Get2DHistInfo();
+	std::map<G4String, f2DHistInfo>::iterator iter2;
+	for(iter2 = f2DH.begin(); iter2 != f2DH.end(); iter2++)
+	{
+		fAnalysisManager->CreateH2(iter2->first, iter2->second.description,
+			iter2->second.nBinsX, iter2->second.lowX, iter2->second.highX,
+			iter2->second.nBinsY, iter2->second.lowY, iter2->second.highY);
+	}
+
+	std::map<G4String, f3DHistInfo> f3DH = fHistManager->Get3DHistInfo();
+	std::map<G4String, f3DHistInfo>::iterator iter3;
+	for(iter3 = f3DH.begin(); iter3 != f3DH.end(); iter3++)
+	{
+		fAnalysisManager->CreateH3(iter3->first, iter3->second.description,
+			iter3->second.nBinsX, iter3->second.lowX, iter3->second.highX,
+			iter3->second.nBinsY, iter3->second.lowY, iter3->second.highY,
+			iter3->second.nBinsZ, iter3->second.lowZ, iter3->second.highZ);
 	}
 }

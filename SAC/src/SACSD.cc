@@ -44,8 +44,7 @@ G4bool SACSD::ProcessHits(G4Step* aStep, G4TouchableHistory*)
 	G4Track* track = aStep->GetTrack();
 
 	G4double eDep = aStep->GetTotalEnergyDeposit();
-	if(eDep == 0.0) return true;
-
+	if(eDep == 0.0) return false;
 	G4ThreeVector worldPosPre = preStepPoint->GetPosition();
 	G4ThreeVector localPosPre = touchable->GetHistory()->GetTopTransform().TransformPoint(worldPosPre);
 

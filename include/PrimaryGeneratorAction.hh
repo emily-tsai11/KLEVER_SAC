@@ -38,12 +38,6 @@ class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
 		void GenerateAthertonMomentum();
 		G4LorentzVector GenerateKaonPositionTime();
 
-		void SetBeamType(G4int type) { fBeamType = type; }
-		G4int GetBeamType() { return fBeamType; }
-
-		void SetParticleName(G4String name) { fParticleName = name; }
-		G4String GetParticleName() { return fParticleName; }
-
 	private:
 
 		G4int fBeamType;

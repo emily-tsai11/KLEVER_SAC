@@ -23,9 +23,6 @@
 #include "HistManager.hh"
 #include "RandomGenerator.hh"
 
-// #include "G4UnitsTable.hh"
-// #include "SACGeometry.hh"
-
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 EventAction::EventAction(int seedNum) : G4UserEventAction() // initialize defaults
@@ -58,8 +55,7 @@ void EventAction::BeginOfEventAction(const G4Event* evt)
 void EventAction::EndOfEventAction(const G4Event* evt)
 {
 	fTimer->Stop();
-
-	G4cout << "EventAction::EndOfEventAction(): Event " << fEventID << " over, filling histograms now!" << G4endl;
+	// G4cout << "EventAction::EndOfEventAction(): Event " << fEventID << " over, filling histograms now!" << G4endl;
 
 	// draw all trajectories
 	G4TrajectoryContainer* trajectoryContainer = evt->GetTrajectoryContainer();
@@ -76,6 +72,7 @@ void EventAction::EndOfEventAction(const G4Event* evt)
 
 	FillHistograms(evt);
 
+	// periodic printing
 	G4int eventID = evt->GetEventID();
 	if((eventID < 10) || (eventID < 100 && !(eventID % 10)) || (eventID < 1000 && !(eventID % 100)) || !(eventID % 1000))
 	{
@@ -108,47 +105,33 @@ void EventAction::FillRandomEnginesStates()
 
 void EventAction::FillHistograms(const G4Event* evt)
 {
-	G4PrimaryParticle* primary = evt->GetPrimaryVertex()->GetPrimary();
-	G4double primaryInitE = primary->GetKineticEnergy();
-
-	G4cout << "particle name: " << primary->GetParticleDefinition()->GetParticleName() << G4endl;
-	G4cout << "kinetic energy: " << primaryInitE << G4endl;
-	G4cout << "total energy: " << primary->GetTotalEnergy() << G4endl;
-	G4cout << "track ID: " << primary->GetTrackID() << G4endl;
-
-	// KINETIC ENERGY IS THE INITIAL ENERGY!!!
-
+	// get histogram parameters
 	HistManager* fHistManager = HistManager::GetInstance();
-	// fHistManager->PrintHistogramNames();
-	// fHistManager->PrintHistogramBounds();
-	std::map<G4String, G4int> fN = fHistManager->GetHistogramNames();
+	std::map<G4String, G4int> fP = fHistManager->GetParticleNames();
+	std::map<G4String, f1DHistInfo> f1DH = fHistManager->Get1DHistInfo();
+	std::map<G4String, f2DHistInfo> f2DH = fHistManager->Get2DHistInfo();
+	std::map<G4String, f3DHistInfo> f3DH = fHistManager->Get3DHistInfo();
+	// fHistManager->PrintHistNames();
+	// fHistManager->Print1DHistInfo();
+	// fHistManager->Print2DHistInfo();
+	// fHistManager->Print3DHistInfo();
 
+	// get analysis manager
 	G4AnalysisManager* fAnalysisManager = G4AnalysisManager::Instance();
 
+	// get incident particle name & energy
+	G4PrimaryParticle* primary = evt->GetPrimaryVertex()->GetPrimary();
+	G4String primaryName = primary->GetParticleDefinition()->GetParticleName();
+	G4double primaryInitE = primary->GetKineticEnergy();
+	G4cout << primaryName << " incident energy: " << primaryInitE << G4endl;
+
+	// get hits collection
 	fSACCollection = (SACHitsCollection*) evt->GetHCofThisEvent()->GetHC(0);
 	G4int nHits = fSACCollection->entries();
-
-	G4cout << "[EventAction::FillHistograms()] There are " << nHits << " hits." << G4endl;
-
+	// G4cout << "[EventAction::FillHistograms()] There are " << nHits << " hits." << G4endl;
 	// for(G4int i = 0; i < nHits; i++) (*fSACCollection)[i]->Print();
 
-	// UN-HARD CODE THIS LATER!!! make a new map in HistManager
-	std::map<G4String, G4int> fP; // particle names
-	fP.insert({"all", 0});
-	fP.insert({"e-", 1});
-	fP.insert({"gamma", 2});
-	fP.insert({"mu-", 3});
-	fP.insert({"mu+", 4});
-	fP.insert({"neutron", 5});
-	fP.insert({"opticalphoton", 6});
-	fP.insert({"other", 7});
-	fP.insert({"pi-", 8});
-	fP.insert({"pi+", 9});
-	fP.insert({"pi0", 10});
-	fP.insert({"e+", 11});
-	fP.insert({"proton", 12});
-	fP.insert({"untracked", 13});
-
+	// hit attributes
 	G4int cellID;
 	G4int trackID;
 	G4String particleName;
@@ -156,11 +139,12 @@ void EventAction::FillHistograms(const G4Event* evt)
 	G4String sdName;
 	G4String creatorProcessName;
 	G4double energyDeposition;
-	G4double time;
-	G4double trackLength;
-	G4ThreeVector position;
-	G4ThreeVector localPosition;
-	G4int partIndex;
+	// G4double time;
+	// G4double trackLength;
+	// G4ThreeVector position;
+	// G4ThreeVector localPosition;
+
+	// helpers to fill histograms, will need to scale # entries w/# groups
 	std::map<G4int, G4bool> trackedHits;
 	G4double fEDepPerEvent[] = {
 		0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
@@ -169,10 +153,11 @@ void EventAction::FillHistograms(const G4Event* evt)
 		0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
 		0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
 
+	// filling histograms
 	for(G4int i = 0; i < nHits; i++)
 	{
+		// get current hit and attributes
 		SACHit* currentHit = (*fSACCollection)[i];
-
 		cellID = currentHit->GetCellID();
 		trackID = currentHit->GetTrackID();
 		particleName = currentHit->GetParticleName();
@@ -181,50 +166,63 @@ void EventAction::FillHistograms(const G4Event* evt)
 		creatorProcessName = currentHit->GetCreatorProcessName();
 		energyDeposition = currentHit->GetEnergyDeposition();
 		// time = currentHit->GetTime();
-		trackLength = currentHit->GetTrackLength();
+		// trackLength = currentHit->GetTrackLength();
 		// position = currentHit->GetPosition();
 		// localPosition = currentHit->GetLocalPosition();
 
-		// increment edep, mult in the event
-		partIndex = fP.at("all");
-		fEDepPerEvent[partIndex] += energyDeposition;
-		fMultPerEvent[partIndex]++;
-		try
-		{
-			partIndex = fP.at(particleName);
-			fEDepPerEvent[partIndex] += energyDeposition;
-			if(trackedHits[trackID] == false)
-			{
-				trackedHits[trackID] = true;
-				fMultPerEvent[partIndex]++;
-			}
-		}
+		// increment edep in the event
+		fEDepPerEvent[fP.at("all")] += energyDeposition;
+		try { fEDepPerEvent[fP.at(particleName)] += energyDeposition; }
 		catch(std::out_of_range)
 		{
 			G4cout << "particle not yet added to list --- " << particleName << G4endl;
-			partIndex = fP.at("other");
-			fEDepPerEvent[partIndex] += energyDeposition;
-			fMultPerEvent[partIndex]++;
+			fEDepPerEvent[fP.at("other")] += energyDeposition;
+		}
+
+		// increment mult in the event
+		if(trackedHits[trackID] == false)
+		{
+			trackedHits[trackID] = true;
+			fMultPerEvent[fP.at("all")]++;
+			try { fMultPerEvent[fP.at(particleName)]++; }
+			catch(std::out_of_range) { fMultPerEvent[fP.at("other")]++; }
 		}
 	}
-	// fill true untracked energy deposition
+	// get true untracked edep
 	fEDepPerEvent[fP.at("untracked")] = primaryInitE - fEDepPerEvent[fP.at("all")];
+
+	// G4double eDepSum = 0.0;
+	// for(G4int i = 0; i < 14; i++)
+	// {
+	// 	G4cout << fEDepPerEvent[i] << " ";
+	// 	if(i > 0 && i < 13) eDepSum += fEDepPerEvent[i];
+	// }
+	// G4cout << G4endl;
+	// G4cout << "total should be: " << eDepSum << G4endl;
+	// G4double multSum = 0.0;
+	// for(G4int i = 0; i < 14; i++)
+	// {
+	// 	G4cout << fMultPerEvent[i] << " ";
+	// 	if(i > 0 && i < 13) multSum += fMultPerEvent[i];
+	// }
+	// G4cout << G4endl;
+	// G4cout << "total should be: " << multSum << G4endl;
 
 	// fill "per event" histograms
 	std::map<G4String, G4int>::iterator iter;
 	for(iter = fP.begin(); iter != fP.end(); iter++)
 	{
 		fAnalysisManager->FillH1(
-			fN.at("hEDep_PerEvent_" + iter->first),
-			fEDepPerEvent[iter->second], 1.0);
-		fAnalysisManager->FillH1(
-			fN.at("hEDep_PerEvent_" + iter->first + "_norm"),
+			f1DH.at("h1EDepNorm_PerEvent_" + iter->first).index,
 			fEDepPerEvent[iter->second] / primaryInitE, 1.0);
 		fAnalysisManager->FillH1(
-			fN.at("hMult_PerEvent_" + iter->first),
+			f1DH.at("h1EDep_PerEvent_" + iter->first).index,
+			fEDepPerEvent[iter->second], 1.0);
+		fAnalysisManager->FillH1(
+			f1DH.at("h1MultLow_PerEvent_" + iter->first).index,
 			fMultPerEvent[iter->second], 1.0);
 		fAnalysisManager->FillH1(
-			fN.at("hMult_PerEvent_" + iter->first + "_low"),
+			f1DH.at("h1Mult_PerEvent_" + iter->first).index,
 			fMultPerEvent[iter->second], 1.0);
 	}
 }
