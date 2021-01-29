@@ -61,7 +61,7 @@ SACGeometry::SACGeometry()
 	fSACPosZ = 0.0 * cm; // debug
 
 	// PMT parameters
-	fEnablePMT = 0;
+	fEnablePMT = 1;
 	fPMTDiameter = 8.0 * mm;
 	fPMTThickness = 1.0 * mm;
 	fPMTRound = 2.0 * M_PI * rad;
@@ -92,9 +92,6 @@ SACGeometry::SACGeometry()
 
 	// verbose level -- do not show debug output
 	fVerbose = 0;
-
-	// incident particle energy
-	fIncidentE = 1.0;
 
 	// from center of yoke, i.e. 370cm from target, 70cm from front of ECal
 	// fSACFrontFacePosZ = 300.0 * cm;

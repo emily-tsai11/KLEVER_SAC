@@ -105,10 +105,6 @@ class SACGeometry
 		void SetVerboseLevel(G4int v) { fVerbose = v; }
 		G4int GetVerboseLevel() { return fVerbose; }
 
-		// incident particle energy
-		void SetIncidentE(G4double e) { fIncidentE = e; }
-		G4double GetIncidentE() { return fIncidentE; }
-
 		// set position along Z of SAC front face
 		// void SetSACFrontFacePosZ(G4double z) { fSACFrontFacePosZ = z; }
 		// G4double GetSACFrontFacePosZ() { return fSACFrontFacePosZ; }
@@ -169,9 +165,6 @@ class SACGeometry
 
 		// verbose level
 		G4int fVerbose;
-
-		// incident particle energy
-		G4double fIncidentE;
 
 		// position along Z axis of SAC front face
 		// G4double fSACFrontFacePosZ;

@@ -47,6 +47,7 @@ DetectorConstruction::DetectorConstruction() : fSolidWorld(0), fLogicalWorld(0),
 DetectorConstruction::~DetectorConstruction()
 {
 	delete fSAC;
+	delete fMessenger;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

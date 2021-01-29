@@ -19,7 +19,6 @@
 class G4UIdirectory;
 class G4UIcmdWithAnInteger;
 class G4UIcmdWithADoubleAndUnit;
-class SACGeometry;
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -33,8 +32,6 @@ class SACMessenger : public G4UImessenger
 
 	private:
 
-		SACGeometry* fSACGeometry;
-
 		G4UIdirectory* fSACDetectorDir;
 
 		G4UIcmdWithADoubleAndUnit* fSetCrystalSizeCmd;
@@ -42,6 +39,7 @@ class SACMessenger : public G4UImessenger
 
 		G4UIcmdWithADoubleAndUnit* fSetCrystalCoatingCmd;
 		G4UIcmdWithADoubleAndUnit* fSetCellGapCmd;
+		G4UIcmdWithADoubleAndUnit* fSetLayerGapCmd;
 
 		G4UIcmdWithAnInteger* fSetSACNRowsCmd;
 		G4UIcmdWithAnInteger* fSetSACNColsCmd;
@@ -51,8 +49,6 @@ class SACMessenger : public G4UImessenger
 		G4UIcmdWithAnInteger* fEnableSiPMCmd;
 
 		G4UIcmdWithAnInteger* fSetVerboseLevelCmd;
-
-		G4UIcmdWithADoubleAndUnit* fSetIncidentECmd;
 		// G4UIcmdWithADoubleAndUnit* fSetSACFrontFaceZCmd;
 };
 

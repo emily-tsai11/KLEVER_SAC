@@ -32,12 +32,12 @@ class SACDetector
 		SACDetector(G4Material*, G4LogicalVolume*);
 		~SACDetector();
 		void CreateGeometry();
+		void ReadGeometry();
 
 		void SetMaterial(G4Material* v) { fMaterial = v; }
 		void SetMotherVolume(G4LogicalVolume* v) { fMotherVolume = v; }
 
 		G4LogicalVolume* GetSACLogicalVolume() { return fSACVolume; }
-
 		// G4double GetSACFrontFaceZ() { return SACGeometry::GetInstance()->GetSACFrontFacePosZ(); }
 
 	private:
@@ -50,7 +50,7 @@ class SACDetector
 		G4double fCellGap, fLayerGap;
 
 		G4int fNRows, fNCols, fNLayers;
-		G4double fSACSizeX, fSACSizeY, fSACSizeZ;
+		G4double fSACSizeX, fSACSizeY, fSACSizeZ, fSACSizeZInit;
 		G4double fSACPosX, fSACPosY, fSACPosZ;
 
 		G4int fEnablePMT, fEnableSiPM;

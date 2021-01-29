@@ -13,6 +13,8 @@ else()
 	find_package(Geant4 REQUIRED)
 endif()
 
+set(CMAKE_BUILD_TYPE Debug)
+
 # find ROOT
 find_package(ROOT REQUIRED)
 

@@ -29,38 +29,7 @@
 
 SACDetector::SACDetector(G4Material* material, G4LogicalVolume* motherVolume) : fMaterial(material), fMotherVolume(motherVolume)
 {
-	SACGeometry* Geo = SACGeometry::GetInstance();
-
-	fCellSizeX = Geo->GetCellSizeX();
-	fCellSizeY = Geo->GetCellSizeY();
-	fCellSizeZ = Geo->GetCellSizeZ();
-
-	fCellGap = Geo->GetCellGap();
-	printf("Gap between SAC cells is %f\n", fCellGap);
-
-	fLayerGap = Geo->GetLayerGap();
-	printf("Gap between SAC layers is %f\n", fLayerGap);
-
-	fNRows = Geo->GetSACNRows();
-	fNCols = Geo->GetSACNCols();
-	fNLayers = Geo->GetSACNLayers();
-	printf("SAC dimensions are %d %d %d\n", fNRows, fNCols, fNLayers);
-
-	fSACSizeX = Geo->GetSACSizeX();
-	fSACSizeY = Geo->GetSACSizeY();
-	fSACSizeZ = Geo->GetSACSizeZ();
-	printf("SAC size is %f %f %f\n", fSACSizeX, fSACSizeY, fSACSizeZ);
-
-	fSACPosX = Geo->GetSACPosX();
-	fSACPosY = Geo->GetSACPosY();
-	fSACPosZ = Geo->GetSACPosZ();
-	printf("SAC will be placed at %f %f %f\n", fSACPosX, fSACPosY, fSACPosZ);
-
 	fCell = new SACCell();
-
-	fPMTThickness = Geo->GetPMTThickness();
-	fSiPMThickness = Geo->GetSiPMThickness();
-
 	fSACMessenger = new SACMessenger();
 }
 
@@ -68,11 +37,10 @@ SACDetector::SACDetector(G4Material* material, G4LogicalVolume* motherVolume) : 
 
 SACDetector::~SACDetector()
 {
-	if(!fCell) delete fCell;
-
 	if(!fPMT) delete fPMT;
 	if(!fSiPM) delete fSiPM;
 
+	delete fCell;
 	delete fSACMessenger;
 }
 
@@ -80,6 +48,9 @@ SACDetector::~SACDetector()
 
 void SACDetector::CreateGeometry()
 {
+	// read in geometry parameters
+	ReadGeometry();
+
 	// create main SAC box
 	G4Box* fSACSolid = new G4Box(
 		"SAC",
@@ -109,26 +80,18 @@ void SACDetector::CreateGeometry()
 	fCell->CreateGeometry();
 
 	// create SAC PMT or SiPM
-	{
-		SACGeometry* Geo = SACGeometry::GetInstance();
-		fEnablePMT = Geo->GetEnablePMT();
-		fEnableSiPM = Geo->GetEnableSiPM();
-	}
-
 	if(fEnablePMT && !fEnableSiPM)
 	{
-		if(fEnablePMT) printf("PMTs are enabled and SiPMs are disabled\n");
+		if(!fSiPM) delete fSiPM;
 		fPMT = new SACPMT();
 		fPMT->CreateGeometry();
 	}
 	else if(fEnableSiPM && !fEnablePMT)
 	{
-		if(fEnableSiPM) printf("SiPMs are enabled and PMTs are disabled\n");
+		if(!fPMT) delete fPMT;
 		fSiPM = new SACSiPM();
 		fSiPM->CreateGeometry();
 	}
-	else if(!fEnablePMT && !fEnableSiPM) printf("Both PMTs and SiPMS are disabled\n");
-	else printf("ERROR --- Both PMTs and SiPMS are disabled\n");
 
 	// position all crystals
 	G4double fCrystalPosX;
@@ -140,60 +103,107 @@ void SACDetector::CreateGeometry()
 		{
 			for(G4int col = 0; col < fNCols; col++)
 			{
-				// checking if crystal exists
-				if(row >= 0 && row < fNRows && col >= 0 && col < fNCols)
+				// get crystal position coordinates
+				fCrystalPosX = (fCellSizeX + fCellGap) * (-fNCols * 0.5 + col + 0.5);
+				fCrystalPosY = (fCellSizeY + fCellGap) * (-fNRows * 0.5 + row + 0.5);
+				fCrystalPosZ = ((fNLayers / 2.0 - 0.5) - layer) * (fCellSizeZ + fLayerGap);
+				if(fEnablePMT && !fEnableSiPM) fCrystalPosZ += fPMTThickness / 2.0;
+				else if(fEnableSiPM && !fEnablePMT) fCrystalPosZ += fSiPMThickness / 2.0;
+
+				G4int CellID = row * fNCols + col + layer * fNRows * fNCols;
+				if(CellID % 100 == 0)
 				{
-					// get crystal position coordinates
-					fCrystalPosX = (fCellSizeX + fCellGap) * (-fNCols * 0.5 + col + 0.5);
-					fCrystalPosY = (fCellSizeY + fCellGap) * (-fNRows * 0.5 + row + 0.5);
-					fCrystalPosZ = (1.5 - layer) * (fCellSizeZ + fLayerGap);
+					printf("Crystal position %f %f %f\n", fCrystalPosX, fCrystalPosY, fCrystalPosZ);
+					printf("***** CellID %d *****\n", CellID);
+				}
 
-					G4int CellID = row * fNCols + col + layer * fNRows * fNCols;
-					if(CellID % 100 == 0)
-					{
-						printf("Crystal position %f %f %f\n", fCrystalPosX, fCrystalPosY, fCrystalPosZ);
-						printf("***** CellID %d *****\n", CellID);
-					}
+				// place the crystals
+				G4ThreeVector fCrystalPos = G4ThreeVector(fCrystalPosX, fCrystalPosY, fCrystalPosZ);
+				new G4PVPlacement(
+					0,
+					fCrystalPos,
+					fCell->GetCellLogicalVolume(),
+					"SACCell",
+					fSACVolume,
+					false, CellID, false);
+				G4int fPMID = row * fNCols + col;
 
-					// place the crystals
-					G4ThreeVector fCrystalPos = G4ThreeVector(fCrystalPosX, fCrystalPosY, fCrystalPosZ);
+				// place the photomultipliers
+				if(fEnablePMT && !fEnableSiPM)
+				{
 					new G4PVPlacement(
 						0,
-						fCrystalPos,
-						fCell->GetCellLogicalVolume(),
-						"SACCell",
+						G4ThreeVector(fCrystalPosX, fCrystalPosY, fCrystalPosZ - 0.5 * (fCellSizeZ + fPMTThickness)),
+						fPMT->GetPMTLogicalVolume(),
+						"SACPMT",
 						fSACVolume,
-						false, CellID, false);
-
-					// place the photomultipliers
-					if(fEnablePMT && !fEnableSiPM)
-					{
-						new G4PVPlacement(
-							0,
-							// TODO: FIGURE OUT HOW TO PLACE PMT RIGHT UP AGAINST CELL
-							G4ThreeVector(fCrystalPosX, fCrystalPosY, fCrystalPosZ - 0.5 * (fCellSizeZ + fPMTThickness)),
-							fPMT->GetPMTLogicalVolume(),
-							"SACPMT",
-							fSACVolume,
-							false, 0, false);
-					}
-					else if(fEnableSiPM && !fEnablePMT)
-					{
-						new G4PVPlacement(
-							0,
-							// TODO: FIGURE OUT HOW TO PLACE SiPM RIGHT UP AGAINST CELL
-							G4ThreeVector(fCrystalPosX, fCrystalPosY, fCrystalPosZ - 0.5 * (fCellSizeZ + fSiPMThickness)),
-							fSiPM->GetSiPMLogicalVolume(),
-							"SACSiPM",
-							fSACVolume,
-							false, 0, false);
-					}
+						false, fPMID, false);
 				}
-				else
+				else if(fEnableSiPM && !fEnablePMT)
 				{
-					printf("SACDetector::CreateGeometry - ERROR - Requested crystal at row %d col %d\n", row, col);
+					new G4PVPlacement(
+						0,
+						G4ThreeVector(fCrystalPosX, fCrystalPosY, fCrystalPosZ - 0.5 * (fCellSizeZ + fSiPMThickness)),
+						fSiPM->GetSiPMLogicalVolume(),
+						"SACSiPM",
+						fSACVolume,
+						false, fPMID, false);
 				}
 			}
 		}
 	}
+}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+void SACDetector::ReadGeometry()
+{
+	SACGeometry* Geo = SACGeometry::GetInstance();
+
+	fCellSizeX = Geo->GetCellSizeX();
+	fCellSizeY = Geo->GetCellSizeY();
+	fCellSizeZ = Geo->GetCellSizeZ();
+
+	fCellGap = Geo->GetCellGap();
+	printf("Gap between SAC cells is %f\n", fCellGap);
+
+	fLayerGap = Geo->GetLayerGap();
+	printf("Gap between SAC layers is %f\n", fLayerGap);
+
+	fEnablePMT = Geo->GetEnablePMT();
+	fEnableSiPM = Geo->GetEnableSiPM();
+
+	fPMTThickness = Geo->GetPMTThickness();
+	fSiPMThickness = Geo->GetSiPMThickness();
+
+	fNRows = Geo->GetSACNRows();
+	fNCols = Geo->GetSACNCols();
+	fNLayers = Geo->GetSACNLayers();
+	printf("SAC dimensions are %d %d %d\n", fNRows, fNCols, fNLayers);
+
+	fSACSizeX = Geo->GetSACSizeX();
+	fSACSizeY = Geo->GetSACSizeY();
+	fSACSizeZInit = Geo->GetSACSizeZ();
+	if(fEnablePMT && !fEnableSiPM)
+	{
+		G4cout << "PMTs are enabled and SiPMs are disabled" << G4endl;
+		fSACSizeZ = fSACSizeZInit + fPMTThickness;
+	}
+	else if(fEnableSiPM && !fEnablePMT)
+	{
+		G4cout << "SiPMs are enabled and PMTs are disabled" << G4endl;
+		fSACSizeZ = fSACSizeZInit + fSiPMThickness;
+	}
+	else
+	{
+		fSACSizeZ = fSACSizeZInit;
+		if(!fEnablePMT && !fEnableSiPM) G4cout << "Both PMTs and SiPMS are disabled" << G4endl;
+		else G4cout << "ERROR --- Both PMTs and SiPMS are disabled" << G4endl;
+	}
+	printf("SAC size is %f %f %f\n", fSACSizeX, fSACSizeY, fSACSizeZ);
+
+	fSACPosX = Geo->GetSACPosX();
+	fSACPosY = Geo->GetSACPosY();
+	fSACPosZ = Geo->GetSACPosZ();
+	printf("SAC will be placed at %f %f %f\n", fSACPosX, fSACPosY, fSACPosZ);
 }

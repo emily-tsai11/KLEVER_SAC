@@ -175,7 +175,7 @@ void EventAction::FillHistograms(const G4Event* evt)
 		try { fEDepPerEvent[fP.at(particleName)] += energyDeposition; }
 		catch(std::out_of_range)
 		{
-			G4cout << "particle not yet added to list --- " << particleName << G4endl;
+			// G4cout << "particle not yet added to list --- " << particleName << G4endl;
 			fEDepPerEvent[fP.at("other")] += energyDeposition;
 		}
 

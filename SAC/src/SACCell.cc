@@ -16,6 +16,7 @@
 #include "G4PVPlacement.hh"
 #include "G4SDManager.hh"
 
+#include "SACGeometry.hh"
 #include "SACSD.hh"
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

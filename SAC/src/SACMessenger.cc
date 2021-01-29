@@ -13,14 +13,11 @@
 #include "G4UIcmdWithADoubleAndUnit.hh"
 
 #include "SACGeometry.hh"
-#include "SACDetector.hh"
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 SACMessenger::SACMessenger()
 {
-	fSACGeometry = SACGeometry::GetInstance();
-
 	fSACDetectorDir = new G4UIdirectory("/Detector/SAC/");
 	fSACDetectorDir->SetGuidance("UI commands to control the SAC detector");
 
@@ -49,10 +46,17 @@ SACMessenger::SACMessenger()
 
 	fSetCellGapCmd = new G4UIcmdWithADoubleAndUnit("/Detector/SAC/CellGap", this);
 	fSetCellGapCmd->SetGuidance("Set size of gap between cells.");
-	fSetCellGapCmd->SetParameterName("G", false);
+	fSetCellGapCmd->SetParameterName("CG", false);
 	fSetCellGapCmd->SetDefaultUnit("um");
-	fSetCellGapCmd->SetRange("G > 0.0 && G <= 1000.0");
+	fSetCellGapCmd->SetRange("CG > 0.0 && CG <= 1000.0");
 	fSetCellGapCmd->AvailableForStates(G4State_PreInit, G4State_Idle);
+
+	fSetLayerGapCmd = new G4UIcmdWithADoubleAndUnit("/Detector/SAC/LayerGap", this);
+	fSetLayerGapCmd->SetGuidance("Set size of gap between layers.");
+	fSetLayerGapCmd->SetParameterName("LG", false);
+	fSetLayerGapCmd->SetDefaultUnit("cm");
+	fSetLayerGapCmd->SetRange("LG > 0.0 && LG <= 10.0");
+	fSetLayerGapCmd->AvailableForStates(G4State_PreInit, G4State_Idle);
 
 
 	fSetSACNRowsCmd = new G4UIcmdWithAnInteger("/Detector/SAC/NRows", this);
@@ -93,14 +97,6 @@ SACMessenger::SACMessenger()
 	fSetVerboseLevelCmd->SetRange("VL >= 0");
 	fSetVerboseLevelCmd->AvailableForStates(G4State_PreInit, G4State_Idle);
 
-
-	fSetIncidentECmd = new G4UIcmdWithADoubleAndUnit("/Detector/SAC/IncidentE", this);
-	fSetIncidentECmd->SetGuidance("Pass in incident particle energy.");
-	fSetIncidentECmd->SetParameterName("IncidentE", false);
-	fSetIncidentECmd->SetDefaultUnit("MeV");
-	fSetIncidentECmd->SetRange("IncidentE >= 0.0");
-	fSetIncidentECmd->AvailableForStates(G4State_PreInit, G4State_Idle);
-
 	// fSetSACFrontFaceZCmd = new G4UIcmdWithADoubleAndUnit("/Detector/SAC/FrontFaceZ", this);
 	// fSetSACFrontFaceZCmd->SetGuidance("Set position along Z of SAC front face.");
 	// fSetSACFrontFaceZCmd->SetParameterName("Z", false);
@@ -118,6 +114,7 @@ SACMessenger::~SACMessenger()
 
 	delete fSetCrystalCoatingCmd;
 	delete fSetCellGapCmd;
+	delete fSetLayerGapCmd;
 
 	delete fSetSACNRowsCmd;
 	delete fSetSACNColsCmd;
@@ -127,8 +124,6 @@ SACMessenger::~SACMessenger()
 	delete fEnableSiPMCmd;
 
 	delete fSetVerboseLevelCmd;
-
-	delete fSetIncidentECmd;
 	// delete fSetSACFrontFaceZCmd;
 
 	delete fSACDetectorDir;
@@ -138,6 +133,8 @@ SACMessenger::~SACMessenger()
 
 void SACMessenger::SetNewValue(G4UIcommand* cmd, G4String par)
 {
+	SACGeometry* fSACGeometry = SACGeometry::GetInstance();
+
 	if(cmd == fSetCrystalSizeCmd)
 	{
 		fSACGeometry->SetCrystalSizeX(fSetCrystalSizeCmd->GetNewDoubleValue(par));
@@ -147,6 +144,7 @@ void SACMessenger::SetNewValue(G4UIcommand* cmd, G4String par)
 
 	if(cmd == fSetCrystalCoatingCmd) fSACGeometry->SetCrystalCoating(fSetCrystalCoatingCmd->GetNewDoubleValue(par));
 	if(cmd == fSetCellGapCmd) fSACGeometry->SetCellGap(fSetCellGapCmd->GetNewDoubleValue(par));
+	if(cmd == fSetLayerGapCmd) fSACGeometry->SetLayerGap(fSetLayerGapCmd->GetNewDoubleValue(par));
 
 	if(cmd == fSetSACNRowsCmd) fSACGeometry->SetSACNRows(fSetSACNRowsCmd->GetNewIntValue(par));
 	if(cmd == fSetSACNColsCmd) fSACGeometry->SetSACNCols(fSetSACNColsCmd->GetNewIntValue(par));
@@ -156,7 +154,5 @@ void SACMessenger::SetNewValue(G4UIcommand* cmd, G4String par)
 	if(cmd == fEnableSiPMCmd) fSACGeometry->SetEnableSiPM(fEnableSiPMCmd->GetNewIntValue(par));
 
 	if(cmd == fSetVerboseLevelCmd) fSACGeometry->SetVerboseLevel(fSetVerboseLevelCmd->GetNewIntValue(par));
-
-	if(cmd == fSetIncidentECmd) fSACGeometry->SetIncidentE(fSetIncidentECmd->GetNewDoubleValue(par));
 	// if(cmd == fSetSACFrontFaceZCmd) fSACGeometry->SetSACFrontFacePosZ(fSetSACFrontFaceZCmd->GetNewDoubleValue(par));
 }

@@ -16,17 +16,18 @@
 
 # detector settings
 
-# /Detector/SAC/VerboseLevel 0
+# /Detector/SAC/CrystalSize 2.0 cm
+# /Detector/SAC/CrystalLength 3.75 cm
+# /Detector/SAC/CrystalCoating 100.0 um
+# /Detector/SAC/CellGap 50.0 um
+# /Detector/SAC/LayerGap 2.0 cm
 # /Detector/SAC/NRows 10
 # /Detector/SAC/NCols 10
 # /Detector/SAC/NLayers 4
-# /Detector/SAC/CrystalSize 2.0 cm
-# /Detector/SAC/CrystalLength 3.75 cm
-# /Detector/SAC/CellGap 50.0 um
-# /Detector/SAC/CrystalCoating 100.0 um
+# /Detector/SAC/EnablePMT 0
+# /Detector/SAC/EnableSiPM 0
+# /Detector/SAC/VerboseLevel 0
 # /Detector/SAC/FrontFaceZ 300.0 cm
-/Detector/SAC/EnablePMT 0
-/Detector/SAC/EnableSiPM 0
 
 # --------------------------------------------------
 

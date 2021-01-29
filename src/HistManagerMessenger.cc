@@ -132,74 +132,85 @@ void HistManagerMessenger::SetNewValue(G4UIcommand* cmd, G4String par)
 	if(cmd == fSetFileNameCmd) fHistManager->fFileName = par;
 	if(cmd == fSetHistToChangeCmd) fHistToChange = par;
 
-	if(fHistManager->f1DH.count(fHistToChange) > 0 || fHistManager->f2DH.count(fHistToChange) > 0 || fHistManager->f3DH.count(fHistToChange) > 0)
+	if(cmd != fSetFileNameCmd && cmd != fSetHistToChangeCmd)
 	{
+		G4int count1 = fHistManager->f1DH.count(fHistToChange);
+		G4int count2 = fHistManager->f2DH.count(fHistToChange);
+		G4int count3 = fHistManager->f3DH.count(fHistToChange);
+
+		if(count1 == 0 || count2 == 0 || count3 == 0)
+		{
+			G4cout << "[HistManagerMessenger::SetNewValue()] ERROR: \""
+				<< fHistToChange << "\" is not a histogram." << G4endl;
+			return;
+		}
+
+		char dim = fHistToChange[1];
+
 		if(cmd == fSetNBinsXCmd)
 		{
-			if(fHistToChange[1] == '1')
+			if(dim == '1')
 				fHistManager->f1DH.at(fHistToChange).nBinsX = fSetNBinsXCmd->GetNewIntValue(par);
-			else if(fHistToChange[1] == '2')
+			else if(dim == '2')
 				fHistManager->f2DH.at(fHistToChange).nBinsX = fSetNBinsXCmd->GetNewIntValue(par);
-			else if(fHistToChange[1] == '3')
+			else if(dim == '3')
 				fHistManager->f3DH.at(fHistToChange).nBinsX = fSetNBinsXCmd->GetNewIntValue(par);
 		}
 		if(cmd == fSetLowXBoundCmd || cmd == fSetLowXBoundWithUnitCmd)
 		{
-			if(fHistToChange[1] == '1')
+			if(dim == '1')
 				fHistManager->f1DH.at(fHistToChange).lowX = fSetLowXBoundCmd->GetNewDoubleValue(par);
-			else if(fHistToChange[1] == '2')
+			else if(dim == '2')
 				fHistManager->f2DH.at(fHistToChange).lowX = fSetLowXBoundCmd->GetNewDoubleValue(par);
-			else if(fHistToChange[1] == '3')
+			else if(dim == '3')
 				fHistManager->f3DH.at(fHistToChange).lowX = fSetLowXBoundCmd->GetNewDoubleValue(par);
 		}
 		if(cmd == fSetHighXBoundCmd || cmd == fSetHighXBoundWithUnitCmd)
 		{
-			if(fHistToChange[1] == '1')
+			if(dim == '1')
 				fHistManager->f1DH.at(fHistToChange).highX = fSetHighXBoundCmd->GetNewDoubleValue(par);
-			else if(fHistToChange[1] == '2')
+			else if(dim == '2')
 				fHistManager->f2DH.at(fHistToChange).highX = fSetHighXBoundCmd->GetNewDoubleValue(par);
-			else if(fHistToChange[1] == '3')
+			else if(dim == '3')
 				fHistManager->f3DH.at(fHistToChange).highX = fSetHighXBoundCmd->GetNewDoubleValue(par);
 		}
 
 		if(cmd == fSetNBinsYCmd)
 		{
-			if(fHistToChange[1] == '2')
+			if(dim == '2')
 				fHistManager->f2DH.at(fHistToChange).nBinsY = fSetNBinsYCmd->GetNewIntValue(par);
-			else if(fHistToChange[1] == '3')
+			else if(dim == '3')
 				fHistManager->f3DH.at(fHistToChange).nBinsY = fSetNBinsYCmd->GetNewIntValue(par);
 		}
 		if(cmd == fSetLowYBoundCmd || cmd == fSetLowYBoundWithUnitCmd)
 		{
-			if(fHistToChange[1] == '2')
+			if(dim == '2')
 				fHistManager->f2DH.at(fHistToChange).lowY = fSetLowYBoundCmd->GetNewDoubleValue(par);
-			else if(fHistToChange[1] == '3')
+			else if(dim == '3')
 				fHistManager->f3DH.at(fHistToChange).lowY = fSetLowYBoundCmd->GetNewDoubleValue(par);
 		}
 		if(cmd == fSetHighYBoundCmd || cmd == fSetHighYBoundWithUnitCmd)
 		{
-			if(fHistToChange[1] == '2')
+			if(dim == '2')
 				fHistManager->f2DH.at(fHistToChange).highY = fSetHighYBoundCmd->GetNewDoubleValue(par);
-			else if(fHistToChange[1] == '3')
+			else if(dim == '3')
 				fHistManager->f3DH.at(fHistToChange).highY = fSetHighYBoundCmd->GetNewDoubleValue(par);
 		}
 
 		if(cmd == fSetNBinsZCmd)
 		{
-			if(fHistToChange[1] == '3')
+			if(dim == '3')
 				fHistManager->f3DH.at(fHistToChange).nBinsZ = fSetNBinsZCmd->GetNewIntValue(par);
 		}
 		if(cmd == fSetLowZBoundCmd || cmd == fSetLowZBoundWithUnitCmd)
 		{
-			if(fHistToChange[1] == '3')
+			if(dim == '3')
 				fHistManager->f3DH.at(fHistToChange).lowZ = fSetLowZBoundCmd->GetNewDoubleValue(par);
 		}
 		if(cmd == fSetHighZBoundCmd || cmd == fSetHighZBoundWithUnitCmd)
 		{
-			if(fHistToChange[1] == '3')
+			if(dim == '3')
 				fHistManager->f3DH.at(fHistToChange).highZ = fSetHighZBoundCmd->GetNewDoubleValue(par);
 		}
 	}
-	else G4cout << "[HistManagerMessenger::SetNewValue()] ERROR: \""
-		<< fHistToChange << "\" is not a histogram." << G4endl;
 }
