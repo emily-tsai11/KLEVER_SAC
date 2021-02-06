@@ -54,7 +54,7 @@ G4bool SACSD::ProcessHits(G4Step* aStep, G4TouchableHistory*)
 	newHit->SetParticleName(track->GetDefinition()->GetParticleName());
 	newHit->SetVolumeName(touchable->GetVolume()->GetName());
 	newHit->SetSDName(preStepPoint->GetSensitiveDetector()->GetName());
-	newHit->SetCreatorProcessName(track->GetCreatorProcess()->GetProcessName());
+	// newHit->SetCreatorProcessName(track->GetCreatorProcess()->GetProcessName());
 	newHit->SetEnergyDeposition(eDep);
 	newHit->SetTime(preStepPoint->GetGlobalTime());
 	newHit->SetTrackLength(track->GetTrackLength());

@@ -53,7 +53,7 @@ HistManagerMessenger::HistManagerMessenger() : G4UImessenger()
 	fSetHighXBoundWithUnitCmd->AvailableForStates(G4State_PreInit, G4State_Idle);
 
 
-	fSetNBinsYCmd = new G4UIcmdWithAnInteger("/HistManager/NBinsY", this);
+	fSetNBinsYCmd = new G4UIcmdWithAnInteger("/HistManager/nBinsY", this);
 	fSetNBinsYCmd->SetGuidance("Set number of Y histogram bins. MUST TELL PROGRAM WHICH HISTOGRAM BOUND TO SET FIRST USING HistManager/HistToChange!!!!");
 	fSetNBinsYCmd->AvailableForStates(G4State_PreInit, G4State_Idle);
 
@@ -74,7 +74,7 @@ HistManagerMessenger::HistManagerMessenger() : G4UImessenger()
 	fSetHighYBoundWithUnitCmd->AvailableForStates(G4State_PreInit, G4State_Idle);
 
 
-	fSetNBinsZCmd = new G4UIcmdWithAnInteger("/HistManager/NBinsZ", this);
+	fSetNBinsZCmd = new G4UIcmdWithAnInteger("/HistManager/nBinsZ", this);
 	fSetNBinsZCmd->SetGuidance("Set number of Z histogram bins. MUST TELL PROGRAM WHICH HISTOGRAM BOUND TO SET FIRST USING HistManager/HistToChange!!!!");
 	fSetNBinsZCmd->AvailableForStates(G4State_PreInit, G4State_Idle);
 
@@ -138,7 +138,7 @@ void HistManagerMessenger::SetNewValue(G4UIcommand* cmd, G4String par)
 		G4int count2 = fHistManager->f2DH.count(fHistToChange);
 		G4int count3 = fHistManager->f3DH.count(fHistToChange);
 
-		if(count1 == 0 || count2 == 0 || count3 == 0)
+		if(count1 == 0 && count2 == 0 && count3 == 0)
 		{
 			G4cout << "[HistManagerMessenger::SetNewValue()] ERROR: \""
 				<< fHistToChange << "\" is not a histogram." << G4endl;

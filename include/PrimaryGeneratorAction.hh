@@ -31,7 +31,7 @@ class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
 {
 	public:
 
-		PrimaryGeneratorAction(DetectorConstruction*, EventAction&);
+		PrimaryGeneratorAction(DetectorConstruction*, EventAction*);
 		~PrimaryGeneratorAction();
 
 		void GeneratePrimaries(G4Event* anEvent); // called at the beginning of each event

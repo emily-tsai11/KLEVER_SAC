@@ -9,8 +9,8 @@
 
 /HistManager/FileName testing_testing
 
-/PrimaryGeneratorAction/BeamEnergy 100 MeV
-/run/beamOn 100
+/PrimaryGeneratorAction/BeamEnergy 200 MeV
+/run/beamOn 1000
 
 # /PrimaryGeneratorAction/BeamType 1
 # /PrimaryGeneratorAction/BeamEnergy 100 MeV

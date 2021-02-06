@@ -19,6 +19,7 @@
 class G4Event;
 class G4Timer;
 class TRandom3;
+class RunAction;
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -26,7 +27,7 @@ class EventAction : public G4UserEventAction
 {
 	public:
 
-		EventAction(int fSeedNum);
+		EventAction(RunAction* runAction, int seedNum);
 		~EventAction();
 
 		void BeginOfEventAction(const G4Event*);
@@ -47,6 +48,7 @@ class EventAction : public G4UserEventAction
 		long fRanecuState[2];
 		G4int fCommandLineSeed;
 		SACHitsCollection* fSACCollection;
+		RunAction* fRunAction;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

@@ -40,6 +40,7 @@ void RunAction::BeginOfRunAction(const G4Run* aRun)
 	fAnalysisManager->SetVerboseLevel(1);
 	fAnalysisManager->OpenFile(fHistManager->GetFileName());
 
+	SetNumEvents(aRun->GetNumberOfEventToBeProcessed());
 	CreateHistograms();
 }
 

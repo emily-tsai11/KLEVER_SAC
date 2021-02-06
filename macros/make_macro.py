@@ -1,5 +1,4 @@
 import argparse
-import json
 
 # define parser
 parser = argparse.ArgumentParser(description = "variables to generate KLMC_SAC macro files with")
@@ -17,14 +16,15 @@ IncidentEUnit = args.IncidentEUnit
 NEvents = args.NEvents
 RunNum = args.r
 
+# define helpers
+key = str(IncidentE) + " " + IncidentEUnit
+plist = ["all", "e+", "e-", "gamma", "mu+", "mu-", "neutron", "opticalphoton", "other", "pi+", "pi-", "pi0", "proton", "untracked"]
+dim = ["X", "Y", "Z"]
+NaN = float("NaN")
+
 # name of file
 filename = "SAC_" + str(BeamType) + "_" + str(int(IncidentE)) + IncidentEUnit + "_n" + str(NEvents)
 if args.r != None: filename += "_r" + str(RunNum)
-
-# read in config parameters
-config = json.loads(open("config.json").read())
-plist = config["particle list"]
-current = config[str(IncidentE) + " " + str(IncidentEUnit)]
 
 # write macro file
 with open(filename + ".mac", "w") as f:
@@ -39,21 +39,8 @@ with open(filename + ".mac", "w") as f:
 	f.write("/run/initialize\n")
 	f.write("\n")
 	f.write("/PrimaryGeneratorAction/BeamType " + str(BeamType) + "\n")
-	f.write("/PrimaryGeneratorAction/BeamEnergy " + str(IncidentE) + " " + IncidentEUnit + "\n")
+	f.write("/PrimaryGeneratorAction/BeamEnergy " + key + "\n")
 	f.write("\n")
 	f.write("/HistManager/FileName " + filename + "\n")
 	f.write("\n")
-	for key in current:
-		for j in range(len(plist)):
-			f.write("/HistManager/HistToChange " + key + plist[j] + "\n")
-			if key.find("EDep") != -1:
-				f.write("/HistManager/LowXBoundWithUnit " + str(current[key]["lowX"][j]) + " " + IncidentEUnit + "\n")
-				f.write("/HistManager/HighXBoundWithUnit " + str(current[key]["highX"][j]) + " " + IncidentEUnit + "\n")
-			elif key.find("TrLen") != -1:
-				f.write("/HistManager/LowXBoundWithUnit " + str(current[key]["lowX"][j]) + " cm\n")
-				f.write("/HistManager/HighXBoundWithUnit " + str(current[key]["highX"][j]) + " cm\n")
-			elif key.find("Mult") != -1:
-				f.write("/HistManager/LowXBound " + str(current[key]["lowX"][j]) + "\n")
-				f.write("/HistManager/HighXBound " + str(current[key]["highX"][j]) + "\n")
-		f.write("\n")
 	f.write("/run/beamOn " + str(NEvents) + "\n")

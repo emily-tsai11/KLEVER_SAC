@@ -25,9 +25,8 @@
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-PrimaryGeneratorAction::PrimaryGeneratorAction(DetectorConstruction* detector, EventAction& eventAction) : G4VUserPrimaryGeneratorAction(), fDetector(detector)
+PrimaryGeneratorAction::PrimaryGeneratorAction(DetectorConstruction* detector, EventAction* eventAction) : G4VUserPrimaryGeneratorAction(), fDetector(detector), fEventAction(eventAction)
 {
-	fEventAction = &eventAction;
 	fParticleTable = G4ParticleTable::GetParticleTable();
 	fMessenger = new PrimaryGeneratorActionMessenger();
 	fParticleGun = new G4ParticleGun(1);

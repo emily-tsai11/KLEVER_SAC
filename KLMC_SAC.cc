@@ -58,9 +58,10 @@ int main(int argc, char** argv)
 	runManager->SetUserInitialization(new PhysicsList);
 
 	// set user actions
-	runManager->SetUserAction(new RunAction);
-	EventAction* eventAction = new EventAction(seedNum);
-	runManager->SetUserAction(new PrimaryGeneratorAction(detector, *eventAction));
+	RunAction* runAction = new RunAction();
+	EventAction* eventAction = new EventAction(runAction, seedNum);
+	runManager->SetUserAction(runAction);
+	runManager->SetUserAction(new PrimaryGeneratorAction(detector, eventAction));
 	runManager->SetUserAction(eventAction);
 	runManager->SetUserAction(new SteppingAction(eventAction));
 

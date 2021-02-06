@@ -32,8 +32,12 @@ class RunAction : public G4UserRunAction
 		void BeginOfRunAction(const G4Run* aRun);
 		void EndOfRunAction(const G4Run* aRun);
 
+		void SetNumEvents(G4int i) { fNumEvents = i; }
+		G4int GetNumEvents() { return fNumEvents; }
+
 	private:
 
+		G4int fNumEvents;
 		G4Timer* fTimer;
 		HistManager* fHistManager;
 		G4VAnalysisManager* fAnalysisManager;

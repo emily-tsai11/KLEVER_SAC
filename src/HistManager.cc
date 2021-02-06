@@ -38,7 +38,7 @@ HistManager::HistManager()
 	G4int fIndex1 = 0;
 	G4int fIndex2 = 0;
 	G4int fIndex3 = 0;
-	G4int fN1DBinsX = 100;
+	G4int fN1DBinsX = 200;
 	std::map<G4String, G4int>::iterator iter;
 
 	SACGeometry* Geo = SACGeometry::GetInstance();
@@ -62,76 +62,40 @@ HistManager::HistManager()
 	fParticleNames.insert({"proton", 12});
 	fParticleNames.insert({"untracked", 13});
 
-	// map histogram names -- KEEP IN ALPHABETICAL ORDER (that's how maps sort)
-	// percent of energy deposition per event
-	for(iter = fParticleNames.begin(); iter != fParticleNames.end(); iter++)
-	{
-		f1DH.insert({
-			"h1EDepNorm_PerEvent_" + iter->first,
-			f1DHistInfo{fIndex1,
-				"% of " + iter->first + " energy deposition per event",
-				fN1DBinsX, 0.0, 1.0}
-		});
-		fIndex1++;
-	}
-
-	// energy deposition per event
+	// map histogram names
+	// energy deposition per event / incident energy
 	for(iter = fParticleNames.begin(); iter != fParticleNames.end(); iter++)
 	{
 		f1DH.insert({
 			"h1EDep_PerEvent_" + iter->first,
 			f1DHistInfo{fIndex1,
-				iter->first + " energy deposition per event",
-				fN1DBinsX, 0.0 * MeV, 1.0 * GeV}
+				"% of " + iter->first + " energy deposition per event",
+				fN1DBinsX + 2, 0.0 - 1.0 / fN1DBinsX, 1.0 + 1.0 / fN1DBinsX}
 		});
 		fIndex1++;
 	}
 
-	// low range of multiplicity per event
+	// energy deposition in SAC layers / incident energy
 	for(iter = fParticleNames.begin(); iter != fParticleNames.end(); iter++)
 	{
 		f1DH.insert({
-			"h1MultLow_PerEvent_" + iter->first,
+			"h1EDep_PerLayer_" + iter->first,
 			f1DHistInfo{fIndex1,
-				"number of " + iter->first + " per event (low range)",
-				fN1DBinsX, 0.0, 10000.0}
-			});
-			fIndex1++;
-		}
-
-	// multiplicity per event
-	for(iter = fParticleNames.begin(); iter != fParticleNames.end(); iter++)
-	{
-		f1DH.insert({
-			"h1Mult_PerEvent_" + iter->first,
-			f1DHistInfo{fIndex1,
-				"number of " + iter->first + " per event",
-				fN1DBinsX, 0.0, 100000.0}
-		});
-		fIndex1++;
-	}
-
-	// multiplicity per SAC layer
-	for(iter = fParticleNames.begin(); iter != fParticleNames.end(); iter++)
-	{
-		f1DH.insert({
-			"h1Mult_PerLayer_" + iter->first,
-			f1DHistInfo{fIndex1,
-				"number of " + iter->first + " per SAC layer",
+				"% of " + iter->first + " energy deposition per SAC layer",
 				(G4int) fSACLayers, 0.0, fSACLayers}
 		});
 		fIndex1++;
 	}
 
-	// multiplicity in 2D SAC layer z = <#>
+	// 2D energy deposition in SAC layer (z = <#>) / incident energy
 	for(G4int i = 0; i < fSACLayers; i++)
 	{
 		for(iter = fParticleNames.begin(); iter != fParticleNames.end(); iter++)
 		{
 			f2DH.insert({
-				"h2MultZ" + std::to_string(i) + "_PerLayer_" + iter->first,
+				"h2EDepZ" + std::to_string(i) + "_PerLayer_" + iter->first,
 				f2DHistInfo{fIndex2,
-					"number of " + iter->first + " in SAC layer z = " + std::to_string(i),
+					"% of " + iter->first + " energy deposition in SAC layer z = " + std::to_string(i),
 					(G4int) fSACRows, 0.0, fSACRows,
 					(G4int) fSACCols, 0.0, fSACCols}
 			});
@@ -139,18 +103,42 @@ HistManager::HistManager()
 		}
 	}
 
-	// multiplicity in 3D SAC
+	// 3D energy deposition in SAC / incident energy
 	for(iter = fParticleNames.begin(); iter != fParticleNames.end(); iter++)
 	{
 		f3DH.insert({
-			"h3Mult_SAC_" + iter->first,
+			"h3EDep_SAC_" + iter->first,
 			f3DHistInfo{fIndex3,
-				"number of " + iter->first + " in SAC",
+				"% of " + iter->first + " energy deposition in SAC",
 				(G4int) fSACRows, 0.0, fSACRows,
 				(G4int) fSACCols, 0.0, fSACCols,
 				(G4int) fSACLayers, 0.0, fSACLayers}
 		});
 		fIndex3++;
+	}
+
+	// multiplicity per event / incident energy
+	for(iter = fParticleNames.begin(); iter != fParticleNames.end(); iter++)
+	{
+		f1DH.insert({
+			"h1Mult_PerEvent_" + iter->first,
+			f1DHistInfo{fIndex1,
+				"number of " + iter->first + " per event / incident energy",
+				fN1DBinsX + 20, 0.0, 110.0}
+		});
+		fIndex1++;
+	}
+
+	// low range of multiplicity per event / incident energy
+	for(iter = fParticleNames.begin(); iter != fParticleNames.end(); iter++)
+	{
+		f1DH.insert({
+			"h1MultLow_PerEvent_" + iter->first,
+			f1DHistInfo{fIndex1,
+				"number of " + iter->first + " per event / incident energy (low range)",
+				fN1DBinsX + 20, 0.0, 11.0}
+		});
+		fIndex1++;
 	}
 
 	// track length per hit
@@ -160,7 +148,7 @@ HistManager::HistManager()
 			"h1TrLen_PerHit_" + iter->first,
 			f1DHistInfo{fIndex1,
 				iter->first + " track length per hit",
-				fN1DBinsX, 0.0 * cm, 202.5 * cm}
+				fN1DBinsX + 20, 0.0 * cm, 220.0 * cm}
 		});
 		fIndex1++;
 	}
