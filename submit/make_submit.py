@@ -1,31 +1,31 @@
 import os, argparse
 
 # define parser
-parser = argparse.ArgumentParser(description = "variables to generate KLMC_SAC condor submit files with")
-parser.add_argument("incidentP", type = str, help = "type of incident particle")
-parser.add_argument("incidentE", type = float, help = "energy of incident particle")
-parser.add_argument("incidentEUnit", type = str, help = "unit of energy of incident particle")
-parser.add_argument("numEvents", type = int, help = "number of events")
-parser.add_argument("numRuns", type = int, help = "number of runs")
-parser.add_argument("jobFlav", type = str, help = "job flavour")
+parser = argparse.ArgumentParser(description = "Variables to generate KLMC_SAC condor submit files with")
+parser.add_argument("BeamType", type = int, help = "Beam type -- Sets incident particle")
+parser.add_argument("IncidentE", type = float, help = "Energy of incident particle")
+parser.add_argument("IncidentEUnit", type = str, help = "Unit of energy of incident particle")
+parser.add_argument("NEvents", type = int, help = "Number of events")
+parser.add_argument("NRuns", type = int, help = "Number of runs")
+parser.add_argument("JobFlav", type = str, help = "Job flavour")
 
 # parse the arguments and save values
 args = parser.parse_args()
-incidentP = args.incidentP
-incidentE = args.incidentE
-incidentEUnit = args.incidentEUnit
-numEvents = args.numEvents
-numRuns = args.numRuns
-jobFlav = args.jobFlav
+BeamType = args.BeamType
+IncidentE = args.IncidentE
+IncidentEUnit = args.IncidentEUnit
+NEvents = args.NEvents
+NRuns = args.NRuns
+JobFlav = args.JobFlav
 
 # filename
-filename = str(int(incidentE)) + incidentEUnit + "_" + incidentP + "_n" + str(numEvents) + "_r"
-print("filename: " + filename + str(numRuns) + "...")
+filename = "SAC_" + str(BeamType) + "_" + str(int(IncidentE)) + IncidentEUnit + "_n" + str(NEvents) + "_r" + str(NRuns)
+print("Filename: " + filename + "!")
 
 # delete and create new directory
 os.system("rm -rf " + filename)
-os.mkdir(filename + str(numRuns))
-os.chdir(filename + str(numRuns))
+os.mkdir(filename)
+os.chdir(filename)
 
 # create err, log, and out folders
 os.mkdir("err")
@@ -34,13 +34,13 @@ os.mkdir("out")
 os.mkdir("root_files")
 
 # write in file
-with open(filename + str(numRuns) + ".in", "w") as f:
-	for i in range(numRuns):
-		f.write(filename + str(i) + "\n")
-print(".in file created!")
+with open(filename + ".in", "w") as f:
+	for i in range(NRuns):
+		f.write(filename[:-len(str(NRuns))] + str(i) + "\n") # FIX THIS!!!
+print("In file created!")
 
 # write condor file
-with open(filename + str(numRuns) + ".condor", "w") as f:
+with open(filename + ".condor", "w") as f:
 	f.write("universe\t\t\t\t\t= vanilla\n")
 	f.write("\n")
 	f.write("error\t\t\t\t\t\t= err/$(macro).error\n")
@@ -56,14 +56,14 @@ with open(filename + str(numRuns) + ".condor", "w") as f:
 	f.write("arguments\t\t\t\t\t= KLMC_SAC $(macro).mac\n")
 	f.write("transfer_input_files\t\t= ../../build/KLMC_SAC, macros/$(macro).mac\n")
 	f.write("\n")
-	f.write("+JobFlavour\t\t\t\t\t= \"" + jobFlav + "\"\n")
+	f.write("+JobFlavour\t\t\t\t\t= \"" + JobFlav + "\"\n")
 	f.write("\n")
-	f.write("queue macro from " + filename + str(numRuns) + ".in\n")
-print(".condor file created!")
+	f.write("queue macro from " + filename + ".in\n")
+print("Condor file created!")
 
 # generate macro files
 os.mkdir("macros")
 os.chdir("macros")
-for i in range(numRuns):
-	os.system("python ../../../macros/make_macro.py " + incidentP + " " + str(incidentE) + " " + incidentEUnit + " " + str(numEvents) + " -r " + str(i))
-print("macro files created!")
+for i in range(NRuns):
+	os.system("python ../../../macros/make_macro.py " + str(BeamType) + " " + str(IncidentE) + " " + IncidentEUnit + " " + str(NEvents) + " -r " + str(i))
+print("Macro files created!")

@@ -110,10 +110,6 @@ void EventAction::FillHistograms(const G4Event* evt)
 	std::map<G4String, f1DHistInfo> f1DH = fHistManager->Get1DHistInfo();
 	std::map<G4String, f2DHistInfo> f2DH = fHistManager->Get2DHistInfo();
 	std::map<G4String, f3DHistInfo> f3DH = fHistManager->Get3DHistInfo();
-	// fHistManager->PrintHistNames();
-	// fHistManager->Print1DHistInfo();
-	// fHistManager->Print2DHistInfo();
-	// fHistManager->Print3DHistInfo();
 
 	// get analysis manager
 	G4AnalysisManager* fAnalysisManager = G4AnalysisManager::Instance();
@@ -122,7 +118,6 @@ void EventAction::FillHistograms(const G4Event* evt)
 	G4PrimaryParticle* primary = evt->GetPrimaryVertex()->GetPrimary();
 	G4String primaryName = primary->GetParticleDefinition()->GetParticleName();
 	G4double primaryInitE = primary->GetKineticEnergy();
-	// G4cout << primaryName << " incident energy: " << primaryInitE << G4endl;
 
 	// get number of events in run
 	G4double fTotalNEvents = fRunAction->GetNumEvents();
@@ -130,8 +125,6 @@ void EventAction::FillHistograms(const G4Event* evt)
 	// get hits collection
 	fSACCollection = (SACHitsCollection*) evt->GetHCofThisEvent()->GetHC(0);
 	G4int nHits = fSACCollection->entries();
-	// G4cout << "[EventAction::FillHistograms()] There are " << nHits << " hits." << G4endl;
-	// for(G4int i = 0; i < nHits; i++) (*fSACCollection)[i]->Print();
 
 	// hit attributes
 	G4int cellID;

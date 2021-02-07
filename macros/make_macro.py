@@ -1,12 +1,12 @@
 import argparse
 
 # define parser
-parser = argparse.ArgumentParser(description = "variables to generate KLMC_SAC macro files with")
-parser.add_argument("BeamType", type = int, help = "beam type, sets incident particle")
-parser.add_argument("IncidentE", type = float, help = "energy of incident particle")
-parser.add_argument("IncidentEUnit", type = str, help = "unit of energy of incident particle")
-parser.add_argument("NEvents", type = int, help = "number of events")
-parser.add_argument("-r", type = int, help = "run number")
+parser = argparse.ArgumentParser(description = "Variables to generate KLMC_SAC macro files with")
+parser.add_argument("BeamType", type = int, help = "Beam type -- Sets incident particle")
+parser.add_argument("IncidentE", type = float, help = "Energy of incident particle")
+parser.add_argument("IncidentEUnit", type = str, help = "Unit of energy of incident particle")
+parser.add_argument("NEvents", type = int, help = "Number of events")
+parser.add_argument("-r", type = int, help = "Run number")
 
 # parse the arguments and save values
 args = parser.parse_args()
