@@ -11,13 +11,12 @@
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 #include "G4UserRunAction.hh"
-#include "G4VAnalysisManager.hh"
-#include "globals.hh"
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-class G4Timer;
 class G4Run;
+class G4Timer;
+class G4VAnalysisManager;
 class HistManager;
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -32,15 +31,15 @@ class RunAction : public G4UserRunAction
 		void BeginOfRunAction(const G4Run* aRun);
 		void EndOfRunAction(const G4Run* aRun);
 
-		void SetNumEvents(G4int i) { fNumEvents = i; }
+		void SetNumEvents(G4int n) { fNumEvents = n; }
 		G4int GetNumEvents() { return fNumEvents; }
 
 	private:
 
 		G4int fNumEvents;
 		G4Timer* fTimer;
-		HistManager* fHistManager;
 		G4VAnalysisManager* fAnalysisManager;
+		HistManager* fHistManager;
 
 		void CreateHistograms();
 };

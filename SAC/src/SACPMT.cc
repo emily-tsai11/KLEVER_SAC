@@ -15,6 +15,7 @@
 #include "G4PVPlacement.hh"
 #include "G4SDManager.hh"
 
+#include "SACGeometry.hh"
 #include "SACSD.hh"
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -24,10 +25,10 @@ SACPMT::SACPMT()
 	SACGeometry* Geo = SACGeometry::GetInstance();
 
 	fPMTDiameter = Geo->GetPMTDiameter();
-	printf("PMT diameter is %f\n", fPMTDiameter);
+	printf("[SACPMT::SACPMT] PMT diameter is %f\n", fPMTDiameter);
 
 	fPMTThickness = Geo->GetPMTThickness();
-	printf("PMT thickness is %f\n", fPMTThickness);
+	printf("[SACPMT::SACPMT] PMT thickness is %f\n", fPMTThickness);
 
 	fPMTRound = Geo->GetPMTRound();
 	fSACSDName = Geo->GetSACSensitiveDetectorName();
@@ -52,15 +53,15 @@ void SACPMT::CreateGeometry()
 		0, 0, 0);
 	fPMTVolume->SetVisAttributes(G4VisAttributes(G4Colour::Green()));
 
-	// make PMT a sensitive detector
+	// Make PMT a sensitive detector
 	G4SDManager* SDMan = G4SDManager::GetSDMpointer();
 	SACSD* fSACSD = static_cast<SACSD*>(SDMan->FindSensitiveDetector(fSACSDName));
 	if(!fSACSD)
 	{
-		printf("SAC SD %s not found, registering it now\n", fSACSDName.c_str());
+		printf("[SACPMT::CreateGeometry] SAC SD %s not found, registering it now\n", fSACSDName.c_str());
 		fSACSD = new SACSD(fSACSDName);
 		SDMan->AddNewDetector(fSACSD);
 	}
 	fPMTVolume->SetSensitiveDetector(fSACSD);
-	printf("Added SAC PMT as sensitive detector\n");
+	printf("[SACPMT::CreateGeometry] Added SAC PMT as sensitive detector\n");
 }

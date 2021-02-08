@@ -28,7 +28,7 @@ class SACGeometry
 		static SACGeometry* GetInstance();
 		std::vector<G4String> GetHashTable();
 
-		// size of PbF2 crystal
+		// Size of PbF2 crystal
 		void SetCrystalSizeX(G4double SizeX) { fCrystalSizeX = SizeX; }
 		G4double GetCrystalSizeX() { return fCrystalSizeX; }
 		void SetCrystalSizeY(G4double SizeY) { fCrystalSizeY = SizeY; }
@@ -36,24 +36,24 @@ class SACGeometry
 		void SetCrystalSizeZ(G4double SizeZ) { fCrystalSizeZ = SizeZ; }
 		G4double GetCrystalSizeZ() { return fCrystalSizeZ; }
 
-		// thickness of paint coating around each crystal
+		// Thickness of paint coating around each crystal
 		void SetCrystalCoating(G4double c) { fCrystalCoating = c; }
 		G4double GetCrystalCoating() { return fCrystalCoating; }
 
-		// size of SAC cell (crystal + coating)
+		// Size of SAC cell (crystal + coating)
 		G4double GetCellSizeX() { return fCellSizeX; }
 		G4double GetCellSizeY() { return fCellSizeY; }
 		G4double GetCellSizeZ() { return fCellSizeZ; }
 
-		// size of gap between cells
+		// Size of gap between cells
 		void SetCellGap(G4double gap) { fCellGap = gap; }
 		G4double GetCellGap() { return fCellGap; }
 
-		// size of gap between layers
+		// Size of gap between layers
 		void SetLayerGap(G4double gap) { fLayerGap = gap; }
 		G4double GetLayerGap() { return fLayerGap; }
 
-		// number of rows, columns, layers of cells in SAC
+		// Number of rows, columns, layers of cells in SAC
 		void SetSACNRows(G4int r) { fSACNRows = r; }
 		G4int GetSACNRows() { return fSACNRows; }
 		void SetSACNCols(G4int c) { fSACNCols = c; }
@@ -61,12 +61,12 @@ class SACGeometry
 		void SetSACNLayers(G4int l) { fSACNLayers = l; }
 		G4int GetSACNLayers() { return fSACNLayers; }
 
-		// size of SAC box
+		// Size of SAC box
 		G4double GetSACSizeX() { return fSACSizeX; }
 		G4double GetSACSizeY() { return fSACSizeY; }
 		G4double GetSACSizeZ() { return fSACSizeZ; }
 
-		// position of center of SAC box
+		// Position of center of SAC box
 		G4double GetSACPosX() { return fSACPosX; }
 		G4double GetSACPosY() { return fSACPosY; }
 		G4double GetSACPosZ() { return fSACPosZ; }
@@ -88,7 +88,7 @@ class SACGeometry
 		void SetSiPMThickness(G4double t) { fSiPMThickness = t; }
 		G4double GetSiPMThickness() { return fSiPMThickness; }
 
-		// --------------- DIGITIZATION PARAMETERS ---------------
+		// Digitization parameters
 		G4double GetSACLightPropagationSpeed() { return fDigiAvgLightSpeed; }
 		G4double GetDigiEtoNPEConversion() { return fDigiEtoNPEConversion; }
 		G4double GetDigiPEtoSignalConversion() { return fDigiPEtoSignalConversion; }
@@ -101,13 +101,9 @@ class SACGeometry
 		// SAC SD name
 		G4String GetSACSensitiveDetectorName() { return fSACSensitiveDetectorName; }
 
-		// verbose level
+		// Verbose level
 		void SetVerboseLevel(G4int v) { fVerbose = v; }
 		G4int GetVerboseLevel() { return fVerbose; }
-
-		// set position along Z of SAC front face
-		// void SetSACFrontFacePosZ(G4double z) { fSACFrontFacePosZ = z; }
-		// G4double GetSACFrontFacePosZ() { return fSACFrontFacePosZ; }
 
 	protected:
 
@@ -117,25 +113,25 @@ class SACGeometry
 
 		static SACGeometry* fInstance;
 
-		// size of PbF2 crystal
+		// Size of PbF2 crystal
 		G4double fCrystalSizeX, fCrystalSizeY, fCrystalSizeZ;
 
-		// thickness of paint coating around each crystal
+		// Thickness of paint coating around each crystal
 		G4double fCrystalCoating;
 
-		// size of SAC cell (crystal + coating)
+		// Size of SAC cell (crystal + coating)
 		G4double fCellSizeX, fCellSizeY, fCellSizeZ;
 
-		// size of gap between cells and layers
+		// Size of gap between cells and layers
 		G4double fCellGap, fLayerGap;
 
-		// number of rows, columns, layers of cells in SAC
+		// Number of rows, columns, layers of cells in SAC
 		G4int fSACNRows, fSACNCols, fSACNLayers;
 
-		// size of SAC box
+		// Size of SAC box
 		G4double fSACSizeX, fSACSizeY, fSACSizeZ;
 
-		// position of center of SAC box
+		// Position of center of SAC box
 		G4double fSACPosX, fSACPosY, fSACPosZ;
 
 		// PMT parameters
@@ -146,28 +142,25 @@ class SACGeometry
 		G4int fEnableSiPM;
 		G4double fSiPMSize, fSiPMThickness;
 
-		// --------------- DIGITIZATION PARAMETERS ---------------
-		// average light speed inside SAC crystal for Cherenkov spectrum
+		// Digitization parameters
+		// Average light speed inside SAC crystal for Cherenkov spectrum
 		G4double fDigiAvgLightSpeed;
-		// number of p.e. produced by photocathode per MeV of hit energy
+		// Number of p.e. produced by photocathode per MeV of hit energy
 		G4double fDigiEtoNPEConversion;
-		// contribution of 1 p.e. to integral ADC signal
+		// Contribution of 1 p.e. to integral ADC signal
 		G4double fDigiPEtoSignalConversion;
-		// relative collection efficiency along crystal
+		// Relative collection efficiency along crystal
 		std::vector<G4double> fDigiPECollectionMap;
 		// PMT transit time from photocathode to anode
 		G4double fDigiPMTTransitTime;
-		// delay due to connection cables
+		// Delay due to connection cables
 		G4double fDigiPMTCableDelay;
 
 		// SAC SD name
 		G4String fSACSensitiveDetectorName;
 
-		// verbose level
+		// Verbose level
 		G4int fVerbose;
-
-		// position along Z axis of SAC front face
-		// G4double fSACFrontFacePosZ;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

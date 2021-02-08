@@ -6,13 +6,12 @@
 // --------------------------------------------------------------
 
 #include "SACSD.hh"
+#include "globals.hh"
 
 #include "G4HCofThisEvent.hh"
 #include "G4Step.hh"
 #include "G4ThreeVector.hh"
-#include "G4VProcess.hh"
 #include "G4SDManager.hh"
-#include "G4ios.hh"
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -49,7 +48,7 @@ G4bool SACSD::ProcessHits(G4Step* aStep, G4TouchableHistory*)
 	G4ThreeVector localPosPre = touchable->GetHistory()->GetTopTransform().TransformPoint(worldPosPre);
 
 	SACHit* newHit = new SACHit();
-	newHit->SetCellID(touchable->GetCopyNumber(1)); // copy number of cell, not crystal
+	newHit->SetCellID(touchable->GetCopyNumber(1)); // Copy number of cell, not crystal
 	newHit->SetTrackID(track->GetTrackID());
 	newHit->SetParticleName(track->GetDefinition()->GetParticleName());
 	newHit->SetVolumeName(touchable->GetVolume()->GetName());

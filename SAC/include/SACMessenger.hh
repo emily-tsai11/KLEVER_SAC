@@ -12,7 +12,6 @@
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 #include "G4UImessenger.hh"
-#include "globals.hh"
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -49,7 +48,6 @@ class SACMessenger : public G4UImessenger
 		G4UIcmdWithAnInteger* fEnableSiPMCmd;
 
 		G4UIcmdWithAnInteger* fSetVerboseLevelCmd;
-		// G4UIcmdWithADoubleAndUnit* fSetSACFrontFaceZCmd;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

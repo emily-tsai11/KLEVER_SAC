@@ -9,7 +9,7 @@
 // Roberto Piandani (roberto.piandani@cern.ch) 30-05-2013
 // Michal Koval (michal.koval@cern.ch) 21-08-2013
 // Karim Massri (karim.massri@cern.ch) 27-03-2014
-//		Updated physics list for Geant 4 10 compatibility (from Hadr01 example)
+// - Updated physics list for Geant 4 10 compatibility (from Hadr01 example)
 //		- deprecated lists removed:
 //			- G4HadronDElasticPhysics
 //			- G4HadronQElasticPhysics
@@ -40,57 +40,68 @@
 //			- G4StoppingPhysics
 //			- G4HadronPhysicsFTFP_BERT_HP
 // Evgueni Goudzovski (eg@hep.ph.bham.ac.uk) Autumn 2015
-// 		exotic particle and pion decays
+// - Exotic particle and pion decays
 // Viacheslav Duk (Viacheslav.Duk@cern.ch) August 2017
-//		exotic particle update
+// - Exotic particle update
 // Karim Massri (karim.massri@cern.ch) 09-10-2017
-//		custom muon decay class introduced
-// Adapted from Padme by Emily Tsai (emily.tsai11@gmail.com) 2020-7-13
+// - Custom muon decay class introduced
+// Adapted from PADME by Emily Tsai (emily.tsai11@gmail.com) 2020-7-13
 // --------------------------------------------------------------
 
 #include "PhysicsList.hh"
+#include "globals.hh"
+#include "G4SystemOfUnits.hh"
 
-#include "G4RunManager.hh"
-
-#include "G4DecayPhysics.hh"
-#include "G4EmStandardPhysics.hh"
-#include "G4EmStandardPhysics_option4.hh"
+#include "G4EmExtraPhysics.hh"
 #include "G4EmLivermorePhysics.hh"
 #include "G4EmPenelopePhysics.hh"
-#include "G4HadronElasticPhysics.hh"
-#include "G4HadronElasticPhysicsXS.hh"
-#include "G4HadronElasticPhysicsHP.hh"
-#include "G4ChargeExchangePhysics.hh"
-#include "G4NeutronTrackingCut.hh"
-#include "G4NeutronCrossSectionXS.hh"
-#include "G4StoppingPhysics.hh"
-#include "G4IonPhysics.hh"
-#include "G4EmExtraPhysics.hh"
 #include "G4EmProcessOptions.hh"
+#include "G4EmSaturation.hh"
+#include "G4EmStandardPhysics.hh"
+#include "G4EmStandardPhysics_option4.hh"
+
+#include "G4HadronicProcessStore.hh"
+#include "G4HadronElasticPhysics.hh"
+#include "G4HadronElasticPhysicsHP.hh"
+#include "G4HadronElasticPhysicsXS.hh"
 #include "G4HadronPhysicsFTFP_BERT.hh"
 #include "G4HadronPhysicsQGSP_BERT.hh"
 #include "G4HadronPhysicsQGSP_FTFP_BERT.hh"
-#include "G4LossTableManager.hh"
-#include "G4EmSaturation.hh"
-#include "G4ProcessManager.hh"
+
+#include "G4Decay.hh"
+#include "G4DecayPhysics.hh"
+#include "G4DecayTable.hh"
+#include "G4DecayWithSpin.hh"
+
+#include "G4eIonisation.hh"
+#include "G4eBremsstrahlung.hh"
+#include "G4eplusAnnihilation.hh"
+
 #include "G4ParticleTypes.hh"
 #include "G4ParticleTable.hh"
-#include "G4ProductionCuts.hh"
-#include "G4HadronicProcessStore.hh"
-#include "G4FastSimulationManagerProcess.hh"
-#include "G4DecayTable.hh"
-#include "G4ProcessTable.hh"
-#include "G4Decay.hh"
-#include "G4DecayWithSpin.hh"
+#include "G4ParticlePropertyTable.hh"
+
+#include "G4NeutronTrackingCut.hh"
+#include "G4NeutronCrossSectionXS.hh"
+
 #include "G4MuonDecayChannelWithSpin.hh"
 #include "G4MuonRadiativeDecayChannelWithSpin.hh"
+
+#include "G4ChargeExchangePhysics.hh"
+#include "G4StoppingPhysics.hh"
+#include "G4IonPhysics.hh"
+
+#include "G4RunManager.hh"
+#include "G4LossTableManager.hh"
+#include "G4ProcessManager.hh"
+
+#include "G4ProductionCuts.hh"
+#include "G4FastSimulationManagerProcess.hh"
+#include "G4ProcessTable.hh"
 #include "G4PhaseSpaceDecayChannel.hh"
-#include "G4ParticlePropertyTable.hh"
-#include "G4PhysicalConstants.hh"
+#include "G4VMultipleScattering.hh"
 
-#include "PhysicsListMessenger.hh"
-
-// optical processes
+// Optical processes
 #include "G4OpticalPhysics.hh"
 #include "G4Cerenkov.hh"
 #include "G4Scintillation.hh"
@@ -99,22 +110,18 @@
 #include "G4OpBoundaryProcess.hh"
 #include "G4OpWLS.hh"
 
-// #include "G4MultipleScattering.hh"
-// #include "G4eIonisation.hh"
-// #include "G4eBremsstrahlung.hh"
-// #include "G4eplusAnnihilation.hh"
+#include "PhysicsListMessenger.hh"
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-PhysicsList* PhysicsList::fgInstance = nullptr;
+PhysicsList* PhysicsList::fInstance = 0;
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-// static access method
 PhysicsList* PhysicsList::GetInstance()
 {
-	if(!fgInstance) fgInstance = new PhysicsList();
-	return fgInstance;
+	if(!fInstance) fInstance = new PhysicsList();
+	return fInstance;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -126,14 +133,14 @@ PhysicsList::PhysicsList() : G4VModularPhysicsList(), fCerenkovProcess(nullptr),
 	fMessenger(nullptr), fBrPie2(0.0)
 {
 	G4LossTableManager::Instance();
-	defaultCutValue = 0.7 * CLHEP::mm;
+	defaultCutValue = 0.7 * mm;
 	fCutForGamma = defaultCutValue;
 	fCutForElectron = defaultCutValue;
 	fCutForPositron = defaultCutValue;
 	fCutForProton = defaultCutValue;
-	verboseLevel = 1;
+	verboseLevel = 0;
 
-	// particles
+	// Particles
 	fParticleList = new G4DecayPhysics("decays");
 
 	// EM physics
@@ -142,10 +149,9 @@ PhysicsList::PhysicsList() : G4VModularPhysicsList(), fCerenkovProcess(nullptr),
 	// HNL mode
 	fMDS = 1968.47;
 
-	// add hadronic and optical photon physics list
+	// Add hadronic and optical photon physics list
 	AddPhysicsList("FTFP_BERT_EMZ");
 
-	// physics list messenger
 	fMessenger = new PhysicsListMessenger();
 }
 
@@ -166,7 +172,7 @@ void PhysicsList::SetMessengerParam()
 	fMessenger = PhysicsListMessenger::GetInstance();
 	if(!fMessenger)
 	{
-		G4cout << "[PhysicsList] ERORR: no messenger available!!! Exiting!" << G4endl;
+		G4cout << "[PhysicsList::SetMessengerParam] ERORR: no messenger available!!! Exiting!" << G4endl;
 		return;
 	}
 
@@ -187,7 +193,7 @@ void PhysicsList::SetMessengerParam()
 	if(fBrPie2 > 0.0) SetBrPie2(fBrPie2);
 	if(fMessenger->GetMuonDecay() > 0)
 	{
-		G4cout << "[PhysicsList] SetMuonDecay " << fMessenger->GetMuonDecay() << G4endl;
+		G4cout << "[PhysicsList::SetMessengerParam] SetMuonDecay " << fMessenger->GetMuonDecay() << G4endl;
 		SetMuonDecay(fMessenger->GetMuonDecay());
 	}
 	if(fMessenger->GetAddParameterisation())
@@ -202,13 +208,13 @@ void PhysicsList::SetMessengerParam()
 
 void PhysicsList::ConstructParticle()
 {
-	// standard Geant4 particles
+	// Standard Geant4 particles
 	fParticleList->ConstructParticle();
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-// set BR(pi->enu) and BR(pi-->munu)
+// Set BR(pi->enu) and BR(pi-->munu)
 void PhysicsList::SetBrPie2(G4double val)
 {
 	G4double BrPie2 = val;
@@ -217,7 +223,7 @@ void PhysicsList::SetBrPie2(G4double val)
 
 	if(BrPie2 < 0.0 || BrPie2 > 1.0)
 	{
-		G4cout << "[PhysicsList] Error: invalid Br(pi-->enu) = " << BrPie2 << G4endl;
+		G4cout << "[PhysicsList::SetBrPie2] ERROR: invalid Br(pi-->enu) = " << BrPie2 << G4endl;
 		return;
 	}
 
@@ -234,15 +240,15 @@ void PhysicsList::SetBrPie2(G4double val)
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-// polarized muon decay tables
+// Polarized muon decay tables
 void PhysicsList::SetMuonDecay(G4int MuonDecayMode)
 {
 	if(MuonDecayMode < 0 || MuonDecayMode > 2)
 	{
-		G4cout << "[PhysicsList] Error: invalid MuonDecayMode = " << MuonDecayMode << G4endl;
+		G4cout << "[PhysicsList::SetMuonDecay] ERROR: invalid MuonDecayMode = " << MuonDecayMode << G4endl;
 		return;
 	}
-	// G4cout << "[PhysicsList] Setting MuonDecayMode = " << MuonDecayMode << G4endl;
+	// G4cout << "[PhysicsList::SetMuonDecay] Setting MuonDecayMode = " << MuonDecayMode << G4endl;
 
 	G4DecayTable* MuonPlusDecayTable = new G4DecayTable();
 	G4DecayTable* MuonMinusDecayTable = new G4DecayTable();
@@ -253,7 +259,7 @@ void PhysicsList::SetMuonDecay(G4int MuonDecayMode)
 	}
 	else if(MuonDecayMode == 1) // Geant4 mu decay (polarization + 1st order radiative corrections + radiative mu->enunug decay, Eg > 0.5 MeV)
 	{
-		// the weights are such that the ratio of radiative muon decays with Eg > 10 MeV is 0.014, in agreement with the experimental results
+		// The weights are such that the ratio of radiative muon decays with Eg > 10 MeV is 0.014, in agreement with the experimental results
 		MuonPlusDecayTable->Insert(new G4MuonDecayChannelWithSpin("mu+", 0.932));
 		MuonMinusDecayTable->Insert(new G4MuonDecayChannelWithSpin("mu-", 0.932));
 	}
@@ -274,11 +280,12 @@ void PhysicsList::ConstructProcess()
 	G4HadronicProcessStore::Instance()->SetVerbose(0);
 	// G4HadronicProcessStore::Instance()->Dump(1);
 
-	// muon decay with spin
+	// Muon decay with spin
 	G4DecayWithSpin* decayWithSpin = new G4DecayWithSpin();
 	G4ProcessTable* processTable = G4ProcessTable::GetProcessTable();
 	G4VProcess* Decay = processTable->FindProcess("Decay", G4MuonPlus::MuonPlus());
 	G4ProcessManager* Manager = G4MuonPlus::MuonPlus()->GetProcessManager();
+
 	if(Manager)
 	{
 		if(Decay) Manager->RemoveProcess(Decay);
@@ -286,8 +293,10 @@ void PhysicsList::ConstructProcess()
 		Manager->SetProcessOrdering(decayWithSpin, idxPostStep);
 		Manager->SetProcessOrdering(decayWithSpin, idxAtRest);
 	}
+
 	Decay = processTable->FindProcess("Decay", G4MuonMinus::MuonMinus());
 	Manager = G4MuonMinus::MuonMinus()->GetProcessManager();
+
 	if(Manager)
 	{
 		if(Decay) Manager->RemoveProcess(Decay);
@@ -321,12 +330,9 @@ void PhysicsList::OpticalPhysics()
 	fScintillationProcess->SetScintillationYieldFactor(1.0);
 	fScintillationProcess->SetTrackSecondariesFirst(false);
 
-	// use Birks correction in the scintillation process
+	// Use Birks correction in the scintillation process
 	G4EmSaturation* emSaturation = G4LossTableManager::Instance()->EmSaturation();
 	fScintillationProcess->AddSaturation(emSaturation);
-
-	// removed because obsolete (Geant 9.6) RP
-	// fBoundaryProcess->SetModel(themodel);
 
 #ifndef G4SLC6
 	auto theParticleIterator = GetParticleIterator();
@@ -339,19 +345,19 @@ void PhysicsList::OpticalPhysics()
 		G4String particleName = particle->GetParticleName();
 		if(particleName == "opticalphoton")
 		{
-			G4cout << " AddDiscreteProcess to OpticalPhoton " << G4endl;
+			G4cout << "[PhysicsList::OpticalPhysics] Add discrete process to opticalphoton " << G4endl;
 			pmanager->AddDiscreteProcess(fAbsorptionProcess);
 			// pmanager->AddDiscreteProcess(fRayleighScatteringProcess);
 			pmanager->AddDiscreteProcess(fBoundaryProcess);
 			pmanager->AddDiscreteProcess(fWLSProcess);
 		}
-		// if(particleName == "e+")
-		// {
-		// 	pmanager->AddProcess(new G4MultipleScattering, -1, 1, 1);
-		// 	pmanager->AddProcess(new G4eIonisation, -1, 2, 2);
-		// 	pmanager->AddProcess(new G4eBremsstrahlung, -1, 3, 3);
-		// 	pmanager->AddProcess(new G4eplusAnnihilation, 0,-1, 4);
-		// }
+		if(particleName == "e+")
+		{
+			// pmanager->AddProcess(new G4MultipleScattering, -1, 1, 1); // DOESN'T WORK BUT IDK HOW TO FIX
+			pmanager->AddProcess(new G4eIonisation, -1, 2, 2);
+			pmanager->AddProcess(new G4eBremsstrahlung, -1, 3, 3);
+			pmanager->AddProcess(new G4eplusAnnihilation, 0, -1, 4);
+		}
 		if(fScintillationProcess->IsApplicable(*particle))
 		{
 			pmanager->AddProcess(fScintillationProcess);
@@ -370,7 +376,7 @@ void PhysicsList::OpticalPhysics()
 
 void PhysicsList::AddPhysicsList(const G4String& name)
 {
-	G4cout << "[PhysicsList] Adding list " << name << G4endl;
+	G4cout << "[PhysicsList::AddPhysicsList] Adding list " << name << G4endl;
 	if(name == "FTFP_BERT")
 	{
 		SetBuilderList1();
@@ -406,7 +412,7 @@ void PhysicsList::AddPhysicsList(const G4String& name)
 	}
 	else
 	{
-		G4cout << "[PhysicsList] Invalid list " << name << G4endl;
+		G4cout << "[PhysicsList::AddPhysicsList] Invalid list " << name << G4endl;
 		return;
 	}
 }
@@ -440,34 +446,18 @@ void PhysicsList::SetCuts()
 {
 	if(verboseLevel > 0)
 	{
-		G4cout << "[PhysicsList] CutLength " << G4BestUnit(fCutForGamma, "Length") << " for gamma" << G4endl;
-		G4cout << "[PhysicsList] CutLength " << G4BestUnit(fCutForElectron, "Length") << " for e-" << G4endl;
-		G4cout << "[PhysicsList] CutLength " << G4BestUnit(fCutForPositron, "Length") << " for e+" << G4endl;
-		G4cout << "[PhysicsList] CutLength " << G4BestUnit(fCutForProton, "Length") << " for proton" << G4endl;
+		G4cout << "[PhysicsList::SetCuts] CutLength " << G4BestUnit(fCutForGamma, "Length") << " for gamma" << G4endl;
+		G4cout << "[PhysicsList::SetCuts] CutLength " << G4BestUnit(fCutForElectron, "Length") << " for e-" << G4endl;
+		G4cout << "[PhysicsList::SetCuts] CutLength " << G4BestUnit(fCutForPositron, "Length") << " for e+" << G4endl;
+		G4cout << "[PhysicsList::SetCuts] CutLength " << G4BestUnit(fCutForProton, "Length") << " for proton" << G4endl;
 	}
 
-	// set cut values for gamma at first and for e- second and next for e+,
+	// Set cut values for gamma at first and for e- second and next for e+
 	// because some processes for e+/e- need cut values for gamma
 	SetCutValue(fCutForGamma, "gamma");
 	SetCutValue(fCutForElectron, "e-");
 	SetCutValue(fCutForPositron, "e+");
 	SetCutValue(fCutForProton, "proton");
-
-	// cuts per region: radiator
-	// G4Region* RadiatorRegion = G4RegionStore::GetInstance()->GetRegion("RICHRadiator");
-	// G4ProductionCuts* RadiatorProductionCuts = new G4ProductionCuts();
-	// RadiatorProductionCuts->SetProductionCut(1.0 * mm, G4ProductionCuts::GetIndex("gamma"));
-	// RadiatorProductionCuts->SetProductionCut(10.0 * m, G4ProductionCuts::GetIndex("e-"));
-	// RadiatorProductionCuts->SetProductionCut(10.0 * m, G4ProductionCuts::GetIndex("e+"));
-	// RadiatorRegion->SetProductionCuts(RadiatorProductionCuts);
-
-	// cuts per region: radiator
-	// G4Region* MirrorRegion = G4RegionStore::GetInstance()->GetRegion("RICHMirror");
-	// G4ProductionCuts* MirrorProductionCuts = new G4ProductionCuts();
-	// MirrorProductionCuts->SetProductionCut(1.0 * mm, G4ProductionCuts::GetIndex("gamma"));
-	// MirrorProductionCuts->SetProductionCut(1.0 * mm, G4ProductionCuts::GetIndex("e-"));
-	// MirrorProductionCuts->SetProductionCut(1.0 * mm, G4ProductionCuts::GetIndex("e+"));
-	// MirrorRegion->SetProductionCuts(MirrorProductionCuts);
 
 	// G4ProductionCutsTable::GetProductionCutsTable()->SetEnergyRange(100.0 * MeV, 200.0 * GeV);
 	// if(verboseLevel > 0) DumpCutValuesTable();
@@ -514,6 +504,7 @@ void PhysicsList::AddParameterisation()
 #ifndef G4SLC6
 	auto theParticleIterator=GetParticleIterator();
 #endif
+
 	theParticleIterator->reset();
 	while((*theParticleIterator)())
 	{

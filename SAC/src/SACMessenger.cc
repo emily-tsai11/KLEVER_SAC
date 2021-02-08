@@ -7,11 +7,9 @@
 // --------------------------------------------------------------
 
 #include "SACMessenger.hh"
-
 #include "G4UIdirectory.hh"
 #include "G4UIcmdWithAnInteger.hh"
 #include "G4UIcmdWithADoubleAndUnit.hh"
-
 #include "SACGeometry.hh"
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -96,13 +94,6 @@ SACMessenger::SACMessenger()
 	fSetVerboseLevelCmd->SetParameterName("VL", false);
 	fSetVerboseLevelCmd->SetRange("VL >= 0");
 	fSetVerboseLevelCmd->AvailableForStates(G4State_PreInit, G4State_Idle);
-
-	// fSetSACFrontFaceZCmd = new G4UIcmdWithADoubleAndUnit("/Detector/SAC/FrontFaceZ", this);
-	// fSetSACFrontFaceZCmd->SetGuidance("Set position along Z of SAC front face.");
-	// fSetSACFrontFaceZCmd->SetParameterName("Z", false);
-	// fSetSACFrontFaceZCmd->SetDefaultUnit("cm");
-	// fSetSACFrontFaceZCmd->SetRange("Z > 100.0 && Z <= 1000.0");
-	// fSetSACFrontFaceZCmd->AvailableForStates(G4State_PreInit, G4State_Idle);
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -124,7 +115,6 @@ SACMessenger::~SACMessenger()
 	delete fEnableSiPMCmd;
 
 	delete fSetVerboseLevelCmd;
-	// delete fSetSACFrontFaceZCmd;
 
 	delete fSACDetectorDir;
 }
@@ -140,19 +130,18 @@ void SACMessenger::SetNewValue(G4UIcommand* cmd, G4String par)
 		fSACGeometry->SetCrystalSizeX(fSetCrystalSizeCmd->GetNewDoubleValue(par));
 		fSACGeometry->SetCrystalSizeY(fSetCrystalSizeCmd->GetNewDoubleValue(par));
 	}
-	if(cmd == fSetCrystalLengthCmd) fSACGeometry->SetCrystalSizeZ(fSetCrystalLengthCmd->GetNewDoubleValue(par));
+	else if(cmd == fSetCrystalLengthCmd) fSACGeometry->SetCrystalSizeZ(fSetCrystalLengthCmd->GetNewDoubleValue(par));
 
-	if(cmd == fSetCrystalCoatingCmd) fSACGeometry->SetCrystalCoating(fSetCrystalCoatingCmd->GetNewDoubleValue(par));
-	if(cmd == fSetCellGapCmd) fSACGeometry->SetCellGap(fSetCellGapCmd->GetNewDoubleValue(par));
-	if(cmd == fSetLayerGapCmd) fSACGeometry->SetLayerGap(fSetLayerGapCmd->GetNewDoubleValue(par));
+	else if(cmd == fSetCrystalCoatingCmd) fSACGeometry->SetCrystalCoating(fSetCrystalCoatingCmd->GetNewDoubleValue(par));
+	else if(cmd == fSetCellGapCmd) fSACGeometry->SetCellGap(fSetCellGapCmd->GetNewDoubleValue(par));
+	else if(cmd == fSetLayerGapCmd) fSACGeometry->SetLayerGap(fSetLayerGapCmd->GetNewDoubleValue(par));
 
-	if(cmd == fSetSACNRowsCmd) fSACGeometry->SetSACNRows(fSetSACNRowsCmd->GetNewIntValue(par));
-	if(cmd == fSetSACNColsCmd) fSACGeometry->SetSACNCols(fSetSACNColsCmd->GetNewIntValue(par));
-	if(cmd == fSetSACNLayersCmd) fSACGeometry->SetSACNLayers(fSetSACNLayersCmd->GetNewIntValue(par));
+	else if(cmd == fSetSACNRowsCmd) fSACGeometry->SetSACNRows(fSetSACNRowsCmd->GetNewIntValue(par));
+	else if(cmd == fSetSACNColsCmd) fSACGeometry->SetSACNCols(fSetSACNColsCmd->GetNewIntValue(par));
+	else if(cmd == fSetSACNLayersCmd) fSACGeometry->SetSACNLayers(fSetSACNLayersCmd->GetNewIntValue(par));
 
-	if(cmd == fEnablePMTCmd) fSACGeometry->SetEnablePMT(fEnablePMTCmd->GetNewIntValue(par));
-	if(cmd == fEnableSiPMCmd) fSACGeometry->SetEnableSiPM(fEnableSiPMCmd->GetNewIntValue(par));
+	else if(cmd == fEnablePMTCmd) fSACGeometry->SetEnablePMT(fEnablePMTCmd->GetNewIntValue(par));
+	else if(cmd == fEnableSiPMCmd) fSACGeometry->SetEnableSiPM(fEnableSiPMCmd->GetNewIntValue(par));
 
-	if(cmd == fSetVerboseLevelCmd) fSACGeometry->SetVerboseLevel(fSetVerboseLevelCmd->GetNewIntValue(par));
-	// if(cmd == fSetSACFrontFaceZCmd) fSACGeometry->SetSACFrontFacePosZ(fSetSACFrontFaceZCmd->GetNewDoubleValue(par));
+	else if(cmd == fSetVerboseLevelCmd) fSACGeometry->SetVerboseLevel(fSetVerboseLevelCmd->GetNewIntValue(par));
 }

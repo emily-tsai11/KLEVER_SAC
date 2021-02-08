@@ -10,12 +10,12 @@
 #include "G4VisManager.hh"
 #include "G4UIExecutive.hh"
 #include "G4UImanager.hh"
-#include "Randomize.hh"
 
 #include "DetectorConstruction.hh"
 #include "EventAction.hh"
 #include "PhysicsList.hh"
 #include "PrimaryGeneratorAction.hh"
+#include "RandomGenerator.hh"
 #include "RunAction.hh"
 #include "SteppingAction.hh"
 
@@ -24,13 +24,14 @@
 
 int main(int argc, char** argv)
 {
-	// get macro file and seed number
+	// Get macro file and seed number
 	G4String fileName;
 	srand(time(0));
-	G4int seedNum = rand();
+	long seedNum = rand();
+
 	if(argc == 1)
 	{
-		fileName = "macros/vis.mac"; // default interactive mode
+		fileName = "macros/vis.mac"; // Default visualization for interactive mode
 		G4cout << "No macro specified, using " << fileName << G4endl;
 		G4cout << "No seed number specified, using " << seedNum << G4endl;
 	}
@@ -48,49 +49,49 @@ int main(int argc, char** argv)
 		G4cout << "Using seed number " << seedNum << G4endl;
 	}
 
-	// set Random engine
-	CLHEP::HepRandom::setTheEngine(new CLHEP::RanecuEngine());
+	// Set random engine
+	RandomGenerator::GetInstance()->SetSeed(seedNum);
 
-	// construct default run manager
+	// Construct default run manager
 	G4RunManager* runManager = new G4RunManager;
 	DetectorConstruction* detector = new DetectorConstruction();
 	runManager->SetUserInitialization(detector);
 	runManager->SetUserInitialization(new PhysicsList);
 
-	// set user actions
+	// Set user actions
 	RunAction* runAction = new RunAction();
-	EventAction* eventAction = new EventAction(runAction, seedNum);
+	EventAction* eventAction = new EventAction(runAction);
 	runManager->SetUserAction(runAction);
-	runManager->SetUserAction(new PrimaryGeneratorAction(detector, eventAction));
+	runManager->SetUserAction(new PrimaryGeneratorAction());
 	runManager->SetUserAction(eventAction);
-	runManager->SetUserAction(new SteppingAction(eventAction));
+	runManager->SetUserAction(new SteppingAction());
 
-	// define and start UI session
+	// Define and start UI session
 	G4UImanager* UImanager = G4UImanager::GetUIpointer();
 	G4String command = "/control/execute ";
 
 	if(argc == 1)
 	{
-		// define and initialize visualization session
+		// Define and initialize visualization session
 		G4VisManager* visManager = new G4VisExecutive;
 		visManager->Initialize();
 
-		// default interactive mode, if no macro specified
+		// Default is interactive mode, if no macro specified
 		G4UIExecutive* ui = new G4UIExecutive(argc, argv);
 		UImanager->ApplyCommand(command + fileName);
 		ui->SessionStart();
 		delete ui;
 
-		// delete visualization manager
+		// Delete visualization manager
 		delete visManager;
 	}
 	else
 	{
-		// batch mode, if macro specified
+		// Batch mode, if macro specified
 		UImanager->ApplyCommand(command + fileName);
 	}
 
-	// job termination
+	// Job termination
 	delete runManager;
 
 	G4cout << "KLMC_SAC finished successfully!" << G4endl;

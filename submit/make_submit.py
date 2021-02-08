@@ -1,6 +1,6 @@
 import os, argparse
 
-# define parser
+# Define parser
 parser = argparse.ArgumentParser(description = "Variables to generate KLMC_SAC condor submit files with")
 parser.add_argument("BeamType", type = int, help = "Beam type -- Sets incident particle")
 parser.add_argument("IncidentE", type = float, help = "Energy of incident particle")
@@ -9,7 +9,7 @@ parser.add_argument("NEvents", type = int, help = "Number of events")
 parser.add_argument("NRuns", type = int, help = "Number of runs")
 parser.add_argument("JobFlav", type = str, help = "Job flavour")
 
-# parse the arguments and save values
+# Parse the arguments and save values
 args = parser.parse_args()
 BeamType = args.BeamType
 IncidentE = args.IncidentE
@@ -18,28 +18,28 @@ NEvents = args.NEvents
 NRuns = args.NRuns
 JobFlav = args.JobFlav
 
-# filename
+# Filename
 filename = "SAC_" + str(BeamType) + "_" + str(int(IncidentE)) + IncidentEUnit + "_n" + str(NEvents) + "_r" + str(NRuns)
 print("Filename: " + filename + "!")
 
-# delete and create new directory
+# Delete and create new directory
 os.system("rm -rf " + filename)
 os.mkdir(filename)
 os.chdir(filename)
 
-# create err, log, and out folders
+# Create err, log, and out folders
 os.mkdir("err")
 os.mkdir("log")
 os.mkdir("out")
 os.mkdir("root_files")
 
-# write in file
+# Write in file
 with open(filename + ".in", "w") as f:
 	for i in range(NRuns):
 		f.write(filename[:-len(str(NRuns))] + str(i) + "\n") # FIX THIS!!!
 print("In file created!")
 
-# write condor file
+# Write condor file
 with open(filename + ".condor", "w") as f:
 	f.write("universe\t\t\t\t\t= vanilla\n")
 	f.write("\n")
@@ -61,7 +61,7 @@ with open(filename + ".condor", "w") as f:
 	f.write("queue macro from " + filename + ".in\n")
 print("Condor file created!")
 
-# generate macro files
+# Generate macro files
 os.mkdir("macros")
 os.chdir("macros")
 for i in range(NRuns):

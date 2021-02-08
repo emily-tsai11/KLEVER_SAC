@@ -11,7 +11,6 @@
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 #include "G4UImessenger.hh"
-#include "globals.hh"
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -19,29 +18,24 @@ class G4UIdirectory;
 class G4UIcmdWithAnInteger;
 class G4UIcmdWithADoubleAndUnit;
 
+class PrimaryGeneratorAction;
+
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 class PrimaryGeneratorActionMessenger : public G4UImessenger
 {
 	public:
 
-		PrimaryGeneratorActionMessenger();
+		PrimaryGeneratorActionMessenger(PrimaryGeneratorAction*);
 		~PrimaryGeneratorActionMessenger();
-
 		void SetNewValue(G4UIcommand*, G4String);
-
-		G4int GetBeamType() { return fBeamType; }
-		G4double GetBeamEnergy() { return fBeamEnergy; }
 
 	private:
 
-		G4int fBeamType;
-		G4double fBeamEnergy;
-
 		G4UIdirectory* fPrimaryGeneratorActionDir;
-
 		G4UIcmdWithAnInteger* fSetBeamTypeCmd;
 		G4UIcmdWithADoubleAndUnit* fSetBeamEnergyCmd;
+		PrimaryGeneratorAction* fPrimaryGeneratorAction;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

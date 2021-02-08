@@ -6,32 +6,29 @@
 // --------------------------------------------------------------
 
 #include "PrimaryGeneratorAction.hh"
-
 #include "globals.hh"
-#include "TRandom3.h"
 #include "G4SystemOfUnits.hh"
-#include "G4RunManager.hh"
-#include "G4GeometryManager.hh"
-#include "G4ParticleGun.hh"
-#include "G4DecayTable.hh"
-#include "G4ParticleTable.hh"
+
 #include "G4PhysicalConstants.hh"
-#include "RandomGenerator.hh"
+#include "G4RunManager.hh"
+#include "G4ParticleGun.hh"
+#include "G4ParticleTable.hh"
+#include "G4Event.hh"
 
 #include "PrimaryGeneratorActionMessenger.hh"
-#include "PhysicsList.hh"
-#include "EventAction.hh"
-#include "DetectorConstruction.hh"
+#include "RandomGenerator.hh"
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-PrimaryGeneratorAction::PrimaryGeneratorAction(DetectorConstruction* detector, EventAction* eventAction) : G4VUserPrimaryGeneratorAction(), fDetector(detector), fEventAction(eventAction)
+PrimaryGeneratorAction::PrimaryGeneratorAction() : G4VUserPrimaryGeneratorAction()
 {
 	fParticleTable = G4ParticleTable::GetParticleTable();
-	fMessenger = new PrimaryGeneratorActionMessenger();
+	fMessenger = new PrimaryGeneratorActionMessenger(this);
 	fParticleGun = new G4ParticleGun(1);
 
-	// default constants not defined in messenger
+	// Default constants
+	fBeamType = 0;
+	fBeamEnergy = 100.0 * MeV;
 	fParticleName = "gamma";
 	fTime = 0.0 * ns;
 	fPosition = G4ThreeVector(0.0 * m, 0.0 * m, 1.0 * m);
@@ -55,31 +52,26 @@ PrimaryGeneratorAction::~PrimaryGeneratorAction()
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-// called at the beginning of each event
 void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 {
-	fBeamType = fMessenger->GetBeamType();
-	fBeamEnergy = fMessenger->GetBeamEnergy();
-
 	switch(fBeamType)
 	{
 		case 1: // KL with Atherton momentum
 		{
 			fParticleName = "kaon0L";
 
-			fEventAction->FillRandomEnginesStates();
-			GenerateAthertonMomentum(); // fills f4Momentum
-			G4LorentzVector PosTime = GenerateKaonPositionTime(); // gets values from f4Momentum
+			GenerateAthertonMomentum(); // Fills f4Momentum
+			G4LorentzVector PosTime = GenerateKaonPositionTime(); // Gets values from f4Momentum
 
 			fBeamEnergy = f4Momentum.e();
 			fTime = PosTime.t();
 			fPosition = PosTime.vect();
 			fMomentum = G4ThreeVector(f4Momentum.px(), f4Momentum.py(), -f4Momentum.pz());
 
-			G4cout << "PARTICLE ENERGY: " << fBeamEnergy << G4endl;
-			G4cout << "PARTICLE TIME: " << fTime << G4endl;
-			G4cout << "PARTICLE POSITION: " << fPosition << G4endl;
-			G4cout << "PARTICLE MOMENTUM DIRECTION: " << fMomentum << G4endl;
+			// G4cout << "PARTICLE ENERGY: " << fBeamEnergy << G4endl;
+			// G4cout << "PARTICLE TIME: " << fTime << G4endl;
+			// G4cout << "PARTICLE POSITION: " << fPosition << G4endl;
+			// G4cout << "PARTICLE MOMENTUM DIRECTION: " << fMomentum << G4endl;
 
 			break;
 		}
@@ -88,7 +80,7 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 			fParticleName = "kaon0L";
 			break;
 		}
-		case 3: // neutrons
+		case 3: // Neutrons
 		{
 			fParticleName = "neutron";
 			break;
@@ -117,7 +109,7 @@ void PrimaryGeneratorAction::GenerateAthertonMomentum()
 		sin(fKaonProductionAngle) * sin(fKaonProductionAzimuth), cos(fKaonProductionAngle));
 	G4double deltaCosThetaGen = 1 - cos(fKaonOpeningAngle);
 
-	TRandom3* RandomDecay = (RandomGenerator::GetInstance())->GetRandomDecay();
+	RandomGenerator* fRandomGenerator = RandomGenerator::GetInstance();
 
 	// Sample flat solid angle distribution about the netural beam axis (z-axis)
 	G4ThreeVector dirBeam;
@@ -125,15 +117,15 @@ void PrimaryGeneratorAction::GenerateAthertonMomentum()
 
 	while(true)
 	{
-		G4double cosThetaBeam = 1 - deltaCosThetaGen * RandomDecay->Uniform();
+		G4double cosThetaBeam = 1 - deltaCosThetaGen * fRandomGenerator->GetUniform();
 		G4double sinThetaBeam = sqrt(1 - cosThetaBeam * cosThetaBeam);
-		G4double phiBeam = 2 * pi * RandomDecay->Uniform();
+		G4double phiBeam = 2 * pi * fRandomGenerator->GetUniform();
 		dirBeam.set(sinThetaBeam * cos(phiBeam), sinThetaBeam * sin(phiBeam), cosThetaBeam);
 
 		G4double theta = dirBeam.angle(dirPrimary);
 
-		// d2N/dp*dOmega for KL is a linear combination of those for K+ and K-
-		// (the so called Wachsmuth rule): KL = (1/4K+) + (3/4K-)
+		// d2N / dp * dOmega for KL is a linear combination of those for K+ and K-
+		// The so called Wachsmuth rule: KL = (1 / 4 K+) + (3 / 4 K-)
 
 		// K+ Atherton spectrum parameters
 		const G4double Ap = 0.16;
@@ -150,8 +142,8 @@ void PrimaryGeneratorAction::GenerateAthertonMomentum()
 		G4double p0r = 0.001 * p0;
 		const G4double Ath_max = 10.0;
 
-		pA = RandomDecay->Uniform() * p0r;
-		G4double f = RandomDecay->Uniform() * Ath_max;
+		pA = fRandomGenerator->GetUniform() * p0r;
+		G4double f = fRandomGenerator->GetUniform() * Ath_max;
 		G4double fAth = 1.0 * Ap * Bp / p0r * exp(-Bp * pA / p0r) * Cp * pA * pA / M_PI * exp(-Cp * pA * pA * theta * theta)
 			+ 3.0 * Am * Bm / p0r * exp(-Bm * pA / p0r) * Cm * pA * pA / M_PI * exp(-Cm * pA * pA * theta * theta);
 
@@ -166,14 +158,15 @@ void PrimaryGeneratorAction::GenerateAthertonMomentum()
 
 G4LorentzVector PrimaryGeneratorAction::GenerateKaonPositionTime()
 {
-	TRandom3* RandomDecay = (RandomGenerator::GetInstance())->GetRandomDecay();
+	RandomGenerator* fRandomGenerator = RandomGenerator::GetInstance();
 
 	// Kaon production position
 	G4double sx = 0.2 * mm;
 	G4double sy = 0.3 * mm;
-	G4double x0 = RandomDecay->Gaus(0.0, sx);
-	G4double y0 = RandomDecay->Gaus(0.0, sy);
-	G4double z0 = RandomDecay->Uniform(-200.0 * mm, 200.0 * mm);
+	G4double x0 = fRandomGenerator->GetGauss(0.0, sx);
+	G4double y0 = fRandomGenerator->GetGauss(0.0, sy);
+	// Generates random number on flat distribution between -200.0 and 200.0 mm
+	G4double z0 = fRandomGenerator->GetUniform() * (400.0 * mm) - 200 * mm;
 
 	// Position of kaon handover to Geant4 (bypass Cedar, GTK, CHANTI)
 	G4double z = fDecayZMin;

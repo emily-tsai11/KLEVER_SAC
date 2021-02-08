@@ -7,7 +7,7 @@
 //
 // Created by V.Ivanchenko 31.01.2006
 // Modified by V.Ivanchenko 04.06.2006
-//		Adaptation of hadr01
+// - Adaptation of hadr01
 // Sergey Podolsky (siarhei.padolski@cern.ch) 03-09-2012
 // Adapted from Padme by Emily Tsai (emily.tsai11@gmail.com) 2020-7-15
 // --------------------------------------------------------------
@@ -18,7 +18,6 @@
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 #include "G4UImessenger.hh"
-#include "globals.hh"
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -59,6 +58,9 @@ class PhysicsListMessenger : public G4UImessenger
 		void SetPhysicsList(G4String name) { fPhysicsListName = name; }
 		G4String GetPhysicsList() { return fPhysicsListName; }
 
+		void SetListPhysList(G4bool value) { fListPhysList = value; }
+		G4bool GetListPhysList() { return fListPhysList; }
+
 
 		void SetAddParameterisation(G4bool value) { fAddParameterisation = value; }
 		G4bool GetAddParameterisation() { return fAddParameterisation; }
@@ -67,11 +69,8 @@ class PhysicsListMessenger : public G4UImessenger
 		void SetBrPie2(G4double value) { fBrPie2 = value; }
 		G4double GetBrPie2() const { return fBrPie2; }
 
-		void SetMuonDecay(G4int value) { fMuonDecayMode = value; } // set muon decay mode
-		G4double GetMuonDecay() { return fMuonDecayMode; } // set muon decay mode
-
-		void SetListPhysList(G4bool value) { fListPhysList = value; }
-		G4bool GetListPhysList() { return fListPhysList; }
+		void SetMuonDecay(G4int value) { fMuonDecayMode = value; } // Set muon decay mode
+		G4double GetMuonDecay() { return fMuonDecayMode; } // Set muon decay mode
 
 	private:
 
@@ -80,11 +79,12 @@ class PhysicsListMessenger : public G4UImessenger
 		G4UIdirectory* fSimulationDir;
 		G4UIdirectory* fDecayDir;
 
+		G4UIcmdWithADoubleAndUnit* fCutCmd;
 		G4UIcmdWithADoubleAndUnit* fGammaCutCmd;
 		G4UIcmdWithADoubleAndUnit* fElectCutCmd;
 		G4UIcmdWithADoubleAndUnit* fPosCutCmd;
-		G4UIcmdWithADoubleAndUnit* fCutCmd;
 		G4UIcmdWithADoubleAndUnit* fAllCutCmd;
+
 		G4UIcmdWithAString* fPListCmd;
 		G4UIcmdWithoutParameter* fListCmd;
 		G4UIcmdWithoutParameter* fFastCmd;
@@ -92,15 +92,18 @@ class PhysicsListMessenger : public G4UImessenger
 		G4UIcmdWithADouble* fDecayPiplusDecayCmd;
 		G4UIcmdWithAnInteger* fMuonDecayCmd;
 
-		G4double fBrPie2;
-		G4int fMuonDecayMode;
 		G4double fCutGamma;
 		G4double fCutElectron;
 		G4double fCutPositron;
 		G4double fCutProton;
+
 		G4String fPhysicsListName;
-		G4bool fAddParameterisation;
 		G4bool fListPhysList;
+		G4bool fAddParameterisation;
+
+		G4double fBrPie2;
+		G4int fMuonDecayMode;
+
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

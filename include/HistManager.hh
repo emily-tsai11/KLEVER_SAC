@@ -10,7 +10,6 @@
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-#include "globals.hh"
 #include "g4analysis.hh"
 #include <map>
 
@@ -55,6 +54,7 @@ typedef struct
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 class HistManagerMessenger;
+class G4String;
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -65,11 +65,6 @@ class HistManager
 		~HistManager();
 		static HistManager* GetInstance();
 
-		void PrintHistNames();
-		void Print1DHistInfo();
-		void Print2DHistInfo();
-		void Print3DHistInfo();
-
 		void SetFileName(G4String name) { fFileName = name; }
 		G4String GetFileName() { return fFileName; }
 
@@ -77,6 +72,11 @@ class HistManager
 		std::map<G4String, f1DHistInfo> Get1DHistInfo() { return f1DH; }
 		std::map<G4String, f2DHistInfo> Get2DHistInfo() { return f2DH; }
 		std::map<G4String, f3DHistInfo> Get3DHistInfo() { return f3DH; }
+
+		void PrintHistNames();
+		void Print1DHistInfo();
+		void Print2DHistInfo();
+		void Print3DHistInfo();
 
 	protected:
 

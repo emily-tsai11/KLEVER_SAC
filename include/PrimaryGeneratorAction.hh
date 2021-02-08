@@ -11,18 +11,16 @@
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 #include "G4VUserPrimaryGeneratorAction.hh"
-#include "G4ParticleTable.hh"
 #include "G4LorentzVector.hh"
-#include "G4Event.hh"
-#include "globals.hh"
+#include "G4ThreeVector.hh"
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-class DetectorConstruction;
-class EventAction;
+class G4Event;
+class G4String;
 class G4ParticleTable;
 class G4ParticleGun;
-class G4Event;
+
 class PrimaryGeneratorActionMessenger;
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -31,18 +29,25 @@ class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
 {
 	public:
 
-		PrimaryGeneratorAction(DetectorConstruction*, EventAction*);
+		PrimaryGeneratorAction();
 		~PrimaryGeneratorAction();
 
-		void GeneratePrimaries(G4Event* anEvent); // called at the beginning of each event
+		void SetBeamType(G4int bt) { fBeamType = bt; }
+		G4int GetBeamType() { return fBeamType; }
+
+		void SetBeamEnergy(G4double be) { fBeamEnergy = be; }
+		G4double GetBeamEnergy() { return fBeamEnergy; }
+
+		// Called at the beginning of each event
+		void GeneratePrimaries(G4Event* anEvent);
 		void GenerateAthertonMomentum();
 		G4LorentzVector GenerateKaonPositionTime();
 
 	private:
 
 		G4int fBeamType;
-		G4String fParticleName;
 		G4int fBeamEnergy;
+		G4String fParticleName;
 		G4double fTime;
 		G4ThreeVector fPosition;
 		G4ThreeVector fMomentum;
@@ -58,8 +63,6 @@ class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
 		G4ParticleTable* fParticleTable;
 		G4ParticleGun* fParticleGun;
 
-		DetectorConstruction* fDetector;
-		EventAction* fEventAction;
 		PrimaryGeneratorActionMessenger* fMessenger;
 };
 

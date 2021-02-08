@@ -10,7 +10,12 @@
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-#include "SACGeometry.hh"
+#include "globals.hh"
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+class G4LogicalVolume;
+class G4String;
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -20,7 +25,6 @@ class SACPMT
 
 		explicit SACPMT();
 		void CreateGeometry();
-
 		G4LogicalVolume* GetPMTLogicalVolume() { return fPMTVolume; }
 
     private:

@@ -15,6 +15,7 @@
 #include "G4PVPlacement.hh"
 #include "G4SDManager.hh"
 
+#include "SACGeometry.hh"
 #include "SACSD.hh"
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -24,10 +25,10 @@ SACSiPM::SACSiPM()
 	SACGeometry* Geo = SACGeometry::GetInstance();
 
 	fSiPMSize = Geo->GetSiPMSize();
-	printf("SiPM size is %f\n", fSiPMSize);
+	printf("[SACSiPM::SACSiPM] SiPM size is %f\n", fSiPMSize);
 
 	fSiPMThickness = Geo->GetSiPMThickness();
-	printf("SiPM thickness is %f\n", fSiPMThickness);
+	printf("[SACSiPM::SACSiPM] SiPM thickness is %f\n", fSiPMThickness);
 
 	fSACSDName = Geo->GetSACSensitiveDetectorName();
 }
@@ -49,15 +50,15 @@ void SACSiPM::CreateGeometry()
 		0, 0, 0);
 	fSiPMVolume->SetVisAttributes(G4VisAttributes(G4Colour::Green()));
 
-	// make SiPM a sensitive detector
+	// Make SiPM a sensitive detector
 	G4SDManager* SDMan = G4SDManager::GetSDMpointer();
 	SACSD* fSACSD = static_cast<SACSD*>(SDMan->FindSensitiveDetector(fSACSDName));
 	if(!fSACSD)
 	{
-		printf("SAC SD %s not found, registering it now\n", fSACSDName.c_str());
+		printf("[SACSiPM::CreateGeometry] SAC SD %s not found, registering it now\n", fSACSDName.c_str());
 		fSACSD = new SACSD(fSACSDName);
 		SDMan->AddNewDetector(fSACSD);
 	}
 	fSiPMVolume->SetSensitiveDetector(fSACSD);
-	printf("Added SAC SiPM as sensitive detector\n");
+	printf("[SACSiPM::CreateGeometry] Added SAC SiPM as sensitive detector\n");
 }

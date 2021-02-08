@@ -6,26 +6,11 @@
 // --------------------------------------------------------------
 
 #include "RandomGenerator.hh"
-// #include "DatacardManager.hh"
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
-using namespace TMath;
+#include "Randomize.hh"
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 RandomGenerator* RandomGenerator::fInstance = 0;
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
-RandomGenerator::RandomGenerator() {}
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
-RandomGenerator::~RandomGenerator()
-{
-	if(fRandDecay) delete fRandDecay;
-}
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -37,68 +22,48 @@ RandomGenerator* RandomGenerator::GetInstance()
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-void RandomGenerator::Init(unsigned int seed)
+RandomGenerator::RandomGenerator()
 {
-	fRandDecay = new TRandom3();
-	fRandDecay->SetSeed(seed);
-	fIntegralHasBeenCalculated = kFALSE;
+	CLHEP::HepRandom::setTheEngine(new CLHEP::RanecuEngine());
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-void RandomGenerator::Init(TRandom3* RandDecay)
+RandomGenerator::~RandomGenerator() {}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+void RandomGenerator::SetSeed(long theSeed)
 {
-	fRandDecay = new TRandom3();
-	*fRandDecay = *RandDecay;
-	fIntegralHasBeenCalculated = kFALSE;
+	fSeed = theSeed;
+	CLHEP::HepRandom::setTheSeed(fSeed);
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-void RandomGenerator::GetRandom2(TH2D* histoInput, Double_t &x, Double_t &y)
+void RandomGenerator::ShowStatus()
 {
-	Int_t nbinsx = histoInput->GetNbinsX();
-	Int_t nbinsy = histoInput->GetNbinsY();
-	Int_t nbins = nbinsx * nbinsy;
-	Double_t integral;
+	CLHEP::HepRandom::showEngineStatus();
+}
 
-	// compute integral checking that all bins have positive content (see ROOT-5894)
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-	// check if integral for that histograms has been evaluated
-	if(mapOfHistograms.find(histoInput) != mapOfHistograms.end())
-	{
-		if(histoInput->GetIntegral()[nbins + 1] != histoInput->GetEntries()) integral = histoInput->ComputeIntegral(true);
-		else integral = histoInput->GetIntegral()[nbins];
-	}
-	else
-	{
-		integral = histoInput->ComputeIntegral(true);
-		mapOfHistograms.insert(std::make_pair(histoInput, histoInput->GetEntries()));
-	}
+void RandomGenerator::SaveStatus()
+{
+	CLHEP::HepRandom::getTheEngine()->saveStatus();
+}
 
-	if(integral == 0)
-	{
-		x = 0;
-		y = 0;
-		return;
-	}
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-	// case histogram has negative bins
-	if(integral == TMath::QuietNaN())
-	{
-		x = TMath::QuietNaN();
-		y = TMath::QuietNaN();
-		return;
-	}
+double RandomGenerator::GetUniform()
+{
+	// Returns a pseudo random number between 0 and 1 (excluding end points)
+	return G4UniformRand();
+}
 
-	Double_t* gInt = histoInput->GetIntegral();
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-	Double_t r1 = fRandDecay->Rndm();
-	Int_t ibin = TMath::BinarySearch(nbins, gInt, (Double_t) r1);
-	Int_t biny = ibin / nbinsx;
-	Int_t binx = ibin - nbinsx * biny;
-
-	x = histoInput->GetXaxis()->GetBinLowEdge(binx + 1);
-	if(r1 > gInt[ibin]) x += histoInput->GetXaxis()->GetBinWidth(binx + 1) * (r1 - gInt[ibin]) / (gInt[ibin + 1] - gInt[ibin]);
-	y = histoInput->GetYaxis()->GetBinLowEdge(biny + 1) + histoInput->GetYaxis()->GetBinWidth(biny + 1) * fRandDecay->Rndm();
+double RandomGenerator::GetGauss(double m, double std)
+{
+	return G4RandGauss::shoot(m, std);
 }

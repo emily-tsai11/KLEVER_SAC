@@ -9,7 +9,6 @@
 
 #include "G4Material.hh"
 #include "G4Box.hh"
-#include "G4SubtractionSolid.hh"
 #include "G4VisAttributes.hh"
 #include "G4RotationMatrix.hh"
 #include "G4ThreeVector.hh"
@@ -28,15 +27,15 @@ SACCell::SACCell()
 	fCrystalSizeX = Geo->GetCrystalSizeX();
 	fCrystalSizeY = Geo->GetCrystalSizeY();
 	fCrystalSizeZ = Geo->GetCrystalSizeZ();
-	printf("SAC crystal size is %f %f %f\n", fCrystalSizeX, fCrystalSizeY, fCrystalSizeZ);
+	printf("[SACCell::SACCell] SAC crystal size is %f %f %f\n", fCrystalSizeX, fCrystalSizeY, fCrystalSizeZ);
 
 	fCrystalCoating = Geo->GetCrystalCoating();
-	printf("Coating around SAC crystals is %f\n", fCrystalCoating);
+	printf("[SACCell::SACCell] Coating around SAC crystals is %f\n", fCrystalCoating);
 
 	fCellSizeX = Geo->GetCellSizeX();
 	fCellSizeY = Geo->GetCellSizeY();
 	fCellSizeZ = Geo->GetCellSizeZ();
-	printf("SAC cell size is %f %f %f\n", fCellSizeX, fCellSizeY, fCellSizeZ);
+	printf("[SACCell::SACCell] SAC cell size is %f %f %f\n", fCellSizeX, fCellSizeY, fCellSizeZ);
 
 	fSACSDName = Geo->GetSACSensitiveDetectorName();
 }
@@ -45,7 +44,7 @@ SACCell::SACCell()
 
 void SACCell::CreateGeometry()
 {
-	// create PbF2 crystal
+	// Create PbF2 crystal
 	G4Box* fCrystalSolid = new G4Box(
 		"SACCrystal",
 		0.5 * fCrystalSizeX,
@@ -59,7 +58,7 @@ void SACCell::CreateGeometry()
 		0, 0, 0);
 	fCrystalVolume->SetVisAttributes(G4VisAttributes(G4Colour::Blue()));
 
-	// create paint coating
+	// Create paint coating
 	G4Box* fCellSolid = new G4Box(
 		"SACCell",
 		0.5 * fCellSizeX,
@@ -73,7 +72,7 @@ void SACCell::CreateGeometry()
 		0, 0, 0);
 	fCellVolume->SetVisAttributes(G4VisAttributes(G4Colour::Magenta()));
 
-	// place crystal inside paint coating
+	// Place crystal inside paint coating
 	new G4PVPlacement(
 		0,
 		G4ThreeVector(0.0, 0.0, -0.5 * fCrystalCoating),
@@ -82,15 +81,15 @@ void SACCell::CreateGeometry()
 		fCellVolume,
 		false, 0, false);
 
-	// make PbF2 crystal a sensitive detector
+	// Make PbF2 crystal a sensitive detector
 	G4SDManager* SDMan = G4SDManager::GetSDMpointer();
 	SACSD* fSACSD = static_cast<SACSD*>(SDMan->FindSensitiveDetector(fSACSDName));
 	if(!fSACSD)
 	{
-		printf("SAC SD %s not found, registering it now\n", fSACSDName.c_str());
+		printf("[SACCell::CreateGeometry] SAC SD %s not found, registering it now\n", fSACSDName.c_str());
 		fSACSD = new SACSD(fSACSDName);
 		SDMan->AddNewDetector(fSACSD);
 	}
 	fCrystalVolume->SetSensitiveDetector(fSACSD);
-	printf("Added SAC crystal as sensitive detector\n");
+	printf("[SACCell::CreateGeometry] Added SAC crystal as sensitive detector\n");
 }

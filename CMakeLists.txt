@@ -1,11 +1,11 @@
-# require minimum cmake version
+# Require minimum cmake version
 cmake_minimum_required(VERSION 2.8...3.18)
 
-#define project
+# Define project
 project(KLMC_SAC)
 
-# find Geant4 package, activate all available UI and vis drivers by default
-# can set WITH_GEANT4_UIVIS to OFF with cmake (-DWITH_GEANT4_UIVIS=OFF)
+# Find Geant4 package, activate all available UI and vis drivers by default
+# Can set WITH_GEANT4_UIVIS to OFF with cmake (-DWITH_GEANT4_UIVIS=OFF)
 option(WITH_GEANT4_UIVIS "Build example with Geant4 UI and Vis drivers" ON)
 if(WITH_GEANT4_UIVIS)
 	find_package(Geant4 REQUIRED ui_all vis_all)
@@ -13,32 +13,30 @@ else()
 	find_package(Geant4 REQUIRED)
 endif()
 
+# Set cmake build type to debug
 set(CMAKE_BUILD_TYPE Debug)
 
-# find ROOT
-find_package(ROOT REQUIRED)
-
-# setup Geant4 include directories and compile definitions
+# Setup Geant4 include directories and compile definitions
 include(${Geant4_USE_FILE})
 
-# configure KLMC_SAC to use project, Geant4, and ROOT headers
-include_directories(${PROJECT_SOURCE_DIR}/include ${Geant4_INCLUDE_DIRS} ${ROOT_INCLUDE_DIRS})
+# Configure KLMC_SAC to use project and Geant4 headers
+include_directories(${PROJECT_SOURCE_DIR}/include ${Geant4_INCLUDE_DIRS})
 
-# locate headers and sources for this project
+# Locate headers and sources for this project
 file(GLOB headers ${PROJECT_SOURCE_DIR}/include/*.hh)
 file(GLOB sources ${PROJECT_SOURCE_DIR}/src/*.cc)
 
-# add the executable and link it to the Geant4 and ROOT libraries
+# Add the executable and link it to the Geant4 libraries
 add_executable(KLMC_SAC KLMC_SAC.cc ${headers} ${sources})
-target_link_libraries(KLMC_SAC ${Geant4_LIBRARIES} ${ROOT_LIBRARIES})
+target_link_libraries(KLMC_SAC ${Geant4_LIBRARIES})
 
-# add SAC to build
-add_subdirectory(${PROJECT_SOURCE_DIR}/SAC) # add SAC subdirectory to build
-include_directories(${PROJECT_SOURCE_DIR}/SAC/include) # specify SAC include directory
-target_link_libraries(KLMC_SAC SAC) # link with KLMC_SAC libraries
+# Add SAC to build
+add_subdirectory(${PROJECT_SOURCE_DIR}/SAC) # Add SAC subdirectory to build
+include_directories(${PROJECT_SOURCE_DIR}/SAC/include) # Specify SAC include directory
+target_link_libraries(KLMC_SAC SAC) # Link with KLMC_SAC libraries
 
-# copy over macro files
+# Copy over macro files
 file(COPY macros DESTINATION .)
 
-# install executable
+# Install executable
 install(TARGETS KLMC_SAC DESTINATION bin)

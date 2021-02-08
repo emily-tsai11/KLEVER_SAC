@@ -6,7 +6,7 @@
 // --------------------------------------------------------------
 
 #include "HistManager.hh"
-
+#include "globals.hh"
 #include "G4SystemOfUnits.hh"
 #include <string>
 
@@ -31,10 +31,10 @@ HistManager::HistManager()
 {
 	fMessenger = new HistManagerMessenger();
 
-	// root save file name
+	// ROOT save file name
 	fFileName = "SACRun";
 
-	// histogram parameters
+	// Histogram parameters
 	G4int fIndex1 = 0;
 	G4int fIndex2 = 0;
 	G4int fIndex3 = 0;
@@ -46,7 +46,7 @@ HistManager::HistManager()
 	G4double fSACCols = (G4double) Geo->GetSACNCols();
 	G4double fSACLayers = (G4double) Geo->GetSACNLayers();
 
-	// map particle names
+	// Map particle names
 	fParticleNames.insert({"all", 0});
 	fParticleNames.insert({"e+", 1});
 	fParticleNames.insert({"e-", 2});
@@ -62,8 +62,8 @@ HistManager::HistManager()
 	fParticleNames.insert({"proton", 12});
 	fParticleNames.insert({"untracked", 13});
 
-	// map histogram names
-	// energy deposition per event / incident energy
+	// Map histogram names
+	// Energy deposition per event / incident energy
 	for(iter = fParticleNames.begin(); iter != fParticleNames.end(); iter++)
 	{
 		f1DH.insert({
@@ -75,7 +75,7 @@ HistManager::HistManager()
 		fIndex1++;
 	}
 
-	// energy deposition in SAC layers / incident energy
+	// Energy deposition in SAC layers / incident energy
 	for(iter = fParticleNames.begin(); iter != fParticleNames.end(); iter++)
 	{
 		f1DH.insert({
@@ -117,7 +117,7 @@ HistManager::HistManager()
 		fIndex3++;
 	}
 
-	// multiplicity per event / incident energy
+	// Multiplicity per event / incident energy
 	for(iter = fParticleNames.begin(); iter != fParticleNames.end(); iter++)
 	{
 		f1DH.insert({
@@ -129,7 +129,7 @@ HistManager::HistManager()
 		fIndex1++;
 	}
 
-	// low range of multiplicity per event / incident energy
+	// Low range of multiplicity per event / incident energy
 	for(iter = fParticleNames.begin(); iter != fParticleNames.end(); iter++)
 	{
 		f1DH.insert({
@@ -141,7 +141,7 @@ HistManager::HistManager()
 		fIndex1++;
 	}
 
-	// track length per hit
+	// Track length per hit
 	for(iter = fParticleNames.begin(); iter != fParticleNames.end(); iter++)
 	{
 		f1DH.insert({

@@ -1,21 +1,15 @@
-# visualize KLMC_SAC
+# Visualize KLMC_SAC
 
 # --------------------------------------------------
 
-# sets some default verbose
+# Sets some default verbose
 /control/verbose 1
 /run/verbose 1
 /tracking/verbose 0
 
 # --------------------------------------------------
 
-# simulation from NA62
-# /Simulation/Physics QGSP_FTFP_BERT
-
-# --------------------------------------------------
-
-# detector settings
-
+# Detector settings
 # /Detector/SAC/CrystalSize 2.0 cm
 # /Detector/SAC/CrystalLength 3.75 cm
 # /Detector/SAC/CrystalCoating 100.0 um
@@ -31,43 +25,42 @@
 
 # --------------------------------------------------
 
-# create detectors and initialize run
+# Create detectors and initialize run
 /run/initialize
 
-# use this open statement to create an OpenGL view:
+# Use this open statement to create an OpenGL view:
 /vis/open OGL 600x600-0+0
 
-# disable auto refresh and quieten vis messages whilst scene and trajectories are established:
+# Disable auto refresh and quieten vis messages whilst scene and trajectories are established:
 /vis/viewer/set/autoRefresh false
 /vis/verbose errors
 
-# draw geometry:
+# Draw geometry:
 /vis/drawVolume
 # /geometry/test/grid_test true
 
+# Choose viewpoint
 # /vis/viewer/set/viewpointVector 0.0 10.0 0.0
-
-# choose viewpoint
-# side view
+# Side view
 # /vis/viewer/set/viewpointThetaPhi -90.0 0.0 deg
-# top view
+# Top view
 # /vis/viewer/set/viewpointThetaPhi 90.0 90.0 deg
-# front view
+# Front view
 /vis/viewer/set/viewpointThetaPhi 0.0 0.0 deg
-# back view
+# Back view
 # /vis/viewer/set/viewpointThetaPhi 180.0 0.0 deg
 
-# specify zoom value:
+# Specify zoom value:
 # /vis/viewer/zoom 2
 
-# specify style (surface or wireframe):
+# Specify style (surface or wireframe):
 /vis/viewer/set/style wireframe
 # /vis/viewer/set/style surface
 
-# draw coordinate axes:
+# Draw coordinate axes:
 # /vis/scene/add/axes 0 0 0 1 m
 
-# decorations
+# Decorations
 /vis/set/textColour green
 /vis/set/textLayout right
 /vis/scene/add/text2D 0.9 -0.9 24 ! ! KLEVER SAC
@@ -76,19 +69,19 @@
 /vis/scene/add/eventID # drawn at end of event
 /vis/scene/add/date # date stamp
 
-# draw smooth trajectories at end of event, showing trajectory points as markers 2 pixels wide:
+# Draw smooth trajectories at end of event, showing trajectory points as markers 2 pixels wide:
 /vis/scene/add/trajectories smooth
 # /vis/modeling/trajectories/create/drawByCharge
 # /vis/modeling/trajectories/drawByCharge-0/default/setDrawStepPts true
 # /vis/modeling/trajectories/drawByCharge-0/default/setStepPtsSize 1
 
-# (if too many tracks cause core dump => /tracking/storeTrajectory 0)
+# If too many tracks cause core dump => /tracking/storeTrajectory 0
 /tracking/storeTrajectory 1
 
-# draw hits at end of event:
+# Draw hits at end of event:
 /vis/scene/add/hits
 
-# to draw only certain particles:
+# To draw only certain particles:
 # /vis/filtering/trajectories/create/particleFilter
 # /vis/filtering/trajectories/particleFilter-0/add gamma
 # /vis/filtering/trajectories/particleFilter-0/add positron
@@ -97,10 +90,10 @@
 # /vis/filtering/trajectories/particleFilter-0/add neutron
 # /vis/filtering/trajectories/particleFilter-0/add opticalphoton
 
-# to invert the above, drawing all particles except certain ones, keep the above lines but also add:
+# To invert the above, drawing all particles except certain ones, keep the above lines but also add:
 # /vis/filtering/trajectories/particleFilter-0/invert true
 
-# to select colour by particle ID:
+# To select colour by particle ID:
 /vis/modeling/trajectories/create/drawByParticleID
 /vis/modeling/trajectories/drawByParticleID-0/set gamma white
 /vis/modeling/trajectories/drawByParticleID-0/set positron green
@@ -109,31 +102,31 @@
 /vis/modeling/trajectories/drawByParticleID-0/set neutron magenta
 /vis/modeling/trajectories/drawByParticleID-0/set opticalphoton cyan
 
-# to superimpose all of the events from a given run:
+# To superimpose all of the events from a given run:
 # /vis/scene/endOfEventAction accumulate
 
-# re-establish auto refreshing and verbosity:
+# Re-establish auto refreshing and verbosity:
 /vis/viewer/set/autoRefresh true
 /vis/verbose warnings
 
-# fix problem in visualizing some circular parts
+# Fix problem in visualizing some circular parts
 # /vis/viewer/set/lineSegmentsPerCircle 50
 
 /vis/scene/endOfEventAction accumulate 10
 
 /vis/viewer/flush
 
-# calo picture
+# Calo picture
 # /vis/viewer/set/viewpointThetaPhi 45.0 45.0
 # /vis/viewer/panTo -1 -0.9
 # /vis/viewer/zoom 4.5
 
-# monitor picture
+# Monitor picture
 # /vis/viewer/panTo -0.5 0.0
 # /vis/viewer/set/viewpointThetaPhi 0.0 0.0
 # /vis/viewer/zoom 50
 
-# only show tracks with p > 1MeV
+# Only show tracks with p > 1MeV
 # /vis/filtering/trajectories/create/attributeFilter
 # /vis/filtering/trajectories/attributeFilter-0/setAttribute IMag
 # /vis/filtering/trajectories/attributeFilter-0/addInterval 1.0 MeV 100000.0 MeV

@@ -6,21 +6,14 @@
 // --------------------------------------------------------------
 
 #include "SteppingAction.hh"
-
-#include "G4SteppingManager.hh"
-#include "G4RunManager.hh"
-
 #include "G4Track.hh"
-#include "G4TrackVector.hh"
-#include "G4VProcess.hh"
-
-#include <stdio.h>
-
-#include "EventAction.hh"
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-SteppingAction::SteppingAction(EventAction* eventAction) : fEventAction(eventAction) {}
+SteppingAction::SteppingAction() : G4UserSteppingAction()
+{
+	fVerboseLevel = 0;
+}
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -30,46 +23,16 @@ SteppingAction::~SteppingAction() {}
 
 void SteppingAction::UserSteppingAction(const G4Step* aStep)
 {
-	// PrintStep(aStep);
-
-	G4Track* Track = aStep->GetTrack();
-
-	// from KLMC: suppress particles touching black hole volumes
-	if(aStep->GetPostStepPoint()->GetPhysicalVolume())
-	{
-		if(aStep->GetPostStepPoint()->GetPhysicalVolume()->GetLogicalVolume()->GetMaterial()->GetName() == "KLBlackHole" &&
-			Track->GetParticleDefinition()->GetParticleName() != "geantino" &&
-			Track->GetParticleDefinition()->GetParticleName() != "Exotic")
-		{
-			Track->SetTrackStatus(fStopAndKill);
-		}
-	}
-
-	// from KLMC: forbid Cherenkov light emission by secondaries in CEDAR lenses
-	if(aStep->GetPreStepPoint()->GetPhysicalVolume())
-	{
-		if((aStep->GetPreStepPoint()->GetPhysicalVolume()->GetLogicalVolume()->GetMaterial()->GetName() == "Cedar_Quartz" ||
-			aStep->GetPreStepPoint()->GetPhysicalVolume()->GetLogicalVolume()->GetMaterial()->GetName() == "Cedar_IdealQuartz") &&
-			(Track->GetParticleDefinition()->GetParticleName() != "opticalphoton" &&
-			Track->GetParticleDefinition()->GetParticleName() != "geantino" &&
-			Track->GetParticleDefinition()->GetParticleName() != "Exotic"))
-		{
-			Track->SetTrackStatus(fKillTrackAndSecondaries);
-		}
-	}
-
-	// save all steps [NOT SURE WHAT TO DO WITH THIS BUT I'LL FIGURE IT OUT LATER]
-	// fFinalMomentum = G4LorentzVector(Track->GetMomentum(), Track->GetTotalEnergy());
-	// fInitialMomentum = fFinalMomentum - G4LorentzVector(aStep->GetDeltaMomentum(), aStep->GetDeltaEnergy());
+	if(fVerboseLevel > 5) PrintStep(aStep);
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 void SteppingAction::PrintStep(const G4Step* aStep, G4String ParticleName)
 {
-	G4Track *Track = aStep->GetTrack();
+	G4Track *aTrack = aStep->GetTrack();
 
-	if(!ParticleName.length() || (Track->GetParticleDefinition()->GetParticleName() == ParticleName))
+	if(!ParticleName.length() || (aTrack->GetParticleDefinition()->GetParticleName() == ParticleName))
 	{
 		if(aStep->GetPreStepPoint()->GetPhysicalVolume())
 		{
@@ -81,7 +44,7 @@ void SteppingAction::PrintStep(const G4Step* aStep, G4String ParticleName)
 				aStep->GetPreStepPoint()->GetMomentum().y(),
 				aStep->GetPreStepPoint()->GetMomentum().z(),
 				aStep->GetPreStepPoint()->GetTotalEnergy(),
-				Track->GetParticleDefinition()->GetParticleName().data(),
+				aTrack->GetParticleDefinition()->GetParticleName().data(),
 				aStep->GetPreStepPoint()->GetPhysicalVolume()->GetName().data());
 		}
 		if(aStep->GetPostStepPoint()->GetPhysicalVolume())
@@ -94,7 +57,7 @@ void SteppingAction::PrintStep(const G4Step* aStep, G4String ParticleName)
 				aStep->GetPostStepPoint()->GetMomentum().y(),
 				aStep->GetPostStepPoint()->GetMomentum().z(),
 				aStep->GetPostStepPoint()->GetTotalEnergy(),
-				Track->GetParticleDefinition()->GetParticleName().data(),
+				aTrack->GetParticleDefinition()->GetParticleName().data(),
 				aStep->GetPostStepPoint()->GetPhysicalVolume()->GetName().data());
 		}
 	}

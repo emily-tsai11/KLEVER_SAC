@@ -6,12 +6,11 @@
 // --------------------------------------------------------------
 
 #include "HistManagerMessenger.hh"
-
+#include "globals.hh"
 #include "G4UIcmdWithAString.hh"
 #include "G4UIcmdWithAnInteger.hh"
 #include "G4UIcmdWithADouble.hh"
 #include "G4UIcmdWithADoubleAndUnit.hh"
-
 #include "HistManager.hh"
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -130,9 +129,9 @@ void HistManagerMessenger::SetNewValue(G4UIcommand* cmd, G4String par)
 	HistManager* fHistManager = HistManager::GetInstance();
 
 	if(cmd == fSetFileNameCmd) fHistManager->fFileName = par;
-	if(cmd == fSetHistToChangeCmd) fHistToChange = par;
+	else if(cmd == fSetHistToChangeCmd) fHistToChange = par;
 
-	if(cmd != fSetFileNameCmd && cmd != fSetHistToChangeCmd)
+	else if(cmd != fSetFileNameCmd && cmd != fSetHistToChangeCmd)
 	{
 		G4int count1 = fHistManager->f1DH.count(fHistToChange);
 		G4int count2 = fHistManager->f2DH.count(fHistToChange);
@@ -140,7 +139,7 @@ void HistManagerMessenger::SetNewValue(G4UIcommand* cmd, G4String par)
 
 		if(count1 == 0 && count2 == 0 && count3 == 0)
 		{
-			G4cout << "[HistManagerMessenger::SetNewValue()] ERROR: \""
+			G4cout << "[HistManagerMessenger::SetNewValue] ERROR: \""
 				<< fHistToChange << "\" is not a histogram." << G4endl;
 			return;
 		}
@@ -156,7 +155,7 @@ void HistManagerMessenger::SetNewValue(G4UIcommand* cmd, G4String par)
 			else if(dim == '3')
 				fHistManager->f3DH.at(fHistToChange).nBinsX = fSetNBinsXCmd->GetNewIntValue(par);
 		}
-		if(cmd == fSetLowXBoundCmd || cmd == fSetLowXBoundWithUnitCmd)
+		else if(cmd == fSetLowXBoundCmd || cmd == fSetLowXBoundWithUnitCmd)
 		{
 			if(dim == '1')
 				fHistManager->f1DH.at(fHistToChange).lowX = fSetLowXBoundCmd->GetNewDoubleValue(par);
@@ -165,7 +164,7 @@ void HistManagerMessenger::SetNewValue(G4UIcommand* cmd, G4String par)
 			else if(dim == '3')
 				fHistManager->f3DH.at(fHistToChange).lowX = fSetLowXBoundCmd->GetNewDoubleValue(par);
 		}
-		if(cmd == fSetHighXBoundCmd || cmd == fSetHighXBoundWithUnitCmd)
+		else if(cmd == fSetHighXBoundCmd || cmd == fSetHighXBoundWithUnitCmd)
 		{
 			if(dim == '1')
 				fHistManager->f1DH.at(fHistToChange).highX = fSetHighXBoundCmd->GetNewDoubleValue(par);
@@ -175,21 +174,21 @@ void HistManagerMessenger::SetNewValue(G4UIcommand* cmd, G4String par)
 				fHistManager->f3DH.at(fHistToChange).highX = fSetHighXBoundCmd->GetNewDoubleValue(par);
 		}
 
-		if(cmd == fSetNBinsYCmd)
+		else if(cmd == fSetNBinsYCmd)
 		{
 			if(dim == '2')
 				fHistManager->f2DH.at(fHistToChange).nBinsY = fSetNBinsYCmd->GetNewIntValue(par);
 			else if(dim == '3')
 				fHistManager->f3DH.at(fHistToChange).nBinsY = fSetNBinsYCmd->GetNewIntValue(par);
 		}
-		if(cmd == fSetLowYBoundCmd || cmd == fSetLowYBoundWithUnitCmd)
+		else if(cmd == fSetLowYBoundCmd || cmd == fSetLowYBoundWithUnitCmd)
 		{
 			if(dim == '2')
 				fHistManager->f2DH.at(fHistToChange).lowY = fSetLowYBoundCmd->GetNewDoubleValue(par);
 			else if(dim == '3')
 				fHistManager->f3DH.at(fHistToChange).lowY = fSetLowYBoundCmd->GetNewDoubleValue(par);
 		}
-		if(cmd == fSetHighYBoundCmd || cmd == fSetHighYBoundWithUnitCmd)
+		else if(cmd == fSetHighYBoundCmd || cmd == fSetHighYBoundWithUnitCmd)
 		{
 			if(dim == '2')
 				fHistManager->f2DH.at(fHistToChange).highY = fSetHighYBoundCmd->GetNewDoubleValue(par);
@@ -197,17 +196,17 @@ void HistManagerMessenger::SetNewValue(G4UIcommand* cmd, G4String par)
 				fHistManager->f3DH.at(fHistToChange).highY = fSetHighYBoundCmd->GetNewDoubleValue(par);
 		}
 
-		if(cmd == fSetNBinsZCmd)
+		else if(cmd == fSetNBinsZCmd)
 		{
 			if(dim == '3')
 				fHistManager->f3DH.at(fHistToChange).nBinsZ = fSetNBinsZCmd->GetNewIntValue(par);
 		}
-		if(cmd == fSetLowZBoundCmd || cmd == fSetLowZBoundWithUnitCmd)
+		else if(cmd == fSetLowZBoundCmd || cmd == fSetLowZBoundWithUnitCmd)
 		{
 			if(dim == '3')
 				fHistManager->f3DH.at(fHistToChange).lowZ = fSetLowZBoundCmd->GetNewDoubleValue(par);
 		}
-		if(cmd == fSetHighZBoundCmd || cmd == fSetHighZBoundWithUnitCmd)
+		else if(cmd == fSetHighZBoundCmd || cmd == fSetHighZBoundWithUnitCmd)
 		{
 			if(dim == '3')
 				fHistManager->f3DH.at(fHistToChange).highZ = fSetHighZBoundCmd->GetNewDoubleValue(par);

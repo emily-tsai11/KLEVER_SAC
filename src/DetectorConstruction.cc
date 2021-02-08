@@ -3,10 +3,12 @@
 // History:
 //
 // Created by Emily Tsai (emily.tsai11@gmail.com) 2020-7-8
-//		optical properties taken from NA62 LAVs
+// - Optical properties taken from NA62 LAVs
 // --------------------------------------------------------------
 
 #include "DetectorConstruction.hh"
+#include "globals.hh"
+#include "G4SystemOfUnits.hh"
 
 #include "G4NistManager.hh"
 #include "G4RunManager.hh"
@@ -25,21 +27,21 @@
 #include "G4ThreeVector.hh"
 #include "G4PVPlacement.hh"
 #include "G4VisAttributes.hh"
-#include "G4SystemOfUnits.hh"
 
-#include "SACDetector.hh"
 #include "DetectorConstructionMessenger.hh"
+#include "SACDetector.hh"
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-DetectorConstruction::DetectorConstruction() : fSolidWorld(0), fLogicalWorld(0), fPhysicalWorld(0)
+DetectorConstruction::DetectorConstruction() : G4VUserDetectorConstruction(),
+	fSolidWorld(0), fLogicalWorld(0), fPhysicalWorld(0)
 {
+	fMessenger = new DetectorConstructionMessenger(this);
+	fSAC = new SACDetector(0, 0);
+
 	fWorldLengthX = 1.0 * m;
 	fWorldLengthY = 1.0 * m;
 	fWorldLengthZ = 1.0 * m;
-
-	fSAC = new SACDetector(0, 0);
-	fMessenger = new DetectorConstructionMessenger(this);
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -54,38 +56,38 @@ DetectorConstruction::~DetectorConstruction()
 
 G4VPhysicalVolume* DetectorConstruction::Construct()
 {
-	// clean old geometry (if it exists)
+	// Clean old geometry (if it exists)
 	CleanGeometry();
 
-	// define materials
+	// Define materials
 	DefineMaterials();
 
-	// create world
+	// Create world
 	fSolidWorld = new G4Box("World", 0.5 * fWorldLengthX, 0.5 * fWorldLengthY, 0.5 * fWorldLengthZ);
 	fLogicalWorld = new G4LogicalVolume(
-		fSolidWorld,							// solid
-		G4Material::GetMaterial("G4_Galactic"),	// material
-		"World",								// name
-		0,										// field manager
-		0,										// sensitive detector
-		0);										// user limits
+		fSolidWorld,							// Solid
+		G4Material::GetMaterial("G4_Galactic"),	// Material
+		"World",								// Name
+		0,										// Field manager
+		0,										// Sensitive detector
+		0);										// User limits
 	fPhysicalWorld = new G4PVPlacement(
-		0,										// no rotation
-		G4ThreeVector(),						// at (0, 0, 0)
-		fLogicalWorld,							// logical volume
-		"World",								// name
-		0,										// mother volume
-		false,									// no boolean operations
-		0);										// copy number
+		0,										// No rotation
+		G4ThreeVector(),						// At (0, 0, 0)
+		fLogicalWorld,							// Logical volume
+		"World",								// Name
+		0,										// Mother volume
+		false,									// No boolean operations
+		0);										// Copy number
 	// fLogicalWorld->SetVisAttributes(G4VisAttributes::Invisible);
 	fLogicalWorld->SetVisAttributes(G4VisAttributes(G4Colour::Cyan()));
 
-	// create SAC detector
+	// Create SAC detector
 	fSAC->SetMaterial(G4Material::GetMaterial("G4_Galactic"));
 	fSAC->SetMotherVolume(fLogicalWorld);
 	fSAC->CreateGeometry();
 
-	// return world
+	// Return world
 	return fPhysicalWorld;
 }
 
@@ -105,8 +107,8 @@ void DetectorConstruction::CleanGeometry()
 
 void DetectorConstruction::DefineMaterials()
 {
-	// ------------------------- DEFINE MATERIALS -------------------------
-	// standard materials
+	// --------------------------- DEFINE MATERIALS ---------------------------
+	// Standard materials
 	G4NistManager* nistMgr = G4NistManager::Instance();
 	nistMgr->FindOrBuildMaterial("G4_Galactic");
 	nistMgr->FindOrBuildElement("N");
@@ -117,16 +119,16 @@ void DetectorConstruction::DefineMaterials()
 	nistMgr->FindOrBuildElement("C");
 	nistMgr->FindOrBuildElement("H");
 
-	// for extensive output about material definition
+	// For extensive output about material definition
 	nistMgr->SetVerbose(0);
 	// nistMgr->PrintElement("all");
 	// nistMgr->ListMaterials("all");
 
-	// ----------------------- "black hole" -----------------------
-	// "black hole" material: all particles entering it are suppressed
+	// ----------------------------- "BLACK HOLE" -----------------------------
+	// "Black hole" material: all particles entering it are suppressed
 	new G4Material("KLBlackHole", 1.0, 1.0 * g / mole, 1.0 * g / cm3);
 
-	// ----------------------- EJ510 -----------------------
+	// --------------------------------- EJ510 ---------------------------------
 	// EJ510 reflective paint (SAC)
 	G4Material* EJ510Paint = new G4Material("EJ510Paint", 1.182 * g / cm3, 4);
 	EJ510Paint->AddElement(G4Element::GetElement("Ti"), 41.053 * perCent);
@@ -134,13 +136,13 @@ void DetectorConstruction::DefineMaterials()
 	EJ510Paint->AddElement(G4Element::GetElement("H"), 2.899 * perCent);
 	EJ510Paint->AddElement(G4Element::GetElement("O"), 38.854 * perCent);
 
-	// optical properties of EJ510Paint
+	// Optical properties of EJ510 paint
 	G4int EJ510PaintOpticSize = 2;
 	G4double EJ510PaintOpticEnergies[] = {1.88 * eV, 3.1 * eV};
 	G4double EJ510PaintOpticZero[] = {0.0, 0.0};
 	G4double EJ510PaintRef[] = {0.9, 0.9};
 
-	// material properties table of EJ510Paint
+	// Material properties table of EJ510 paint
 	G4MaterialPropertiesTable* MPTEJ510Paint = new G4MaterialPropertiesTable();
 	MPTEJ510Paint->AddProperty("REFLECTIVITY", EJ510PaintOpticEnergies, EJ510PaintRef, EJ510PaintOpticSize);
 	MPTEJ510Paint->AddProperty("EFFICIENCY", EJ510PaintOpticEnergies, EJ510PaintOpticZero, EJ510PaintOpticSize);
@@ -148,17 +150,20 @@ void DetectorConstruction::DefineMaterials()
     MPTEJ510Paint->AddProperty("SPECULARSPIKECONSTANT", EJ510PaintOpticEnergies, EJ510PaintOpticZero, EJ510PaintOpticSize);
     MPTEJ510Paint->AddProperty("BACKSCATTERCONSTANT", EJ510PaintOpticEnergies, EJ510PaintOpticZero, EJ510PaintOpticSize);
 
-	// optical surface of EJ510Paint
+	// Optical surface of EJ510 paint
 	G4OpticalSurface* EJ510PaintOptSurf = new G4OpticalSurface("Diffusive", unified, groundfrontpainted, dielectric_dielectric);
 	EJ510PaintOptSurf->SetMaterialPropertiesTable(MPTEJ510Paint);
 
-	// ----------------------- PbF2 -----------------------
-	// lead fluoride PbF2 (SAC)
+	// G4cout << "[DetectorConstruction::DefineMaterials] EJ510 Paint MaterialPropertiesTable:" << G4endl;
+	// MPTEJ510Paint->DumpTable();
+
+	// --------------------------------- PbF2 ---------------------------------
+	// Lead fluoride PbF2 (SAC)
 	G4Material* PbF2 = new G4Material("PbF2", 7.77 * g / cm3, 2);
 	PbF2->AddElement(G4Element::GetElement("Pb"), 1);
 	PbF2->AddElement(G4Element::GetElement("F"), 2);
 
-	// optical properties of PbF2
+	// Optical properties of PbF2
 	G4double PhotonEnergy[] =
 	  { 0.104 * eV, 0.151 * eV, 0.218 * eV, 0.314 * eV, 0.454 * eV,
 		0.656 * eV, 0.948 * eV, 1.370 * eV, 1.980 * eV, 2.860 * eV,
@@ -172,14 +177,14 @@ void DetectorConstruction::DefineMaterials()
 		10.0 * m };
 	const G4int nEntries = sizeof(PhotonEnergy) / sizeof(G4double); // 11
 
-	// material properties table of PbF2
+	// Material properties table of PbF2
 	G4MaterialPropertiesTable* MPTPbF2 = new G4MaterialPropertiesTable();
 	MPTPbF2->AddProperty("RINDEX", PhotonEnergy, RefractiveIndexPbF2, nEntries);
 	MPTPbF2->AddProperty("ABSLENGTH", PhotonEnergy, AbsorptionLengthPbF2, nEntries);
 	PbF2->SetMaterialPropertiesTable(MPTPbF2);
 
-	G4cout << "PbF2 G4MaterialPropertiesTable:" << G4endl;
-	MPTPbF2->DumpTable();
+	// G4cout << "[DetectorConstruction::DefineMaterials] PbF2 MaterialPropertiesTable:" << G4endl;
+	// MPTPbF2->DumpTable();
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

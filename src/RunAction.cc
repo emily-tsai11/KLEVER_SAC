@@ -6,6 +6,7 @@
 // --------------------------------------------------------------
 
 #include "RunAction.hh"
+#include "globals.hh"
 
 #include "G4RunManager.hh"
 #include "G4Run.hh"
@@ -15,7 +16,7 @@
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-RunAction::RunAction()
+RunAction::RunAction() : G4UserRunAction()
 {
 	fHistManager = HistManager::GetInstance();
 	fTimer = new G4Timer();
@@ -34,13 +35,16 @@ void RunAction::BeginOfRunAction(const G4Run* aRun)
 {
 	G4cout << "RunAction::BeginOfRunAction(): Run " << aRun->GetRunID() << " begins!" << G4endl;
 	fTimer->Start();
+
 	G4RunManager::GetRunManager()->SetRandomNumberStore(false);
 
+	// Open output file
 	fAnalysisManager = G4Analysis::ManagerInstance("root");
 	fAnalysisManager->SetVerboseLevel(1);
 	fAnalysisManager->OpenFile(fHistManager->GetFileName());
 
-	SetNumEvents(aRun->GetNumberOfEventToBeProcessed());
+	fNumEvents = aRun->GetNumberOfEventToBeProcessed();
+
 	CreateHistograms();
 }
 
@@ -51,7 +55,7 @@ void RunAction::EndOfRunAction(const G4Run* aRun)
 	fTimer->Stop();
 	G4cout << "RunAction::EndOfRunAction(): Run " << aRun->GetRunID() << " completed!" << G4endl;
 
-	// save output file
+	// Save output file
 	fAnalysisManager = G4AnalysisManager::Instance();
 	fAnalysisManager->Write();
 	fAnalysisManager->CloseFile();

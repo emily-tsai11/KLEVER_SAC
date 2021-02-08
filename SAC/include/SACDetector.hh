@@ -12,7 +12,6 @@
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 #include "globals.hh"
-// #include "SACGeometry.hh"
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -38,7 +37,6 @@ class SACDetector
 		void SetMotherVolume(G4LogicalVolume* v) { fMotherVolume = v; }
 
 		G4LogicalVolume* GetSACLogicalVolume() { return fSACVolume; }
-		// G4double GetSACFrontFaceZ() { return SACGeometry::GetInstance()->GetSACFrontFacePosZ(); }
 
 	private:
 

@@ -7,32 +7,22 @@
 
 #include "EventAction.hh"
 
-#include "G4RunManager.hh"
-#include "G4EventManager.hh"
 #include "G4VVisManager.hh"
-#include "G4SDManager.hh"
-#include "G4VAnalysisManager.hh"
 #include "G4Event.hh"
 #include "G4TrajectoryContainer.hh"
 #include "G4Trajectory.hh"
 #include "G4Timer.hh"
-#include "G4ios.hh"
-#include "TRandom3.h"
 #include "G4PrimaryParticle.hh"
 
 #include "RunAction.hh"
 #include "HistManager.hh"
-#include "RandomGenerator.hh"
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-EventAction::EventAction(RunAction* runAction, int seedNum) : G4UserEventAction(),
- 	fRunAction(runAction) // initialize defaults
+EventAction::EventAction(RunAction* runAction) : G4UserEventAction(),
+ 	fRunAction(runAction)
 {
 	fTimer = new G4Timer;
-	fCurrentEventCount = 0;
-	CLHEP::HepRandom::setTheSeed(seedNum);
-	fCommandLineSeed = seedNum;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -48,8 +38,7 @@ void EventAction::BeginOfEventAction(const G4Event* evt)
 {
 	fEventID = evt->GetEventID();
 	// if((fEventID < 10) || (fEventID < 100 && !(fEventID % 10)) || (fEventID < 1000 && !(fEventID % 100)) || !(fEventID % 1000))
-	// 	G4cout << "EventAction::BeginOfEventAction(): Event " << fEventID << " starting!" << G4endl;
-	// CLHEP::HepRandom::showEngineStatus();
+	// 	G4cout << "[EventAction::BeginOfEventAction] Event " << fEventID << " starting!" << G4endl;
 	fTimer->Start();
 }
 
@@ -59,7 +48,7 @@ void EventAction::EndOfEventAction(const G4Event* evt)
 {
 	fTimer->Stop();
 
-	// draw all trajectories
+	// Draw all trajectories
 	G4TrajectoryContainer* trajectoryContainer = evt->GetTrajectoryContainer();
 	if(G4VVisManager::GetConcreteInstance() && trajectoryContainer)
 	{
@@ -68,65 +57,45 @@ void EventAction::EndOfEventAction(const G4Event* evt)
 		{
 			G4Trajectory* trj = (G4Trajectory*) ((*trajectoryContainer)[i]);
 			trj->DrawTrajectory();
-			if(i % 10000 == 0) G4cout << "EventAction::EndOfEventAction(): Trajectory " << i << " processed!" << G4endl;
+			if(i % 10000 == 0) G4cout << "[EventAction::EndOfEventAction] Trajectory " << i << " processed!" << G4endl;
 		}
 	}
 
 	FillHistograms(evt);
 
-	// periodic printing
+	// Periodic printing
 	if((fEventID < 10) || (fEventID < 100 && !(fEventID % 10)) || (fEventID < 1000 && !(fEventID % 100)) || !(fEventID % 1000))
-		G4cout << "EventAction::EndOfEventAction(): Event " << fEventID << " processed!" << G4endl;
-}
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
-void EventAction::FillRandomEnginesStates()
-{
-	if(fCurrentEventCount == 0) fRandomDecayState = new TRandom3();
-
-	if(fCurrentEventCount == 0)
-	{
-		unsigned int iSeed = 10;
-		if(fCommandLineSeed != -1) iSeed = fCommandLineSeed;
-		G4cout << "EventAction::FillRandomEnginesStates(): Random seed = " << iSeed << G4endl;
-		RandomGenerator::GetInstance()->Init(iSeed);
-	}
-
-	*fRandomDecayState = *RandomGenerator::GetInstance()->GetRandomDecay();
-	const long* table = CLHEP::HepRandom::getTheSeeds();
-	fRanecuState[0] = table[0];
-	fRanecuState[1] = table[1];
-	fCurrentEventCount++;
+		G4cout << "[EventAction::EndOfEventAction] Event " << fEventID << " processed!" << G4endl;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 void EventAction::FillHistograms(const G4Event* evt)
 {
-	// get histogram parameters
+	// Get histogram parameters
 	HistManager* fHistManager = HistManager::GetInstance();
+
 	std::map<G4String, G4int> fP = fHistManager->GetParticleNames();
 	std::map<G4String, f1DHistInfo> f1DH = fHistManager->Get1DHistInfo();
 	std::map<G4String, f2DHistInfo> f2DH = fHistManager->Get2DHistInfo();
 	std::map<G4String, f3DHistInfo> f3DH = fHistManager->Get3DHistInfo();
 
-	// get analysis manager
+	// Get analysis manager
 	G4AnalysisManager* fAnalysisManager = G4AnalysisManager::Instance();
 
-	// get incident particle name & energy
+	// Get incident particle name & energy
 	G4PrimaryParticle* primary = evt->GetPrimaryVertex()->GetPrimary();
 	G4String primaryName = primary->GetParticleDefinition()->GetParticleName();
 	G4double primaryInitE = primary->GetKineticEnergy();
 
-	// get number of events in run
+	// Get number of events in run
 	G4double fTotalNEvents = fRunAction->GetNumEvents();
 
-	// get hits collection
+	// Get hits collection
 	fSACCollection = (SACHitsCollection*) evt->GetHCofThisEvent()->GetHC(0);
 	G4int nHits = fSACCollection->entries();
 
-	// hit attributes
+	// Hit attributes
 	G4int cellID;
 	G4int trackID;
 	G4String particleName;
@@ -139,21 +108,21 @@ void EventAction::FillHistograms(const G4Event* evt)
 	// G4ThreeVector position;
 	// G4ThreeVector localPosition;
 
-	// helpers to fill histograms, will need to scale # entries w/# groups
+	// Helpers to fill histograms, will need to scale # entries w/# groups
 	std::map<G4int, G4bool> trackedHits;
 	G4double fEDepPerEvent[] = {
 		0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-		0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
+		0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
 	G4double fMultPerEvent[] = {
 		0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-		0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
+		0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
 	G4int pIndex, x, y, z;
 	G4double eNorm;
 
-	// filling histograms
+	// Filling histograms
 	for(G4int i = 0; i < nHits; i++)
 	{
-		// get current hit and attributes
+		// Get current hit and attributes
 		SACHit* currentHit = (*fSACCollection)[i];
 		cellID = currentHit->GetCellID();
 		trackID = currentHit->GetTrackID();
@@ -171,7 +140,7 @@ void EventAction::FillHistograms(const G4Event* evt)
 		try { pIndex = fP.at(particleName); }
 		catch(std::out_of_range)
 		{
-			// G4cout << "particle not yet added to list --- " << particleName << G4endl;
+			// G4cout << "[EventAction::FillHistograms] Particle not yet added to list --- " << particleName << G4endl;
 			pIndex = fP.at("other");
 			particleName = "other";
 		}
@@ -182,12 +151,12 @@ void EventAction::FillHistograms(const G4Event* evt)
 
 		eNorm = energyDeposition / primaryInitE / fTotalNEvents;
 
-		// increment energy deposition in event
+		// Increment energy deposition in event
 		fEDepPerEvent[fP.at("all")] += energyDeposition;
 		fEDepPerEvent[pIndex] += energyDeposition;
 
-		// fill "once per hit" histograms
-		// energy deposition in SAC layers / incident energy
+		// Fill "once per hit" histograms
+		// Energy deposition in SAC layers / incident energy
 		fAnalysisManager->FillH1(
 			f1DH.at("h1EDep_PerLayer_all").index,
 			z, eNorm);
@@ -211,7 +180,7 @@ void EventAction::FillHistograms(const G4Event* evt)
 			f3DH.at("h3EDep_SAC_" + particleName).index,
 			x, y, z, eNorm);
 
-		// track length per hit
+		// Track length per hit
 		fAnalysisManager->FillH1(
 			f1DH.at("h1TrLen_PerHit_all").index,
 			trackLength, 1.0);
@@ -219,7 +188,7 @@ void EventAction::FillHistograms(const G4Event* evt)
 			f1DH.at("h1TrLen_PerHit_" + particleName).index,
 			trackLength, 1.0);
 
-		// increment mult in the event
+		// Increment multiplicity in the event
 		if(trackedHits[trackID] == false)
 		{
 			trackedHits[trackID] = true;
@@ -227,27 +196,27 @@ void EventAction::FillHistograms(const G4Event* evt)
 			fMultPerEvent[pIndex]++;
 		}
 	}
-	// take out optical photon energy, since they don't obey energy conservation
+	// Take out optical photon energy, since they don't obey energy conservation
 	// https://geant4-forum.web.cern.ch/t/energy-deposition-is-higher-than-the-primary-source-energy/2064/3
 	fEDepPerEvent[fP.at("all")] -= fEDepPerEvent[fP.at("opticalphoton")];
-	// get true untracked edep
+	// Get true untracked energy deposition
 	fEDepPerEvent[fP.at("untracked")] = primaryInitE - fEDepPerEvent[fP.at("all")];
 
-	// fill "once per event" histograms
+	// Fill "once per event" histograms
 	std::map<G4String, G4int>::iterator iter;
 	for(iter = fP.begin(); iter != fP.end(); iter++)
 	{
-		// energy deposition per event / incident energy
+		// Energy deposition per event / incident energy
 		fAnalysisManager->FillH1(
 			f1DH.at("h1EDep_PerEvent_" + iter->first).index,
 			fEDepPerEvent[iter->second] / primaryInitE, 1.0);
 
-		// multiplicity per event / incident energy
+		// Multiplicity per event / incident energy
 		fAnalysisManager->FillH1(
 			f1DH.at("h1Mult_PerEvent_" + iter->first).index,
 			fMultPerEvent[iter->second] / primaryInitE, 1.0);
 
-		// low range of multiplicity per event / incident energy
+		// Low range of multiplicity per event / incident energy
 		fAnalysisManager->FillH1(
 			f1DH.at("h1MultLow_PerEvent_" + iter->first).index,
 			fMultPerEvent[iter->second] / primaryInitE, 1.0);

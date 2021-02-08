@@ -6,21 +6,21 @@
 // --------------------------------------------------------------
 
 #include "PrimaryGeneratorActionMessenger.hh"
-
 #include "G4UIcmdWithAnInteger.hh"
 #include "G4UIcmdWithADoubleAndUnit.hh"
+#include "PrimaryGeneratorAction.hh"
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-PrimaryGeneratorActionMessenger::PrimaryGeneratorActionMessenger() : G4UImessenger(),
-	fBeamType(0), fBeamEnergy(100.0)
+PrimaryGeneratorActionMessenger::PrimaryGeneratorActionMessenger(PrimaryGeneratorAction* pga) :
+	G4UImessenger(), fPrimaryGeneratorAction(pga)
 {
 	fPrimaryGeneratorActionDir = new G4UIdirectory("/PrimaryGeneratorAction/");
 	fPrimaryGeneratorActionDir->SetGuidance("UI commands to control the Primary Generator Action");
 
 	fSetBeamTypeCmd = new G4UIcmdWithAnInteger("/PrimaryGeneratorAction/BeamType", this);
-	fSetBeamTypeCmd->SetParameterName("BT", false);
 	fSetBeamTypeCmd->SetGuidance("Set beam type. Default is gammas. 1 for kaons.");
+	fSetBeamTypeCmd->SetParameterName("BT", false);
 	fSetBeamTypeCmd->AvailableForStates(G4State_PreInit, G4State_Idle);
 
 	fSetBeamEnergyCmd = new G4UIcmdWithADoubleAndUnit("/PrimaryGeneratorAction/BeamEnergy", this);
@@ -37,7 +37,6 @@ PrimaryGeneratorActionMessenger::~PrimaryGeneratorActionMessenger()
 {
 	delete fSetBeamTypeCmd;
 	delete fSetBeamEnergyCmd;
-
 	delete fPrimaryGeneratorActionDir;
 }
 
@@ -45,6 +44,6 @@ PrimaryGeneratorActionMessenger::~PrimaryGeneratorActionMessenger()
 
 void PrimaryGeneratorActionMessenger::SetNewValue(G4UIcommand* cmd, G4String par)
 {
-	if(cmd == fSetBeamTypeCmd) fBeamType = fSetBeamTypeCmd->GetNewIntValue(par);
-	if(cmd == fSetBeamEnergyCmd) fBeamEnergy = fSetBeamEnergyCmd->GetNewDoubleValue(par);
+	if(cmd == fSetBeamTypeCmd) fPrimaryGeneratorAction->SetBeamType(fSetBeamTypeCmd->GetNewIntValue(par));
+	else if(cmd == fSetBeamEnergyCmd) fPrimaryGeneratorAction->SetBeamEnergy(fSetBeamEnergyCmd->GetNewDoubleValue(par));
 }
