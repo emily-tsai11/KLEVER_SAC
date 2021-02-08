@@ -54,16 +54,13 @@ int main(int argc, char** argv)
 
 	// Construct default run manager
 	G4RunManager* runManager = new G4RunManager;
-	DetectorConstruction* detector = new DetectorConstruction();
-	runManager->SetUserInitialization(detector);
+	runManager->SetUserInitialization(new DetectorConstruction());
 	runManager->SetUserInitialization(new PhysicsList);
 
 	// Set user actions
-	RunAction* runAction = new RunAction();
-	EventAction* eventAction = new EventAction(runAction);
-	runManager->SetUserAction(runAction);
+	runManager->SetUserAction(new RunAction());
 	runManager->SetUserAction(new PrimaryGeneratorAction());
-	runManager->SetUserAction(eventAction);
+	runManager->SetUserAction(new EventAction());
 	runManager->SetUserAction(new SteppingAction());
 
 	// Define and start UI session

@@ -1,42 +1,37 @@
-// EventAction.hh
+// AnalysisMessenger.hh
 // --------------------------------------------------------------
 // History:
 //
-// Created by Emily Tsai (emily.tsai11@gmail.com) 2020-7-8
+// Created by Emily Tsai (emily.tsai11@gmail.com) 2021-1-26
 // --------------------------------------------------------------
 
-#ifndef EventAction_H
-#define EventAction_H 1
+#ifndef AnalysisMessenger_H
+#define AnalysisMessenger_H 1
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-#include "G4UserEventAction.hh"
-#include "globals.hh"
+#include "G4UImessenger.hh"
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-class G4Event;
-class G4Timer;
+class G4String;
+class G4UIdirectory;
+class G4UIcmdWithAString;
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-class EventAction : public G4UserEventAction
+class AnalysisMessenger : public G4UImessenger
 {
 	public:
 
-		EventAction();
-		~EventAction();
-
-		void BeginOfEventAction(const G4Event*);
-		void EndOfEventAction(const G4Event*);
-
-		void SetEventID(G4int id) { fEventID = id; }
-		G4long GetEventID() { return fEventID; }
+		AnalysisMessenger();
+		~AnalysisMessenger();
+		void SetNewValue(G4UIcommand*, G4String);
 
 	private:
 
-		G4Timer* fTimer;
-		G4long fEventID;
+		G4UIdirectory* fAnalysisDir;
+		G4UIcmdWithAString* fSetFileNameCmd;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

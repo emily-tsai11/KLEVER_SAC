@@ -7,11 +7,12 @@
 # /Detector/SAC/EnablePMT 1
 # /Detector/UpdateGeometry
 
-/HistManager/FileName testing_testing
+/Analysis/FileName testing_testing
 
-# /PrimaryGeneratorAction/BeamEnergy 100 MeV
-# /run/beamOn 1
-
-/PrimaryGeneratorAction/BeamType 1
+/PrimaryGeneratorAction/BeamType 0
 /PrimaryGeneratorAction/BeamEnergy 100 MeV
-/run/beamOn 5
+/run/beamOn 3
+
+# /PrimaryGeneratorAction/BeamType 1
+# /PrimaryGeneratorAction/BeamEnergy 100 MeV
+# /run/beamOn 3

@@ -16,8 +16,7 @@
 
 class G4Run;
 class G4Timer;
-class G4VAnalysisManager;
-class HistManager;
+class Analysis;
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -31,17 +30,10 @@ class RunAction : public G4UserRunAction
 		void BeginOfRunAction(const G4Run* aRun);
 		void EndOfRunAction(const G4Run* aRun);
 
-		void SetNumEvents(G4int n) { fNumEvents = n; }
-		G4int GetNumEvents() { return fNumEvents; }
-
 	private:
 
-		G4int fNumEvents;
 		G4Timer* fTimer;
-		G4VAnalysisManager* fAnalysisManager;
-		HistManager* fHistManager;
-
-		void CreateHistograms();
+		Analysis* fAnalysis;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
