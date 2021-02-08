@@ -41,6 +41,6 @@ with open(filename + ".mac", "w") as f:
 	f.write("/PrimaryGeneratorAction/BeamType " + str(BeamType) + "\n")
 	f.write("/PrimaryGeneratorAction/BeamEnergy " + key + "\n")
 	f.write("\n")
-	f.write("/HistManager/FileName " + filename + "\n")
+	f.write("/Analysis/FileName " + filename + "\n")
 	f.write("\n")
 	f.write("/run/beamOn " + str(NEvents) + "\n")

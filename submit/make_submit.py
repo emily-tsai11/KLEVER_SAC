@@ -1,7 +1,7 @@
 import os, argparse
 
 # Define parser
-parser = argparse.ArgumentParser(description = "Variables to generate KLMC_SAC condor submit files with")
+parser = argparse.ArgumentParser(description = "Variables to generate KLMC_SAC condor submit files with. Job Flavours: (espresso = 20 minutes) --> (microcentury = 1 hour) --> (longlunch = 2 hours) --> (workday = 8 hours) --> (tomorrow = 1 day) --> (testmatch  = 3 days) --> (nextweek = 1 week)")
 parser.add_argument("BeamType", type = int, help = "Beam type -- Sets incident particle")
 parser.add_argument("IncidentE", type = float, help = "Energy of incident particle")
 parser.add_argument("IncidentEUnit", type = str, help = "Unit of energy of incident particle")
