@@ -246,6 +246,7 @@ void Analysis::FillHistograms(const G4Event* evt)
 			particleName = "other";
 		}
 
+		// CHANGE THIS TO BEING MOD SAC DIMENSIONS FOR BETTER PORTABILITY
 		x = cellID % 10;		// x = which row (0-9)
 		y = cellID / 10 % 10;	// y = which column (0-9)
 		z = cellID / 100;		// z = which layer (0 = front, 1, 2, 3 = back)
