@@ -282,8 +282,9 @@ void DrawStackedBar(string masterKey)
 	for(int p = 0; p < NParticles; p++)
 	{
 		key = masterKey + SParticles[p];
-		THStack* hs = new THStack(key.c_str(),
-			(SymbParticles[p] + " % Energy Deposition Per SAC Layer").c_str());
+		THStack* hs = new THStack(key.c_str(), key.c_str());
+		hs->SetTitle((SymbParticles[p] + " % Energy Deposition Per SAC Layer;"
+			+ "Incident Energy [GeV];[%]").c_str());
 		for(int l = 0; l < SACNLayers; l++)
 		{
 			TH1D* temp = new TH1D((key + "_" + std::to_string(l)).c_str(),
