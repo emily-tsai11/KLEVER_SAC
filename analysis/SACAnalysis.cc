@@ -1,550 +1,346 @@
 // SACAnalysis.cc
 // --------------------------------------------------------------
-// run with "root SACAnalysis.cc"
+// run with "root -l -b SACAnalysis.cc(<BeamType>, <NEvents>)"
 // --------------------------------------------------------------
 // History:
 //
 // Created by Emily Tsai (emily.tsai11@gmail.com) 2020-7-20
 // --------------------------------------------------------------
 
-#include <string>
 #include <map>
-#include <math.h>
 
-// CHANGE THESE
-const int numEnergies = 10;
-string initPart = "gamma";
-string n = "100000";
+// -------------------- Constants -------------------- //
 
-// energies
-vector<double> energies_dbl {100.0, 200.0, 500.0, 1000.0, 2000.0, 5000.0,
-	10000.0, 20000.0, 50000.0, 100000.0};
-string energies_str[] = {"100MeV", "200MeV", "500MeV", "1GeV", "2GeV", "5GeV",
-	"10GeV", "20GeV", "50GeV", "100GeV"};
+static const int NEnergies = 10;
+static const string SEnergies[] = {
+	"100MeV",
+	"200MeV",
+	"500MeV",
+	"1GeV",
+	"2GeV",
+	"5GeV",
+	"10GeV",
+	"20GeV",
+	"50GeV",
+	"100GeV"
+};
+static const double DEnergies[] = { // in GeV
+	0.1,
+	0.2,
+	0.5,
+	1.0,
+	2.0,
+	5.0,
+	10.0,
+	20.0,
+	50.0,
+	100.0
+};
+static const double StdEnergies[] = { // in GeV
+	0.0,
+	0.0,
+	0.0,
+	0.0,
+	0.0,
+	0.0,
+	0.0,
+	0.0,
+	0.0,
+	0.0
+};
+static const double BEnergies[] = { // in GeV
+	0.07,
+	0.12,
+	0.3,
+	0.7,
+	1.2,
+	3.0,
+	7.0,
+	12.0,
+	30.0,
+	70.0,
+	120.0
+};
 
-// particle types
-int numParticles = 11;
-// string partType[] = {"Gamma", "Positron", "Electron", "Proton", "Neutron",
-// 	"PionPlus", "PionMinus", "PionZero", "MuonPlus", "MuonMinus", "OptPhot"};
-string partType[] = {"MuonPlus", "MuonMinus", "PionPlus", "PionMinus", "PionZero",
-	"Neutron", "Proton", "Gamma", "Electron", "Positron", "OptPhot"};
-string partType_symb[] = {"#mu^{+}", "#mu^{-}", "#pi^{+}", "#pi^{-}", "#pi^{0}",
-	"n", "p", "#gamma", "e^{-}", "e^{+}", "Cer. #gamma"};
+static const int NParticles = 14;
+static const string SParticles[] = {
+	"all",
+	"e+",
+	"e-",
+	"gamma",
+	"mu+",
+	"mu-",
+	"neutron",
+	"opticalphoton",
+	"other",
+	"pi+",
+	"pi-",
+	"pi0",
+	"proton",
+	"untracked"
+};
+static const string SymbParticles[] = {
+	"E_{total}",
+	"e^{+}",
+	"e^{-}",
+	"#gamma",
+	"#mu^{+}",
+	"#mu^{-}",
+	"n",
+	"Cer. #gamma",
+	"E_{other}",
+	"#pi^{+}",
+	"#pi^{-}",
+	"#pi^{0}",
+	"p",
+	"E_{untracked}"
+};
 
-// things to plot
-const int numAttr = 3;
-string attr[] = {"EDep", "Mult", "InitE"};
-string attr_title[] = {"energy deposition", "multiplicity", "initial energy"};
+static const int SACNRows = 10;
+static const int SACNCols = 10;
+static const int SACNLayers = 4;
 
-// optical photon mult gaussian fit ranges for incident photon events
-double fitRangeMin[] = {82.0, 82.0, 82.0, 82.0, 80.0, 78.0, 78.0, 78.0, 75.0, 73.0};
-double fitRangeMax[] = {95.0, 95.0, 95.0, 92.0, 90.0, 88.0, 87.0, 86.0, 85.0, 83.0};
+static const char* DrawOpt = "AP";
+static const int Colors[] = {
+	1,
+	2,
+	4,
+	3,
+	29,
+	30,
+	6,
+	7,
+	9,
+	39,
+	40,
+	49,
+	5,
+	28
+};
+static const double MSize = 1.3;
+static const int MStyle = 8;
+static const int LWidth = 1;
+static const int LStyle = 1;
 
-// optical photon tracked energy gaussian fit ranges incident photon events
-double fitTrackedEMin[] = {90.0, 180.0, 460.0, 940.0, 1900.0, 4700.0, 9300.0, 18000.0, 44000.0, 85000.0};
-double fitTrackedEMax[] = {100.0, 200.0, 500.0, 990.0, 1960.0, 4850.0, 9600.0, 19000.0, 46000.0, 90000.0};
+static const int StackColors[] = {
+	2,
+	3,
+	4,
+	5
+};
 
-// optical photon untracked energy from particles gaussian fit ranges incident photon events
-double fitUntrackedEFromParticlesMin[] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
-double fitUntrackedEFromParticlesMax[] = {2.0, 2.0, 10.0, 10.0, 20.0, 50.0, 80.0, 120.0, 300.0, 300.0};
+static string Beam;
+static const string FOutName = "plots.pdf";
 
-// optical photon efficiency thresholds in MeV
-int numThresholds = 20;
-double bin_width = 10.0; // in MeV
-double thresholds[] = {50.0, 100.0, 150.0, 200.0, 450.0, 1000.0, 2000.0,
-	3000.0, 4000.0, 5000.0, 6000.0, 7000.0, 8000.0, 9000.0, 10000.0, 11000.0,
-	12000.0, 13000.0, 14000.0, 15000.0};
-string thresh_str[] = {"50MeV", "100MeV", "150MeV", "200MeV", "450MeV", "1GeV",
-	"2GeV", "3GeV", "4GeV", "5GeV", "6GeV", "7GeV", "8GeV", "9GeV", "10GeV",
-	"11GeV", "12GeV", "13GeV", "14GeV", "15GeV"};
+static bool firstPlot = true;
+static bool lastPlot = false;
 
-// TGraph drawing options
-string x_axis = "incident energy (MeV)";
-string draw_opt = "AP";
-// int colors[] = {2, 3, 4, 5, 6, 39, 38, 29, 28, 45, 7};
-int colors[] = {28, 45, 39, 38, 29, 6, 5, 2, 7, 3, 4};
-double mSize = 1.3;
-int mStyle = 8;
-int lWidth = 1;
-int lStyle = 1;
-vector<double> zoomRangeGamma {-0.01, 0.18, -0.05, 1.0, -20.0, 560.0};
-vector<double> zoomRangeNeutron {-0.02, 0.257, -0.02, 0.23, -100.0, 2400.0};
+// -------------------- Data structures -------------------- //
 
-// file type
-string fType = ".png";
+static map<string, TFile*> MFiles;
+static map<string, vector<double>> MData;
 
-// data structures
-map<string, TFile*> mFiles;
-map<string, vector<double>> mData;
-map<string, TCanvas*> mCanvas;
-map<string, TGraph*> mGraphs;
+// -------------------- Helper methods -------------------- //
 
-void SACAnalysis()
+string GetBeamType(int bt)
 {
-	// set to run in batch mode
-	gROOT->SetBatch(1);
-
-	// open input files
-	for(int i = 0; i < numEnergies; i++)
-		mFiles["f" + energies_str[i]] = new TFile(("n" + n + "_" + initPart + "/SAC_" + energies_str[i] + "_" + initPart + "_n" + n + ".root").c_str());
+	switch(bt)
 	{
-		// fill x-axis arrays
-		mData["x"] = energies_dbl;
-		mData["x_GeV"] = vector<double> {0.1, 0.2, 0.5, 1.0, 2.0, 5.0, 10.0, 20.0, 50.0, 100.0};
-		mData["x_stddev"] = vector<double>(mData["x"].size(), 0.0);
+		case 1: return "kaon0L";
+		case 2: return "kaon0L";
+		case 3: return "neutron";
+		default: return "gamma";
+	}
+}
 
-		// optical photon stddev / mean
-		mData["y_OptPhot_Mult_nStdDev_dMean"] = vector<double>(numEnergies, 0.0);
+void GetMeanAndStd(string h, vector<double> &m, vector<double> &std)
+{
+	for(int e = 0; e < NEnergies; e++)
+	{
+		TH1D* temp = (TH1D*) MFiles[SEnergies[e]]->Get(h.c_str());
+		m[e] = temp->GetMean();
+		std[e] = temp->GetStdDev();
+	}
+}
 
-		// fill attr
-		for(int i = 0; i < numAttr; i++)
+void ReadInGraphVals(string masterKey)
+{
+	vector<double> yValMean(NEnergies);
+	vector<double> yValStd(NEnergies);
+	string key;
+	for(int p = 0; p < NParticles; p++)
+	{
+		key = masterKey + SParticles[p];
+		GetMeanAndStd(key, yValMean, yValStd);
+		MData[key + "_m"] = yValMean;
+		MData[key + "_std"] = yValStd;
+	}
+}
+
+void ReadInStackedBarVals(string masterKey)
+{
+	string key;
+
+	// Read in values from files
+	vector<double> yVal(SACNLayers);
+	for(int p = 0; p < NParticles; p++)
+	{
+		key = masterKey + SParticles[p];
+		for(int e = 0; e < NEnergies; e++)
 		{
-			for(int j = 0; j < numParticles; j++)
-			{
-				mData["y_" + partType[j] + "_" + attr[i] + "_mean"] = vector<double>(numEnergies, 0.0);
-				mData["y_" + partType[j] + "_" + attr[i] + "_stddev"] = vector<double>(numEnergies, 0.0);
-
-				for(int k = 0; k < numEnergies; k++)
-				{
-					TH1D* tempHist = (TH1D*) mFiles["f" + energies_str[k]]->Get(("h" + partType[j] + "_PerEvent_" + attr[i]).c_str());
-
-					double m;
-					double sd;
-					if(initPart == "gamma" && partType[j] == "OptPhot" && attr[i] == "Mult")
-					{
-						// fit gaussian in range
-						TF1* func = new TF1("func", "gaus", fitRangeMin[k], fitRangeMax[k]);
-						tempHist->Fit("func", "RQ");
-						TF1* fit = tempHist->GetFunction("func");
-
-						m = fit->GetParameter(1);
-						sd = fit->GetParameter(2);
-					}
-					else
-					{
-						// or just pull mean and stddev from root histograms
-						m = tempHist->GetMean();
-						sd = tempHist->GetStdDev();
-					}
-
-					mData["y_" + partType[j] + "_" + attr[i] + "_mean"][k] = m;
-					mData["y_" + partType[j] + "_" + attr[i] + "_stddev"][k] = sd;
-
-					// make stddev / mean
-					if(attr[i] == "Mult")
-					{
-						mData["y_OptPhot_Mult_nStdDev_dMean"][k] = sd / m;
-					}
-				}
-			}
-		}
-
-		// fill total energy deposition
-		mData["y_trackedE_mean"] = vector<double>(numEnergies, 0.0);
-		mData["y_trackedE_stddev"] = vector<double>(numEnergies, 0.0);
-
-		for(int i = 0; i < numEnergies; i++)
-		{
-			TH1D* trackedETemp = (TH1D*) mFiles["f" + energies_str[i]]->Get("hPerEvent_EDep");
-			double m;
-			double sd;
-
-			// fit gaussian in range if incident particle is photon
-			if(initPart == "gamma")
-			{
-				TF1* funcTrackedE = new TF1("funcTrackedE", "gaus", fitTrackedEMin[i], fitTrackedEMax[i]);
-				funcTrackedE->SetParLimits(1, fitTrackedEMin[i], fitTrackedEMax[i]);
-				trackedETemp->Fit("funcTrackedE", "QR");
-
-				TF1* fitTrackedE = trackedETemp->GetFunction("funcTrackedE");
-				m = fitTrackedE->GetParameter(1);
-				sd = fitTrackedE->GetParameter(2);
-			}
-			else if(initPart == "neutron")
-			{
-				m = trackedETemp->GetMean();
-				sd = trackedETemp->GetStdDev();
-			}
-
-			mData["y_trackedE_mean"][i] = m / energies_dbl[i];
-			mData["y_trackedE_stddev"][i] = sd / energies_dbl[i];
-		}
-
-		// fill total untracked energy deposition
-		mData["y_untrackedE_mean"] = vector<double>(numEnergies, 0.0);
-		mData["y_untrackedE_stddev"] = vector<double>(numEnergies, 0.0);
-
-		for(int i = 0; i < numEnergies; i++)
-		{
-			mData["y_untrackedE_mean"][i] = 1.0 - mData["y_trackedE_mean"][i];
-			mData["y_untrackedE_stddev"][i] = mData["y_trackedE_stddev"][i];
-		}
-
-		// fill total untracked energy from other particles
-		mData["y_untrackedEFromParticles_mean"] = vector<double>(numEnergies, 0.0);
-		mData["y_untrackedEFromParticles_stddev"] = vector<double>(numEnergies, 0.0);
-
-		for(int i = 0; i < numEnergies; i++)
-		{
-			TH1D* UntrackedEFromParticlesTemp = (TH1D*) mFiles["f" + energies_str[i]]->Get("hPerEvent_UntrackedE");
-			double m;
-			double sd;
-
-			// fit gaussian in range if incident particle is photon
-			TF1* funcUntrackedEFromParticles;
-			if(initPart == "gamma")
-			{
-				funcUntrackedEFromParticles = new TF1("funcUntrackedEFromParticles", "gaus",
-					fitUntrackedEFromParticlesMin[i], fitUntrackedEFromParticlesMax[i]);
-				funcUntrackedEFromParticles->SetParLimits(1,
-					fitUntrackedEFromParticlesMin[i], fitUntrackedEFromParticlesMax[i]);
-				UntrackedEFromParticlesTemp->Fit("funcUntrackedEFromParticles", "QR");
-
-				TF1* fitUntrackedEFromParticles = UntrackedEFromParticlesTemp->GetFunction("funcUntrackedEFromParticles");
-				m = fitUntrackedEFromParticles->GetParameter(1);
-				sd = fitUntrackedEFromParticles->GetParameter(2);
-			}
-			else if(initPart == "neutron")
-			{
-				m = UntrackedEFromParticlesTemp->GetMean();
-				sd = UntrackedEFromParticlesTemp->GetStdDev();
-			}
-
-			mData["y_untrackedEFromParticles_mean"][i] = m / energies_dbl[i];
-			mData["y_untrackedEFromParticles_stddev"][i] = sd / energies_dbl[i];
-		}
-
-		// optical photon inefficiency threshold plots
-		for(int i = 0; i < numThresholds; i++)
-		{
-			mData["OptPhotIneff_t" + thresh_str[i]] = vector<double>(numEnergies);
-			for(int j = 0; j < numEnergies; j++)
-			{
-				TH1D* OptPhotMultTemp = (TH1D*) mFiles["f" + energies_str[j]]->Get("hOptPhot_PerEvent_lowMult");
-				double integral = OptPhotMultTemp->Integral(0, (int) (thresholds[i] / bin_width));
-				mData["OptPhotIneff_t" + thresh_str[i]][j] = integral / stoi(n);
-			}
+			TH1D* temp = (TH1D*) MFiles[SEnergies[e]]->Get(key.c_str());
+			for(int l = 0; l < SACNLayers; l++)
+				yVal[l] = temp->GetBinContent(l + 1);
+			MData[key + SEnergies[e]] = yVal;
 		}
 	}
-	for(int i = 0; i < numEnergies; i++) mFiles["f" + energies_str[i]]->Close();
 
-	// open output file
-	mFiles["fOut"] = new TFile(("root_files/SACAnalysis_n" + n + "_" + initPart + ".root").c_str(), "RECREATE");
+	// Rearrange values into what I need to plot them
+	vector<double> yStackedVal(NEnergies);
+	for(int p = 0; p < NParticles; p++)
 	{
-		// remove title from plots
-		gStyle->SetOptTitle(0);
-
-		// total energy deposition graph
-		mCanvas["cTrackedE"] = new TCanvas("cTrackedE", "total energy deposition", 800, 600);
+		key = masterKey + SParticles[p];
+		for(int l = 0; l < SACNLayers; l++)
 		{
-			mGraphs["gTrackedE"] = new TGraphErrors(numEnergies,
-				mData["x"].data(), mData["y_trackedE_mean"].data(),
-				mData["x_stddev"].data(), mData["y_trackedE_stddev"].data());
+			for(int e = 0; e < NEnergies; e++)
+				yStackedVal[e] = MData[key + SEnergies[e]][l];
+			MData[key + std::to_string(l)] = yStackedVal;
+		}
+	}
+}
 
-			mGraphs["gTrackedE"]->SetName("gTrackedE");
-			mGraphs["gTrackedE"]->SetTitle("total energy deposition");
-			mGraphs["gTrackedE"]->GetXaxis()->SetTitle(x_axis.c_str());
-			mGraphs["gTrackedE"]->GetYaxis()->SetTitle("energy deposition / incident energy (1 / MeV)");
+void DrawTGraphErrors(TGraphErrors* g, int p, string n, string t, string x,
+	string y)
+{
+	g->SetName(n.c_str());
+	g->SetTitle((t + ";" + x + ";" + y).c_str());
 
-			mGraphs["gTrackedE"]->SetMarkerColor(1);
-			mGraphs["gTrackedE"]->SetMarkerSize(mSize);
-			mGraphs["gTrackedE"]->SetMarkerStyle(mStyle);
-			mGraphs["gTrackedE"]->SetLineWidth(lWidth);
-			mGraphs["gTrackedE"]->SetLineStyle(lStyle);
+	g->SetMarkerColor(Colors[p]);
+	g->SetMarkerSize(MSize);
+	g->SetMarkerStyle(MStyle);
+	g->SetLineWidth(LWidth);
+	g->SetLineStyle(LStyle);
 
-			mGraphs["gTrackedE"]->Draw(draw_opt.c_str());
-			mGraphs["gTrackedE"]->Write();
+	TCanvas* c = new TCanvas(n.c_str(), n.c_str(), 800, 600);
+	gPad->SetLogx(1);
+	g->Draw(DrawOpt);
+
+	string fname = Beam + "/" + Beam + FOutName;
+	if(firstPlot) fname += "(";
+	else if(lastPlot) fname += ")";
+
+	c->Print(fname.c_str());
+}
+
+void DrawTMultiGraph(TMultiGraph* mg, TLegend* l, string n, string t, string x,
+	string y)
+{
+	mg->SetName(n.c_str());
+	mg->SetTitle((t + ";" + x + ";" + y).c_str());
+
+	l->SetFillStyle(0);
+	l->SetBorderSize(0);
+
+	TCanvas* c = new TCanvas(n.c_str(), n.c_str(), 800, 600);
+	gPad->SetLogx(1);
+	mg->Draw(DrawOpt);
+	l->Draw();
+
+	string fname = Beam + "/" + Beam + FOutName;
+	if(firstPlot) fname += "(";
+	else if(lastPlot) fname += ")";
+
+	c->Print(fname.c_str());
+}
+
+void DrawGraphs(string masterKey, string t, string x, string y)
+{
+	TMultiGraph* mg = new TMultiGraph();
+	TLegend* legend = new TLegend(0.905, 0.2, 0.995, 0.8);
+
+	string key;
+	string title;
+	for(int p = 0; p < NParticles; p++)
+	{
+		key = masterKey + SParticles[p];
+
+		TGraphErrors* g = new TGraphErrors(NEnergies, DEnergies,
+			MData[key + "_m"].data(), StdEnergies, MData[key + "_std"].data());
+		DrawTGraphErrors(g, p, key, (SymbParticles[p] + " " + t).c_str(), x, y);
+		firstPlot = false;
+
+		mg->Add(g);
+		legend->AddEntry(g, SymbParticles[p].c_str());
+	}
+
+	DrawTMultiGraph(mg, legend, masterKey, t, x, y);
+}
+
+void DrawStackedBar(string masterKey)
+{
+	string key;
+	for(int p = 0; p < NParticles; p++)
+	{
+		key = masterKey + SParticles[p];
+		THStack* hs = new THStack(key.c_str(),
+			(SymbParticles[p] + " % Energy Deposition Per SAC Layer").c_str());
+		for(int l = 0; l < SACNLayers; l++)
+		{
+			TH1D* temp = new TH1D((key + "_" + std::to_string(l)).c_str(),
+				("z = " + std::to_string(l)).c_str(), NEnergies, BEnergies);
+			for(int e = 0; e < NEnergies; e++)
+				temp->AddBinContent(e + 1, MData[key + std::to_string(l)][e]);
+			temp->SetFillColor(StackColors[l]);
+			hs->Add(temp);
 		}
 
-		// total untracked energy deposition graph
-		mCanvas["cUntrackedE"] = new TCanvas("cUntrackedE", "untracked energy deposition", 800, 600);
-		{
-			mGraphs["gUntrackedE"] = new TGraphErrors(numEnergies,
-				mData["x"].data(), mData["y_untrackedE_mean"].data(),
-				mData["x_stddev"].data(), mData["y_untrackedE_stddev"].data());
-
-			mGraphs["gUntrackedE"]->SetName("gUntrackedE");
-			mGraphs["gUntrackedE"]->SetTitle("total untracked energy deposition");
-			mGraphs["gUntrackedE"]->GetXaxis()->SetTitle(x_axis.c_str());
-			mGraphs["gUntrackedE"]->GetYaxis()->SetTitle("untracked energy deposition / incident energy (1 / MeV)");
-
-			mGraphs["gUntrackedE"]->SetMarkerColor(9);
-			mGraphs["gUntrackedE"]->SetMarkerSize(mSize);
-			mGraphs["gUntrackedE"]->SetMarkerStyle(mStyle);
-			mGraphs["gUntrackedE"]->SetLineWidth(lWidth);
-			mGraphs["gUntrackedE"]->SetLineStyle(lStyle);
-
-			mGraphs["gUntrackedE"]->Draw(draw_opt.c_str());
-			mGraphs["gUntrackedE"]->Write();
-		}
-
-		// total untracked energy from other particles graph
-		mCanvas["cUntrackedEFromParticles"] = new TCanvas("cUntrackedEFromParticles",
-			"untracked energy deposition from other particles", 800, 600);
-		{
-			mGraphs["gUntrackedEFromParticles"] = new TGraphErrors(numEnergies,
-				mData["x"].data(), mData["y_untrackedEFromParticles_mean"].data(),
-				mData["x_stddev"].data(), mData["y_untrackedEFromParticles_stddev"].data());
-
-			mGraphs["gUntrackedEFromParticles"]->SetName("gUntrackedEFromParticles");
-			mGraphs["gUntrackedEFromParticles"]->SetTitle("untracked energy deposition from other particles");
-			mGraphs["gUntrackedEFromParticles"]->GetXaxis()->SetTitle(x_axis.c_str());
-			mGraphs["gUntrackedEFromParticles"]->GetYaxis()->SetTitle("untracked energy (MeV)");
-
-			mGraphs["gUntrackedEFromParticles"]->SetMarkerColor(12);
-			mGraphs["gUntrackedEFromParticles"]->SetMarkerSize(mSize);
-			mGraphs["gUntrackedEFromParticles"]->SetMarkerStyle(mStyle);
-			mGraphs["gUntrackedEFromParticles"]->SetLineWidth(lWidth);
-			mGraphs["gUntrackedEFromParticles"]->SetLineStyle(lStyle);
-
-			mGraphs["gUntrackedEFromParticles"]->Draw(draw_opt.c_str());
-			mGraphs["gUntrackedEFromParticles"]->Write();
-		}
-
-		// attr graphs
-		for(int i = 0; i < numAttr; i++)
-		{
-			mCanvas["c" + attr[i]] = new TCanvas(("c" + attr[i]).c_str(),
-				(attr_title[i] + " per event").c_str(), 800, 600);
-			TMultiGraph* mg = new TMultiGraph();
-			{
-				mg->SetName(("mg" + attr[i]).c_str());
-				mg->SetTitle((attr_title[i] + " per event").c_str());
-				mg->GetXaxis()->SetTitle(x_axis.c_str());
-				if(attr[i] == "Mult" || attr[i] == "EDep")
-					mg->GetYaxis()->SetTitle((attr_title[i] + " per event / incident energy (1 / MeV)").c_str());
-				else
-					mg->GetYaxis()->SetTitle((attr_title[i] + " per event (MeV)").c_str());
-
-				if(attr[i] == "EDep")
-				{
-					mg->Add(mGraphs["gTrackedE"]);
-					mg->Add(mGraphs["gUntrackedE"]);
-				}
-
-				for(int j = 0; j < numParticles; j++)
-				{
-					mCanvas["c" + partType[j] + "_" + attr[i]] = new TCanvas(("c" + partType[j] + "_" + attr[i]).c_str(),
-						(partType[j] + " " + attr_title[i]).c_str(), 800, 600);
-					{
-						mGraphs["g" + partType[j] + "_" + attr[i]] = new TGraphErrors(numEnergies,
-							mData["x"].data(), mData["y_" + partType[j] + "_" + attr[i] + "_mean"].data(),
-							mData["x_stddev"].data(), mData["y_" + partType[j] + "_" + attr[i] + "_stddev"].data());
-
-						mGraphs["g" + partType[j] + "_" + attr[i]]->SetName(("g" + partType[j] + "_" + attr[i]).c_str());
-						mGraphs["g" + partType[j] + "_" + attr[i]]->SetTitle((partType[j] + " " + attr_title[i]).c_str());
-						mGraphs["g" + partType[j] + "_" + attr[i]]->GetXaxis()->SetTitle(x_axis.c_str());
-						if(attr[i] == "Mult" || attr[i] == "EDep")
-							mGraphs["g" + partType[j] + "_" + attr[i]]->GetYaxis()->SetTitle((attr_title[i] + " per event / incident energy (1 / MeV)").c_str());
-						else
-							mGraphs["g" + partType[j] + "_" + attr[i]]->GetYaxis()->SetTitle((attr_title[i] + " per event (MeV)").c_str());
-
-						mGraphs["g" + partType[j] + "_" + attr[i]]->SetMarkerColor(colors[j]);
-						mGraphs["g" + partType[j] + "_" + attr[i]]->SetMarkerSize(mSize);
-						mGraphs["g" + partType[j] + "_" + attr[i]]->SetMarkerStyle(mStyle);
-						mGraphs["g" + partType[j] + "_" + attr[i]]->SetLineWidth(lWidth);
-						mGraphs["g" + partType[j] + "_" + attr[i]]->SetLineStyle(lStyle);
-
-						mGraphs["g" + partType[j] + "_" + attr[i]]->Draw(draw_opt.c_str());
-						mGraphs["g" + partType[j] + "_" + attr[i]]->Write();
-					}
-					mg->Add(mGraphs["g" + partType[j] + "_" + attr[i]]);
-				}
-
-				mCanvas["c" + attr[i]]->cd();
-				mg->Draw(draw_opt.c_str());
-				mg->Write();
-			}
-
-			// create legend
-			TLegend* attr_legend = new TLegend(0.905, 0.2, 0.995, 0.8);
-			{
-				attr_legend->SetFillStyle(0);
-				attr_legend->SetBorderSize(0);
-				if(attr[i] == "EDep")
-				{
-					attr_legend->AddEntry(mGraphs["gTrackedE"], "E_{total}");
-					attr_legend->AddEntry(mGraphs["gUntrackedE"], "E_{untracked}");
-				}
-				for(int j = 0; j < numParticles; j++)
-					attr_legend->AddEntry(mGraphs["g" + partType[j] + "_" + attr[i]], partType_symb[j].c_str());
-			}
-
-			// save plots
-			gPad->SetLogx(1);
-			attr_legend->Draw();
-			mCanvas["c" + attr[i]]->SaveAs(("plots/" + initPart + "_mg" + attr[i] + fType).c_str());
-
-			// zoomed version of plots
-			mCanvas["c" + attr[i] + "_zoomed"] = new TCanvas(("c" + attr[i] + "_zoomed").c_str(),
-				(attr_title[i] + " per event").c_str(), 800, 600);
-			{
-				mg->Draw(draw_opt.c_str());
-
-				// it matters what order Edep, Mult, and InitE are in!!!
-				vector<double> zoomRange;
-				if(initPart == "gamma") zoomRange = zoomRangeGamma;
-				else if(initPart == "neutron") zoomRange = zoomRangeNeutron;
-				switch(i)
-				{
-					case 0: mg->SetMinimum(zoomRange[0]); mg->SetMaximum(zoomRange[1]); break;	// EDep
-					case 1: mg->SetMinimum(zoomRange[2]); mg->SetMaximum(zoomRange[3]); break;	// Mult
-					case 2: mg->SetMinimum(zoomRange[4]); mg->SetMaximum(zoomRange[5]); break;	// InitE
-					default: cout << "Hmm...this wasn't supposed to happen..." << endl;
-				}
-			}
-			gPad->SetLogx(1);
-			attr_legend->Draw();
-			mCanvas["c" + attr[i] + "_zoomed"]->SaveAs(("plots/" + initPart + "_mg" + attr[i] + "_zoomed" + fType).c_str());
-		}
-
-		// optical photon mean -- stability
-		mCanvas["cOptPhot_Mult_mean"] = new TCanvas("cOptPhot_Mult_mean",
-			"Cerenkov photon multiplicity mean -- stability", 800, 600);
-		{
-			mGraphs["gOptPhot_Mult_mean"] = new TGraph(numEnergies,
-				mData["x"].data(), mData["y_OptPhot_Mult_mean"].data());
-
-			mGraphs["gOptPhot_Mult_mean"]->SetName("gOptPhot_Mult_mean");
-			mGraphs["gOptPhot_Mult_mean"]->SetTitle("Cerenkov photon multiplicity mean -- stability");
-			mGraphs["gOptPhot_Mult_mean"]->GetXaxis()->SetTitle(x_axis.c_str());
-			mGraphs["gOptPhot_Mult_mean"]->GetYaxis()->SetTitle("Cerenkov photon multiplicity mean (1 / MeV)");
-
-			mGraphs["gOptPhot_Mult_mean"]->SetMarkerColor(colors[10]);
-			mGraphs["gOptPhot_Mult_mean"]->SetMarkerSize(mSize);
-			mGraphs["gOptPhot_Mult_mean"]->SetMarkerStyle(mStyle);
-			mGraphs["gOptPhot_Mult_mean"]->SetLineWidth(lWidth);
-			mGraphs["gOptPhot_Mult_mean"]->SetLineStyle(lStyle);
-
-			mGraphs["gOptPhot_Mult_mean"]->Draw(draw_opt.c_str());
-			mGraphs["gOptPhot_Mult_mean"]->Write();
-		}
+		TCanvas* c = new TCanvas(key.c_str(), key.c_str(), 800, 600);
 		gPad->SetLogx(1);
-		// mGraphs["gOptPhot_Mult_mean"]->SetMinimum(0.0);
-		// mGraphs["gOptPhot_Mult_mean"]->SetMaximum(90.0);
-		mCanvas["cOptPhot_Mult_mean"]->SaveAs(("plots/" + initPart + "_gOptPhot_Mult_mean" + fType).c_str());
+		hs->Draw();
+		gPad->BuildLegend(0.905, 0.2, 0.995, 0.8);
 
-		// optical photon stddev -- energy resolution
-		mCanvas["cOptPhot_Mult_stddev"] = new TCanvas("cOptPhot_Mult_stddev",
-			"Cerenkov photon multiplicity stddev -- stability", 800, 600);
-		{
-			mGraphs["gOptPhot_Mult_stddev"] = new TGraph(numEnergies,
-				mData["x"].data(), mData["y_OptPhot_Mult_stddev"].data());
+		if(p == NParticles - 1) lastPlot = true;
 
-			mGraphs["gOptPhot_Mult_stddev"]->SetName("gOptPhot_Mult_stddev");
-			mGraphs["gOptPhot_Mult_stddev"]->SetTitle("Cerenkov photon multiplicity stddev -- energy resolution");
-			mGraphs["gOptPhot_Mult_stddev"]->GetXaxis()->SetTitle(x_axis.c_str());
-			mGraphs["gOptPhot_Mult_stddev"]->GetYaxis()->SetTitle("Cerenkov photon multiplicity stddev (1 / MeV)");
+		string fname = Beam + "/" + Beam + FOutName;
+		if(firstPlot) fname += "(";
+		else if(lastPlot) fname += ")";
 
-			mGraphs["gOptPhot_Mult_stddev"]->SetMarkerColor(colors[10]);
-			mGraphs["gOptPhot_Mult_stddev"]->SetMarkerSize(mSize);
-			mGraphs["gOptPhot_Mult_stddev"]->SetMarkerStyle(mStyle);
-			mGraphs["gOptPhot_Mult_stddev"]->SetLineWidth(lWidth);
-			mGraphs["gOptPhot_Mult_stddev"]->SetLineStyle(lStyle);
-
-			mGraphs["gOptPhot_Mult_stddev"]->Draw(draw_opt.c_str());
-			mGraphs["gOptPhot_Mult_stddev"]->Write();
-		}
-		gPad->SetLogx(1);
-		// mGraphs["gOptPhot_Mult_stddev"]->SetMinimum(0.0);
-		// mGraphs["gOptPhot_Mult_stddev"]->SetMaximum(13.0);
-		mCanvas["cOptPhot_Mult_stddev"]->SaveAs(("plots/" + initPart + "_gOptPhot_Mult_stddev"+ fType).c_str());
-
-		// optical photon stddev / mean
-		mCanvas["cOptPhot_Mult_nStdDev_dMean"] = new TCanvas("cOptPhot_Mult_nStdDev_dMean",
-			"optical photon multiplicity std / mean", 800, 600);
-		{
-			mGraphs["gOptPhot_Mult_nStdDev_dMean"] = new TGraph(numEnergies,
-				mData["x"].data(), mData["y_OptPhot_Mult_nStdDev_dMean"].data());
-
-			mGraphs["gOptPhot_Mult_nStdDev_dMean"]->SetName("gOptPhot_Mult_nStdDev_dMean");
-			mGraphs["gOptPhot_Mult_nStdDev_dMean"]->SetTitle("Cerenkov photon multiplicity stddev / mean");
-			mGraphs["gOptPhot_Mult_nStdDev_dMean"]->GetXaxis()->SetTitle(x_axis.c_str());
-			mGraphs["gOptPhot_Mult_nStdDev_dMean"]->GetYaxis()->SetTitle("Cerenkov photon multiplicity stddev / mean");
-
-			mGraphs["gOptPhot_Mult_nStdDev_dMean"]->SetMarkerColor(colors[10]);
-			mGraphs["gOptPhot_Mult_nStdDev_dMean"]->SetMarkerSize(mSize);
-			mGraphs["gOptPhot_Mult_nStdDev_dMean"]->SetMarkerStyle(mStyle);
-			mGraphs["gOptPhot_Mult_nStdDev_dMean"]->SetLineWidth(lWidth);
-			mGraphs["gOptPhot_Mult_nStdDev_dMean"]->SetLineStyle(lStyle);
-
-			mGraphs["gOptPhot_Mult_nStdDev_dMean"]->Draw(draw_opt.c_str());
-			mGraphs["gOptPhot_Mult_nStdDev_dMean"]->Write();
-		}
-		gPad->SetLogx(1);
-		// mGraphs["gOptPhot_Mult_nStdDev_dMean"]->SetMinimum(0.0);
-		// mGraphs["gOptPhot_Mult_nStdDev_dMean"]->SetMaximum(1.8);
-		mCanvas["cOptPhot_Mult_nStdDev_dMean"]->SaveAs(("plots/" + initPart + "_gOptPhot_Mult_nStdDev_dMean" + fType).c_str());
-
-		// threshold graphs
-		for(int i = 0; i < numThresholds; i++)
-		{
-			mCanvas["cOptPhotIneff_t" + thresh_str[i]] = new TCanvas(("cOptPhotIneff_t" + thresh_str[i]).c_str(),
-				("Cerenkov photon inefficiency, threshold = " + thresh_str[i]).c_str(), 800, 600);
-			{
-				mGraphs["gOptPhotIneff_t" + thresh_str[i]] = new TGraph(numEnergies,
-					mData["x_GeV"].data(), mData["OptPhotIneff_t" + thresh_str[i]].data());
-
-				mGraphs["gOptPhotIneff_t" + thresh_str[i]]->SetName(("gOptPhotIneff_t" + thresh_str[i]).c_str());
-				mGraphs["gOptPhotIneff_t" + thresh_str[i]]->SetTitle(("Cerenkov photon inefficiency, threshold = " + thresh_str[i]).c_str());
-				mGraphs["gOptPhotIneff_t" + thresh_str[i]]->GetXaxis()->SetTitle("incident energy (GeV)");
-				mGraphs["gOptPhotIneff_t" + thresh_str[i]]->GetYaxis()->SetTitle("Cerenkov photon inefficiency");
-
-				mGraphs["gOptPhotIneff_t" + thresh_str[i]]->SetMarkerColor(colors[10]);
-				mGraphs["gOptPhotIneff_t" + thresh_str[i]]->SetMarkerSize(mSize);
-				mGraphs["gOptPhotIneff_t" + thresh_str[i]]->SetMarkerStyle(mStyle);
-				mGraphs["gOptPhotIneff_t" + thresh_str[i]]->SetLineWidth(lWidth);
-				mGraphs["gOptPhotIneff_t" + thresh_str[i]]->SetLineStyle(lStyle);
-
-				mGraphs["gOptPhotIneff_t" + thresh_str[i]]->Draw(draw_opt.c_str());
-				mGraphs["gOptPhotIneff_t" + thresh_str[i]]->Write();
-			}
-			gPad->SetLogx(1);
-			gPad->SetLogy(1);
-			mGraphs["gOptPhotIneff_t" + thresh_str[i]]->SetMinimum(1.0 / 1.0e5 - 5.0 / 1.0e6);
-			mGraphs["gOptPhotIneff_t" + thresh_str[i]]->SetMaximum(1.5);
-			mCanvas["cOptPhotIneff_t" + thresh_str[i]]->SaveAs(("plots/" + initPart + "_OptPhot_threshold" + thresh_str[i] + fType).c_str());
-		}
+		c->Print(fname.c_str());
 	}
-	mFiles["fOut"]->Close();
+}
 
-	// make other plots
-	gStyle->SetOptStat("mr");
+// -------------------- SAC Analysis -------------------- //
 
-	for(int i = 0; i < numEnergies; i++)
+void SACAnalysis(int BeamType, int NEvents)
+{
+	// Read in input files
+	Beam = GetBeamType(BeamType);
+	string FName;
+	for(int e = 0; e < NEnergies; e++)
 	{
-		TFile* fGamma = new TFile(("n100000_gamma/SAC_" + energies_str[i] + "_gamma_n100000.root").c_str());
-		TH1D* hGammaTemp = (TH1D*) (fGamma->Get("hOptPhot_PerEvent_Mult"));
-		TCanvas* cGamma = new TCanvas(("cGamma_" + energies_str[i]).c_str(), "Cerenkov photon multiplicity per event", 800, 600);
-		TH1D* hGamma = new TH1D("hGamma", "Cerenkov photon multiplicity per event", 500, 0, 20000);
-		for(int j = 0; j < hGammaTemp->GetNbinsX(); j++)
-			hGamma->Fill(j * 40.0, hGammaTemp->GetBinContent(j));
-		hGamma->GetXaxis()->SetTitle("number of Cerenkov photons");
-		hGamma->SetLineColor(4);
-		hGamma->Draw("hist");
-		hGamma->SetMinimum(0.0);
-		hGamma->SetMaximum(10500.0);
-		cGamma->SaveAs(("plots/Gamma" + energies_str[i] + fType).c_str());
-		fGamma->Close();
+		FName = Beam + "/SAC_" + std::to_string(BeamType) + "_"
+			+ SEnergies[e] + "_n" + std::to_string(NEvents) + ".root";
+		MFiles[SEnergies[e]] = new TFile(FName.c_str());
 	}
 
-	for(int i = 0; i < numEnergies; i++)
-	{
-		TFile* fNeutron = new TFile(("n100000_neutron/SAC_" + energies_str[i] + "_neutron_n100000.root").c_str());
-		TH1D* hNeutronTemp = (TH1D*) (fNeutron->Get("hOptPhot_PerEvent_Mult"));
-		TCanvas* cNeutron = new TCanvas(("cNeutron_" + energies_str[i]).c_str(), "Cerenkov photon multiplicity per event", 800, 600);
-		TH1D* hNeutron = new TH1D("hNeutron", "Cerenkov photon multiplicity per event", 500, 0, 20000);
-		for(int j = 0; j < hNeutronTemp->GetNbinsX(); j++)
-			hNeutron->Fill(j * 40.0, hNeutronTemp->GetBinContent(j));
-		hNeutron->GetXaxis()->SetTitle("number of Cerenkov photons");
-		hNeutron->SetLineColor(4);
-		hNeutron->Draw("hist");
-		hNeutron->SetMinimum(0.0);
-		hNeutron->SetMaximum(10500.0);
-		cNeutron->SaveAs(("plots/Neutron" + energies_str[i] + fType).c_str());
-		fNeutron->Close();
-	}
+	// Read in y values
+	ReadInGraphVals("h1EDep_PerEvent_");
+	ReadInGraphVals("h1Mult_PerEvent_");
+	ReadInStackedBarVals("h1EDep_PerLayer_");
 
-	// unset batch mode
-	gROOT->SetBatch(0);
+	// Close input files
+	for(int e = 0; e < NEnergies; e++) MFiles[SEnergies[e]]->Close();
+
+	// Draw graphs
+	DrawGraphs("h1EDep_PerEvent_", "% of Energy Deposition Per Event",
+		"Incident Energy [MeV]", "[%]");
+	DrawGraphs("h1Mult_PerEvent_", "Multiplicity Per Event",
+		"Incident Energy [MeV]", "[1 / GeV]");
+	DrawStackedBar("h1EDep_PerLayer_");
+}
+
+int main(int argc, char** argv)
+{
+	SACAnalysis(std::stoi(argv[0]), std::stoi(argv[1]));
+	return 0;
 }
