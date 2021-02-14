@@ -333,9 +333,9 @@ void SACAnalysis(int BeamType, int NEvents)
 
 	// Draw graphs
 	DrawGraphs("h1EDep_PerEvent_", "% of Energy Deposition Per Event",
-		"Incident Energy [MeV]", "[%]");
+		"Incident Energy [GeV]", "[%]");
 	DrawGraphs("h1Mult_PerEvent_", "Multiplicity Per Event",
-		"Incident Energy [MeV]", "[1 / GeV]");
+		"Incident Energy [GeV]", "[1 / GeV]");
 	DrawStackedBar("h1EDep_PerLayer_");
 }
 
