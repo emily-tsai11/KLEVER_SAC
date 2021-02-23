@@ -37,6 +37,7 @@ PrimaryGeneratorActionMessenger::~PrimaryGeneratorActionMessenger()
 {
 	delete fSetBeamTypeCmd;
 	delete fSetBeamEnergyCmd;
+
 	delete fPrimaryGeneratorActionDir;
 }
 

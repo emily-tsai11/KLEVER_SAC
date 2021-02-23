@@ -35,6 +35,10 @@ SACSiPM::SACSiPM()
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
+SACSiPM::~SACSiPM() {}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
 void SACSiPM::CreateGeometry()
 {
 	G4Box* fSiPMSolid = new G4Box(

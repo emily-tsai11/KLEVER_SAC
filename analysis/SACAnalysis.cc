@@ -8,6 +8,7 @@
 // --------------------------------------------------------------
 
 #include <map>
+#include <cmath>
 
 // -------------------- Constants -------------------- //
 
@@ -130,6 +131,7 @@ static const int StackColors[] = {
 };
 
 static string Beam;
+static int NEvents;
 static const string FOutName = "plots.pdf";
 
 static bool firstPlot = true;
@@ -159,7 +161,7 @@ void GetMeanAndStd(string h, vector<double> &m, vector<double> &std)
 	{
 		TH1D* temp = (TH1D*) MFiles[SEnergies[e]]->Get(h.c_str());
 		m[e] = temp->GetMean();
-		std[e] = temp->GetStdDev();
+		std[e] = temp->GetStdDev() / sqrt(NEvents);
 	}
 }
 
@@ -312,10 +314,12 @@ void DrawStackedBar(string masterKey)
 
 // -------------------- SAC Analysis -------------------- //
 
-void SACAnalysis(int BeamType, int NEvents)
+void SACAnalysis(int BeamType, int NEvt)
 {
 	// Read in input files
 	Beam = GetBeamType(BeamType);
+	NEvents = NEvt;
+
 	string FName;
 	for(int e = 0; e < NEnergies; e++)
 	{

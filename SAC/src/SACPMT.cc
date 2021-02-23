@@ -36,6 +36,10 @@ SACPMT::SACPMT()
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
+SACPMT::~SACPMT() {}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
 void SACPMT::CreateGeometry()
 {
 	G4Tubs* fPMTSolid = new G4Tubs(

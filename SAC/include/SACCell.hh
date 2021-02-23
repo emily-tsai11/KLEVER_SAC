@@ -23,8 +23,9 @@ class SACCell
 	public:
 
 		explicit SACCell();
-		void CreateGeometry();
+		~SACCell();
 
+		void CreateGeometry();
 		G4LogicalVolume* GetCrystalLogicalVolume() { return fCrystalVolume; }
 		G4LogicalVolume* GetCellLogicalVolume() { return fCellVolume; }
 

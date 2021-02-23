@@ -23,6 +23,8 @@ class SACSiPM
 	public:
 
 		explicit SACSiPM();
+		~SACSiPM();
+
 		void CreateGeometry();
 		G4LogicalVolume* GetSiPMLogicalVolume() { return fSiPMVolume; }
 

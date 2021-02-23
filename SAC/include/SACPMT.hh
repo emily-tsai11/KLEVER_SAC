@@ -24,6 +24,8 @@ class SACPMT
 	public:
 
 		explicit SACPMT();
+		~SACPMT();
+
 		void CreateGeometry();
 		G4LogicalVolume* GetPMTLogicalVolume() { return fPMTVolume; }
 

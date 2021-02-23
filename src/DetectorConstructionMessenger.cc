@@ -52,6 +52,7 @@ DetectorConstructionMessenger::~DetectorConstructionMessenger()
 	delete fSetWorldLengthXCmd;
 	delete fSetWorldLengthYCmd;
 	delete fSetWorldLengthZCmd;
+
 	delete fDetectorConstructionDir;
 }
 

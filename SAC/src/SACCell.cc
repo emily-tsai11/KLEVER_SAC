@@ -42,6 +42,10 @@ SACCell::SACCell()
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
+SACCell::~SACCell() {}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
 void SACCell::CreateGeometry()
 {
 	// Create PbF2 crystal
