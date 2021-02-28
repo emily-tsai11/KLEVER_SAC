@@ -6,12 +6,15 @@
 // --------------------------------------------------------------
 
 #include "Analysis.hh"
-#include "globals.hh"
-#include "G4SystemOfUnits.hh"
 #include <string>
+#include <cmath>
 
 #include "G4Event.hh"
 #include "G4PrimaryParticle.hh"
+
+#include <TFile.h>
+#include <TH1D.h>
+#include <TH2D.h>
 
 #include "AnalysisMessenger.hh"
 #include "SACGeometry.hh"
@@ -19,13 +22,13 @@
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-Analysis* Analysis::fInstance = 0;
+Analysis* Analysis::fInstance = nullptr;
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 Analysis* Analysis::GetInstance()
 {
-	if(fInstance == 0) fInstance = new Analysis();
+	if(!fInstance) fInstance = new Analysis();
 	return fInstance;
 }
 
@@ -34,7 +37,11 @@ Analysis* Analysis::GetInstance()
 Analysis::Analysis()
 {
 	fMessenger = new AnalysisMessenger();
-	fManager = new G4RootAnalysisManager();
+
+	SACGeometry* Geo = SACGeometry::GetInstance();
+	fSACRows = (G4double) Geo->GetSACNRows();
+	fSACCols = (G4double) Geo->GetSACNCols();
+	fSACLayers = (G4double) Geo->GetSACNLayers();
 
 	// Defaults
 	fTotalNEvents = -1;
@@ -49,7 +56,13 @@ Analysis::Analysis()
 Analysis::~Analysis()
 {
 	delete fMessenger;
-	delete fManager;
+}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+void Analysis::OpenFile()
+{
+	fOut = new TFile((fFileName + ".root").c_str(), "RECREATE");
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -74,116 +87,90 @@ void Analysis::CreateParticleList()
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
+void Analysis::CreateLogBins(const int nBins, double min, double max, double* edges)
+{
+	double minBase = log10(min);
+	double maxBase = log10(max);
+	double increment = (maxBase - minBase) / nBins;
+
+	for(int i = 0; i <= nBins; i++)
+		edges[i] = pow(10.0, minBase + i * increment);
+}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
 void Analysis::CreateHistograms()
 {
-	G4int fIndex1 = 0;
-	G4int fIndex2 = 0;
-	G4int fIndex3 = 0;
-	G4int fN1DBinsX = 200;
+	const G4int fN1DBinsX = 200;
 
-	SACGeometry* Geo = SACGeometry::GetInstance();
-	G4double fSACRows = (G4double) Geo->GetSACNRows();
-	G4double fSACCols = (G4double) Geo->GetSACNCols();
-	G4double fSACLayers = (G4double) Geo->GetSACNLayers();
-
-	std::map<G4String, G4int>::iterator iter;
 	G4String key;
 
 	// Energy deposition per event / incident energy
-	for(iter = fP.begin(); iter != fP.end(); iter++)
+	G4double eDepBinEdges[fN1DBinsX + 1];
+	CreateLogBins(fN1DBinsX, 1.0e-6, 1.0, eDepBinEdges);
+	for(auto& iter : fP)
 	{
-		key = "h1EDep_PerEvent_" + iter->first;
-		fH.insert({key, fIndex1});
-		fIndex1++;
-
-		fManager->CreateH1(key,
-			"% of " + iter->first + " energy deposition per event",
-			fN1DBinsX + 2, 0.0 - 1.0 / fN1DBinsX, 1.0 + 1.0 / fN1DBinsX);
+		key = "h1EDep_PerEvent_" + iter.first;
+		fH1D[key] = new TH1D(key.c_str(),
+			("fraction of " + iter.first + " energy deposition per event").c_str(),
+			fN1DBinsX, eDepBinEdges);
 	}
 
 	// Energy deposition in SAC layers / incident energy
-	for(iter = fP.begin(); iter != fP.end(); iter++)
+	for(auto& iter : fP)
 	{
-		key = "h1EDep_PerLayer_" + iter->first;
-		fH.insert({key, fIndex1});
-		fIndex1++;
-
-		fManager->CreateH1(key,
-			"% of " + iter->first + " energy deposition per SAC layer",
+		key = "h1EDep_PerLayer_" + iter.first;
+		fH1D[key] = new TH1D(key.c_str(),
+			("fraction of " + iter.first + " energy deposition per SAC layer").c_str(),
 			(G4int) fSACLayers, 0.0, fSACLayers);
 	}
 
 	// 2D energy deposition in SAC layer (z = <#>) / incident energy
 	for(G4int i = 0; i < fSACLayers; i++)
 	{
-		for(iter = fP.begin(); iter != fP.end(); iter++)
+		for(auto& iter : fP)
 		{
-			key = "h2EDepZ" + std::to_string(i) + "_PerLayer_" + iter->first;
-			fH.insert({key, fIndex2});
-			fIndex2++;
-
-			fManager->CreateH2(key,
-				"% of " + iter->first + " energy deposition in SAC layer z = " + std::to_string(i),
+			key = "h2EDepZ" + std::to_string(i) + "_PerLayer_" + iter.first;
+			fH2D[key] = new TH2D(key.c_str(),
+				("fraction of " + iter.first + " energy deposition in SAC layer z = " + std::to_string(i)).c_str(),
 				(G4int) fSACRows, 0.0, fSACRows,
 				(G4int) fSACCols, 0.0, fSACCols);
 		}
 	}
 
-	// 3D energy deposition in SAC / incident energy
-	for(iter = fP.begin(); iter != fP.end(); iter++)
-	{
-		key = "h3EDep_SAC_" + iter->first;
-		fH.insert({key, fIndex3});
-		fIndex3++;
-
-		fManager->CreateH3(key,
-			"% of " + iter->first + " energy deposition in SAC",
-			(G4int) fSACRows, 0.0, fSACRows,
-			(G4int) fSACCols, 0.0, fSACCols,
-			(G4int) fSACLayers, 0.0, fSACLayers);
-	}
-
 	// Multiplicity per event / incident energy [1/MeV]
-	for(iter = fP.begin(); iter != fP.end(); iter++)
+	for(auto& iter : fP)
 	{
-		key = "h1Mult_PerEvent_" + iter->first;
-		fH.insert({key, fIndex1});
-		fIndex1++;
-
-		fManager->CreateH1(key,
-			"number of " + iter->first + " per event / incident energy",
+		key = "h1Mult_PerEvent_" + iter.first;
+		fH1D[key] = new TH1D(key.c_str(),
+			("number of " + iter.first + " per event / incident energy").c_str(),
 			fN1DBinsX + 20, 0.0, 110.0);
 	}
 
-	// Low range of multiplicity per event / incident energy [1/MeV]
-	for(iter = fP.begin(); iter != fP.end(); iter++)
-	{
-		key = "h1MultLow_PerEvent_" + iter->first;
-		fH.insert({key, fIndex1});
-		fIndex1++;
+	// Number of punch-through events
+	key = "h1PunchThrough_PerEvent";
+	fH1D[key] = new TH1D(key.c_str(),
+		"number of punch-through events / number of events",
+		1, 0.5, 1.5);
 
-		fManager->CreateH1(key,
-			"number of " + iter->first + " per event / incident energy (low range)",
-			fN1DBinsX + 20, 0.0, 11.0);
-	}
+	// Number of elastic collision events
+	key = "h1Elastic_PerEvent";
+	fH1D[key] = new TH1D(key.c_str(),
+		"number of elastic collision events / number of events",
+		1, 0.5, 1.5);
 
-	// Track length per hit [cm]
-	for(iter = fP.begin(); iter != fP.end(); iter++)
-	{
-		key = "h1TrLen_PerHit_" + iter->first;
-		fH.insert({key, fIndex1});
-		fIndex1++;
-
-		fManager->CreateH1(key,
-			iter->first + " track length per hit",
-			fN1DBinsX + 20, 0.0 * cm, 220.0 * cm);
-	}
+	// Number of inelastic collision events
+	key = "h1Inelastic_PerEvent";
+	fH1D[key] = new TH1D(key.c_str(),
+		"number of inelastic collision events / number of events",
+		1, 0.5, 1.5);
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 void Analysis::FillHistograms(const G4Event* evt)
 {
+
 	if(fTotalNEvents == -1)
 		G4cout << "[Analysis::FillHistograms] ERROR: TOTAL NUMBER OF EVENTS IS " << fTotalNEvents << "!!!" << G4endl;
 
@@ -193,19 +180,19 @@ void Analysis::FillHistograms(const G4Event* evt)
 	G4double primaryInitE = primary->GetKineticEnergy();
 
 	// Get hits collection
-	SACHitsCollection* fSACCollection = (SACHitsCollection*) evt->GetHCofThisEvent()->GetHC(0);
+	auto* fSACCollection = (SACHitsCollection*) evt->GetHCofThisEvent()->GetHC(0);
 	G4int nHits = fSACCollection->entries();
 
 	// Hit attributes
 	G4int cellID;
 	G4int trackID;
 	G4String particleName;
-	G4String volumeName;
-	G4String sdName;
-	G4String creatorProcessName;
+	// G4String volumeName;
+	// G4String sdName;
+	// G4String creatorProcessName;
 	G4double energyDeposition;
 	// G4double time;
-	G4double trackLength;
+	// G4double trackLength;
 	// G4ThreeVector position;
 	// G4ThreeVector localPosition;
 
@@ -218,7 +205,10 @@ void Analysis::FillHistograms(const G4Event* evt)
 		0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
 		0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
 	G4int pIndex, x, y, z;
-	G4double eNorm;
+	G4bool isPunchThrough = false, isElastic = false, isInelastic = false;
+	G4String key;
+
+	if(nHits == 0) isPunchThrough = true;
 
 	// Filling histograms
 	for(G4int i = 0; i < nHits; i++)
@@ -228,20 +218,20 @@ void Analysis::FillHistograms(const G4Event* evt)
 		cellID = currentHit->GetCellID();
 		trackID = currentHit->GetTrackID();
 		particleName = currentHit->GetParticleName();
-		volumeName = currentHit->GetVolumeName();
-		sdName = currentHit->GetSDName();
+		// volumeName = currentHit->GetVolumeName();
+		// sdName = currentHit->GetSDName();
 		// DON'T USE FOR NOW, CAUSING SEGFAULTS -- TRY AGAIN AFTER OPTICAL BOUNDARIES DEFINED
 		// creatorProcessName = currentHit->GetCreatorProcessName();
 		energyDeposition = currentHit->GetEnergyDeposition();
 		// time = currentHit->GetTime();
-		trackLength = currentHit->GetTrackLength();
+		// trackLength = currentHit->GetTrackLength();
 		// position = currentHit->GetPosition();
 		// localPosition = currentHit->GetLocalPosition();
 
 		try { pIndex = fP.at(particleName); }
 		catch(std::out_of_range)
 		{
-			// G4cout << "[Analysis::FillHistograms] Particle not yet added to list --- " << particleName << G4endl;
+//			G4cout << "[Analysis::FillHistograms] Particle not yet added to list --- " << particleName << G4endl;
 			pIndex = fP.at("other");
 			particleName = "other";
 		}
@@ -251,51 +241,39 @@ void Analysis::FillHistograms(const G4Event* evt)
 		y = cellID / 10 % 10;	// y = which column (0-9)
 		z = cellID / 100;		// z = which layer (0 = front, 1, 2, 3 = back)
 
-		eNorm = energyDeposition / primaryInitE / fTotalNEvents;
-
 		// Increment energy deposition in event
 		fEDepPerEvent[fP.at("all")] += energyDeposition;
 		fEDepPerEvent[pIndex] += energyDeposition;
 
 		// Fill "once per hit" histograms
 		// Energy deposition in SAC layers / incident energy
-		fManager->FillH1(
-			fH.at("h1EDep_PerLayer_all"),
-			z, eNorm);
-		fManager->FillH1(
-			fH.at("h1EDep_PerLayer_" + particleName),
-			z, eNorm);
+		key = "h1EDep_PerLayer_all";
+		fH1D[key]->Fill(z, energyDeposition);
+		key = "h1EDep_PerLayer_" + particleName;
+		fH1D[key]->Fill(z, energyDeposition);
 
 		// 2D energy deposition in SAC layer (z = <#>) / incident energy
-		fManager->FillH2(
-			fH.at("h2EDepZ" + std::to_string(z) + "_PerLayer_all"),
-			x, y, eNorm);
-		fManager->FillH2(
-			fH.at("h2EDepZ" + std::to_string(z) + "_PerLayer_" + particleName),
-			x, y, eNorm);
-
-		// 3D energy deposition in SAC / incident energy
-		fManager->FillH3(
-			fH.at("h3EDep_SAC_all"),
-			x, y, z, eNorm);
-		fManager->FillH3(
-			fH.at("h3EDep_SAC_" + particleName),
-			x, y, z, eNorm);
-
-		// Track length per hit
-		fManager->FillH1(
-			fH.at("h1TrLen_PerHit_all"),
-			trackLength, 1.0);
-		fManager->FillH1(
-			fH.at("h1TrLen_PerHit_" + particleName),
-			trackLength, 1.0);
+		key = "h2EDepZ" + std::to_string(z) + "_PerLayer_all";
+		fH2D[key]->Fill(x, y, energyDeposition);
+		key = "h2EDepZ" + std::to_string(z) + "_PerLayer_" + particleName;
+		fH2D[key]->Fill(x, y, energyDeposition);
 
 		// Increment multiplicity in the event
-		if(trackedHits[trackID] == false)
+		if(!trackedHits[trackID])
 		{
 			trackedHits[trackID] = true;
 			fMultPerEvent[fP.at("all")]++;
 			fMultPerEvent[pIndex]++;
+
+			// Record if event is elastic and/or inelastic
+			// Thing about photon/hadron primary particle track IDs:
+			// https://www.ge.infn.it/geant4/training/ptb_2009/day4/solutions_day4_partIII.html
+			if(trackID == 1) isElastic = true;
+			else if(trackID > 1)
+			{
+				isElastic = false;
+				isInelastic = true;
+			}
 		}
 	}
 	// Take out optical photon energy, since they don't obey energy conservation
@@ -305,40 +283,182 @@ void Analysis::FillHistograms(const G4Event* evt)
 	fEDepPerEvent[fP.at("untracked")] = primaryInitE - fEDepPerEvent[fP.at("all")];
 
 	// Fill "once per event" histograms
-	std::map<G4String, G4int>::iterator iter;
-	for(iter = fP.begin(); iter != fP.end(); iter++)
+	for(auto& iter : fP)
 	{
 		// Energy deposition per event / incident energy
-		fManager->FillH1(
-			fH.at("h1EDep_PerEvent_" + iter->first),
-			fEDepPerEvent[iter->second] / primaryInitE, 1.0);
+		key = "h1EDep_PerEvent_" + iter.first;
+		fH1D[key]->Fill(fEDepPerEvent[iter.second] / primaryInitE, 1.0);
 
 		// Multiplicity per event / incident energy
-		fManager->FillH1(
-			fH.at("h1Mult_PerEvent_" + iter->first),
-			fMultPerEvent[iter->second] / primaryInitE, 1.0);
-
-		// Low range of multiplicity per event / incident energy
-		fManager->FillH1(
-			fH.at("h1MultLow_PerEvent_" + iter->first),
-			fMultPerEvent[iter->second] / primaryInitE, 1.0);
+		key = "h1Mult_PerEvent_" + iter.first;
+		fH1D[key]->Fill(fMultPerEvent[iter.second] / primaryInitE, 1.0);
 	}
+
+	if(isPunchThrough)
+	{
+		key = "h1PunchThrough_PerEvent";
+		fH1D[key]->Fill(1.0, 1.0);
+	}
+	if(isElastic)
+	{
+		key = "h1Elastic_PerEvent";
+		fH1D[key]->Fill(1.0, 1.0);
+	}
+	if(isInelastic)
+	{
+		key = "h1Inelastic_PerEvent";
+		fH1D[key]->Fill(1.0, 1.0);
+	}
+}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+void Analysis::Write()
+{
+	TH1D* temp1;
+	TH2D* temp2;
+	G4String key;
+	G4double total, totalError, newContent, newError;
+
+	// Energy deposition per event / incident energy
+	for(auto& iter : fP)
+	{
+		key = "h1EDep_PerEvent_" + iter.first;
+		temp1 = fH1D[key];
+
+		total = temp1->GetEntries() - temp1->GetBinContent(0)
+			- temp1->GetBinContent(temp1->GetNbinsX() + 1);
+
+		for(int i = 1; i <= temp1->GetNbinsX(); i++)
+		{
+			newContent = temp1->GetBinContent(i) / total / temp1->GetBinWidth(i);
+			if(isnan(newContent)) newContent = 0.0;
+
+			newError = temp1->GetBinError(i) / total / temp1->GetBinWidth(i);
+			if(isnan(newError)) newError = 0.0;
+
+			temp1->SetBinContent(i, newContent);
+			temp1->SetBinError(i, newError);
+			temp1->SetEntries(fTotalNEvents);
+		}
+	}
+
+	// Energy deposition in SAC layers / incident energy
+	for(auto& iter : fP)
+	{
+		key = "h1EDep_PerLayer_" + iter.first;
+		temp1 = fH1D[key];
+
+		total = 0.0, totalError = 0.0;
+		for(G4int z = 1; z <= fSACLayers; z++)
+		{
+			total += temp1->GetBinContent(z);
+			totalError += temp1->GetBinError(z) * temp1->GetBinError(z);
+		}
+		totalError = sqrt(totalError);
+
+		for(G4int z = 1; z <= fSACLayers; z++) // bin width = 1
+		{
+			newContent = temp1->GetBinContent(z) / total;
+			if(isnan(newContent)) newContent = 0.0;
+
+			newError = newContent
+				* sqrt((temp1->GetBinError(z) / temp1->GetBinContent(z))
+				* (temp1->GetBinError(z) / temp1->GetBinContent(z))
+				+ (totalError / total)
+				* (totalError / total));
+			if(isnan(newError)) newError = 0.0;
+
+			temp1->SetBinContent(z, newContent);
+			temp1->SetBinError(z, newError);
+		}
+	}
+
+	// 2D energy deposition in SAC layer (z = <#>) / incident energy
+	// Didn't do error propagation here bc it isn't used later
+	for(G4int z = 0; z < fSACLayers; z++)
+	{
+		for (auto &iter : fP)
+		{
+			key = "h2EDepZ" + std::to_string(z) + "_PerLayer_" + iter.first;
+			temp2 = fH2D[key];
+
+			total = 0.0;
+			for(int x = 1; x <= fSACRows; x++)
+				for(int y = 1; y <= fSACCols; y++)
+					total += temp2->GetBinContent(x, y);
+
+			for(int x = 1; x <= fSACRows; x++) // bin width = 1
+			{
+				for(int y = 1; y <= fSACCols; y++)
+				{
+					newContent = temp2->GetBinContent(x, y) / total;
+					if(isnan(newContent)) newContent = 0.0;
+
+					temp2->SetBinContent(x, y, newContent);
+				}
+			}
+		}
+	}
+
+	// Multiplicity per event / incident energy
+	for(auto& iter : fP)
+	{
+		key = "h1Mult_PerEvent_" + iter.first;
+		temp1 = fH1D[key];
+
+		total = 0.0, totalError = 0.0;
+		for(G4int i = 1; i <= temp1->GetNbinsX(); i++)
+		{
+			total += temp1->GetBinContent(i);
+			totalError += temp1->GetBinError(i) * temp1->GetBinError(i);
+		}
+		totalError = sqrt(totalError);
+
+		for(G4int i = 1; i <= temp1->GetNbinsX(); i++)
+		{
+			newContent = temp1->GetBinContent(i) / total / temp1->GetBinWidth(i);
+			if(isnan(newContent)) newContent = 0.0;
+
+			newError = newContent
+				* sqrt((temp1->GetBinError(i) / temp1->GetBinContent(i))
+				* (temp1->GetBinError(i) / temp1->GetBinContent(i))
+				+ (totalError / total)
+				* (totalError / total));
+			if(isnan(newError)) newError = 0.0;
+
+			temp1->SetBinContent(i, newContent);
+			temp1->SetBinError(i, newError);
+		}
+	}
+
+	for(auto& iter : fH1D) iter.second->Write();
+	for(auto& iter : fH2D) iter.second->Write();
+}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+void Analysis::CloseFile()
+{
+	fOut->Close();
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 void Analysis::PrintParticleList()
 {
-	std::map<G4String, G4int>::iterator iter;
-	for(iter = fP.begin(); iter != fP.end(); iter++)
-		G4cout << iter->first << " --- " << iter->second << G4endl;
+	G4cout << "--------------- Particle List ---------------" << G4endl;
+	for(auto& iter : fP) G4cout << iter.first << " : " << iter.second << G4endl;
+	G4cout << "---------------------------------------------" << G4endl;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 void Analysis::PrintHistograms()
 {
-	std::map<G4String, G4int>::iterator iter;
-	for(iter = fH.begin(); iter != fH.end(); iter++)
-		G4cout << iter->first << " --- " << iter->second << G4endl;
+	G4cout << "--------------- 1D Histograms ---------------" << G4endl;
+	for(auto& iter : fH1D) G4cout << iter.first << G4endl;
+	G4cout << "--------------- 2D Histograms ---------------" << G4endl;
+	for(auto& iter : fH2D) G4cout << iter.first << G4endl;
+	G4cout << "---------------------------------------------" << G4endl;
 }

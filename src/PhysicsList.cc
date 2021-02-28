@@ -53,9 +53,6 @@
 #include "G4SystemOfUnits.hh"
 
 #include "G4EmExtraPhysics.hh"
-#include "G4EmLivermorePhysics.hh"
-#include "G4EmPenelopePhysics.hh"
-#include "G4EmProcessOptions.hh"
 #include "G4EmSaturation.hh"
 #include "G4EmStandardPhysics.hh"
 #include "G4EmStandardPhysics_option4.hh"
@@ -68,7 +65,6 @@
 #include "G4HadronPhysicsQGSP_BERT.hh"
 #include "G4HadronPhysicsQGSP_FTFP_BERT.hh"
 
-#include "G4Decay.hh"
 #include "G4DecayPhysics.hh"
 #include "G4DecayTable.hh"
 #include "G4DecayWithSpin.hh"
@@ -78,16 +74,12 @@
 #include "G4eplusAnnihilation.hh"
 
 #include "G4ParticleTypes.hh"
-#include "G4ParticleTable.hh"
 #include "G4ParticlePropertyTable.hh"
 
 #include "G4NeutronTrackingCut.hh"
-#include "G4NeutronCrossSectionXS.hh"
 
 #include "G4MuonDecayChannelWithSpin.hh"
-#include "G4MuonRadiativeDecayChannelWithSpin.hh"
 
-#include "G4ChargeExchangePhysics.hh"
 #include "G4StoppingPhysics.hh"
 #include "G4IonPhysics.hh"
 
@@ -102,7 +94,6 @@
 #include "G4VMultipleScattering.hh"
 
 // Optical processes
-#include "G4OpticalPhysics.hh"
 #include "G4Cerenkov.hh"
 #include "G4Scintillation.hh"
 #include "G4OpAbsorption.hh"
@@ -114,7 +105,7 @@
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-PhysicsList* PhysicsList::fInstance = 0;
+PhysicsList* PhysicsList::fInstance = nullptr;
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 

@@ -13,22 +13,25 @@ else()
 	find_package(Geant4 REQUIRED)
 endif()
 
+# Find ROOT package
+find_package(ROOT REQUIRED)
+
 # Set cmake build type to debug
 set(CMAKE_BUILD_TYPE Debug)
 
 # Setup Geant4 include directories and compile definitions
 include(${Geant4_USE_FILE})
 
-# Configure KLMC_SAC to use project and Geant4 headers
-include_directories(${PROJECT_SOURCE_DIR}/include ${Geant4_INCLUDE_DIRS})
+# Configure KLMC_SAC to use project, Geant4 headers, and ROOT headers
+include_directories(${PROJECT_SOURCE_DIR}/include ${Geant4_INCLUDE_DIRS} ${ROOT_INCLUDE_DIRS})
 
 # Locate headers and sources for this project
 file(GLOB headers ${PROJECT_SOURCE_DIR}/include/*.hh)
 file(GLOB sources ${PROJECT_SOURCE_DIR}/src/*.cc)
 
-# Add the executable and link it to the Geant4 libraries
+# Add the executable and link it to the Geant4 and ROOT libraries
 add_executable(KLMC_SAC KLMC_SAC.cc ${headers} ${sources})
-target_link_libraries(KLMC_SAC ${Geant4_LIBRARIES})
+target_link_libraries(KLMC_SAC ${Geant4_LIBRARIES} ${ROOT_LIBRARIES})
 
 # Add SAC to build
 add_subdirectory(${PROJECT_SOURCE_DIR}/SAC) # Add SAC subdirectory to build

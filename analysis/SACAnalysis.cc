@@ -1,7 +1,5 @@
 // SACAnalysis.cc
 // --------------------------------------------------------------
-// run with "root -l -b SACAnalysis.cc(<BeamType>, <NEvents>)"
-// --------------------------------------------------------------
 // History:
 //
 // Created by Emily Tsai (emily.tsai11@gmail.com) 2020-7-20
@@ -14,9 +12,9 @@
 
 static const int NEnergies = 10;
 static const string SEnergies[] = {
-	"100MeV",
-	"200MeV",
-	"500MeV",
+	"0.1GeV",
+	"0.2GeV",
+	"0.5GeV",
 	"1GeV",
 	"2GeV",
 	"5GeV",
@@ -61,6 +59,16 @@ static const double BEnergies[] = { // in GeV
 	30.0,
 	70.0,
 	120.0
+};
+
+static const int NThresholds = 6;
+static const double DThresholds[] = { // in GeV
+	1.0,
+	2.0,
+	5.0,
+	15.0,
+	0.093,
+	100.0
 };
 
 static const int NParticles = 14;
@@ -130,12 +138,12 @@ static const int StackColors[] = {
 	5
 };
 
+static bool firstPlot = true;
+static bool lastPlot = false;
+
 static string Beam;
 static int NEvents;
 static const string FOutName = "plots.pdf";
-
-static bool firstPlot = true;
-static bool lastPlot = false;
 
 // -------------------- Data structures -------------------- //
 
@@ -157,9 +165,10 @@ string GetBeamType(int bt)
 
 void GetMeanAndStd(string h, vector<double> &m, vector<double> &std)
 {
+	TH1D* temp;
 	for(int e = 0; e < NEnergies; e++)
 	{
-		TH1D* temp = (TH1D*) MFiles[SEnergies[e]]->Get(h.c_str());
+		temp = (TH1D*) MFiles[SEnergies[e]]->Get(h.c_str());
 		m[e] = temp->GetMean();
 		std[e] = temp->GetStdDev() / sqrt(NEvents);
 	}
@@ -185,12 +194,13 @@ void ReadInStackedBarVals(string masterKey)
 
 	// Read in values from files
 	vector<double> yVal(SACNLayers);
+	TH1D* temp;
 	for(int p = 0; p < NParticles; p++)
 	{
 		key = masterKey + SParticles[p];
 		for(int e = 0; e < NEnergies; e++)
 		{
-			TH1D* temp = (TH1D*) MFiles[SEnergies[e]]->Get(key.c_str());
+			temp = (TH1D*) MFiles[SEnergies[e]]->Get(key.c_str());
 			for(int l = 0; l < SACNLayers; l++)
 				yVal[l] = temp->GetBinContent(l + 1);
 			MData[key + SEnergies[e]] = yVal;
@@ -207,6 +217,47 @@ void ReadInStackedBarVals(string masterKey)
 			for(int e = 0; e < NEnergies; e++)
 				yStackedVal[e] = MData[key + SEnergies[e]][l];
 			MData[key + std::to_string(l)] = yStackedVal;
+		}
+	}
+}
+
+void CalcThresholds(string masterKey)
+{
+	string key;
+
+	// Calculate threshold values
+	vector<double> yVal(NEnergies);
+	vector<double> yValStd(NEnergies);
+	TH1D* temp;
+	double integral, integralError;
+	for(double threshold : DThresholds)
+	{
+		for(string particle : SParticles)
+		{
+			key = masterKey + particle;
+			for(int e = 0; e < NEnergies; e++)
+			{
+				temp = (TH1D*) MFiles[SEnergies[e]]->Get(key.c_str());
+
+				if(threshold >= DEnergies[e]) yVal[e] = 0.0;
+				else
+				{
+					integral = 0.0, integralError = 0.0;
+					for(int i = 1; i <= temp->GetNbinsX(); i++)
+					{
+						if(temp->GetBinLowEdge(i) * DEnergies[e] >= threshold)
+						{
+							integral += temp->GetBinContent(i) * temp->GetBinWidth(i);
+							integralError += temp->GetBinError(i) * temp->GetBinError(i)
+								* temp->GetBinWidth(i) * temp->GetBinWidth(i);
+						}
+					}
+					yVal[e] = integral;
+					yValStd[e] = sqrt(integralError);
+				}
+			}
+			MData[std::to_string(threshold) + key + "_m"] = yVal;
+			MData[std::to_string(threshold) + key + "_std"] = yValStd;
 		}
 	}
 }
@@ -268,30 +319,31 @@ void DrawGraphs(string masterKey, string t, string x, string y)
 
 		TGraphErrors* g = new TGraphErrors(NEnergies, DEnergies,
 			MData[key + "_m"].data(), StdEnergies, MData[key + "_std"].data());
-		DrawTGraphErrors(g, p, key, (SymbParticles[p] + " " + t).c_str(), x, y);
+		DrawTGraphErrors(g, p, key, (SymbParticles[p] + t).c_str(), x, y);
 		firstPlot = false;
 
 		mg->Add(g);
 		legend->AddEntry(g, SymbParticles[p].c_str());
 	}
 
+	if(key == std::to_string(DThresholds[NThresholds - 1]) + "h1EDep_PerEvent_"
+		+ SParticles[NParticles - 1]) lastPlot = true;
 	DrawTMultiGraph(mg, legend, masterKey, t, x, y);
 }
 
-void DrawStackedBar(string masterKey)
+void DrawStackedBar(string masterKey, string t, string x, string y)
 {
 	string key;
 	for(int p = 0; p < NParticles; p++)
 	{
 		key = masterKey + SParticles[p];
 		THStack* hs = new THStack(key.c_str(), key.c_str());
-		hs->SetTitle((SymbParticles[p] + " % Energy Deposition Per SAC Layer;"
-			+ "Incident Energy [GeV];[%]").c_str());
+		hs->SetTitle((SymbParticles[p] + t + ";" + x + ";" + y).c_str());
 		for(int l = 0; l < SACNLayers; l++)
 		{
 			TH1D* temp = new TH1D((key + "_" + std::to_string(l)).c_str(),
 				("z = " + std::to_string(l)).c_str(), NEnergies, BEnergies);
-			for(int e = 0; e < NEnergies; e++)
+			for(int e = 0; e < NEnergies; e++) // bin width = 1
 				temp->AddBinContent(e + 1, MData[key + std::to_string(l)][e]);
 			temp->SetFillColor(StackColors[l]);
 			hs->Add(temp);
@@ -301,8 +353,6 @@ void DrawStackedBar(string masterKey)
 		gPad->SetLogx(1);
 		hs->Draw();
 		gPad->BuildLegend(0.905, 0.2, 0.995, 0.8);
-
-		if(p == NParticles - 1) lastPlot = true;
 
 		string fname = Beam + "/" + Beam + FOutName;
 		if(firstPlot) fname += "(";
@@ -332,16 +382,23 @@ void SACAnalysis(int BeamType, int NEvt)
 	ReadInGraphVals("h1EDep_PerEvent_");
 	ReadInGraphVals("h1Mult_PerEvent_");
 	ReadInStackedBarVals("h1EDep_PerLayer_");
+	CalcThresholds("h1EDep_PerEvent_");
 
 	// Close input files
 	for(int e = 0; e < NEnergies; e++) MFiles[SEnergies[e]]->Close();
 
 	// Draw graphs
-	DrawGraphs("h1EDep_PerEvent_", "% of Energy Deposition Per Event",
-		"Incident Energy [GeV]", "[%]");
-	DrawGraphs("h1Mult_PerEvent_", "Multiplicity Per Event",
+	DrawGraphs("h1EDep_PerEvent_", " Fraction of Energy Deposition Per Event",
+		"Incident Energy [GeV]", "Fraction");
+	DrawGraphs("h1Mult_PerEvent_", " Multiplicity Per Event",
 		"Incident Energy [GeV]", "[1 / GeV]");
-	DrawStackedBar("h1EDep_PerLayer_");
+	DrawStackedBar("h1EDep_PerLayer_",
+		" Fraction of Energy Deposition Per SAC Layer",
+		"Incident Energy [GeV]", "Fraction");
+	for(double threshold : DThresholds)
+		DrawGraphs(std::to_string(threshold) + "h1EDep_PerEvent_",
+			 (" " + std::to_string(threshold) + " GeV Threshold").c_str(),
+			 "Incident Energy [GeV]", "Fraction");
 }
 
 int main(int argc, char** argv)

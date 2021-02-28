@@ -11,13 +11,13 @@
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-SACGeometry* SACGeometry::fInstance = 0;
+SACGeometry* SACGeometry::fInstance = nullptr;
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 SACGeometry* SACGeometry::GetInstance()
 {
-	if(fInstance == 0) fInstance = new SACGeometry();
+	if(!fInstance) fInstance = new SACGeometry();
 	return fInstance;
 }
 

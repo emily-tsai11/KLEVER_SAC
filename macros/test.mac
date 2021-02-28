@@ -7,12 +7,14 @@
 # /Detector/SAC/EnablePMT 1
 # /Detector/UpdateGeometry
 
-/Analysis/FileName testing_testing
+/Analysis/FileName SAC_0_0.1GeV_n10
 
 /PrimaryGeneratorAction/BeamType 0
-/PrimaryGeneratorAction/BeamEnergy 100 MeV
-/run/beamOn 3
+/PrimaryGeneratorAction/BeamEnergy 0.1 GeV
+/run/beamOn 10
 
-# /PrimaryGeneratorAction/BeamType 1
-# /PrimaryGeneratorAction/BeamEnergy 100 MeV
-# /run/beamOn 3
+# /PrimaryGeneratorAction/BeamType 2
+# /PrimaryGeneratorAction/BeamEnergy 0.1 GeV
+# /run/beamOn 10
+
+# good kaon seed: 531140150

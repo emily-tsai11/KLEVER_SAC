@@ -68,10 +68,10 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 			fPosition = PosTime.vect();
 			fMomentum = G4ThreeVector(f4Momentum.px(), f4Momentum.py(), -f4Momentum.pz());
 
-			// G4cout << "PARTICLE ENERGY: " << fBeamEnergy << G4endl;
-			// G4cout << "PARTICLE TIME: " << fTime << G4endl;
-			// G4cout << "PARTICLE POSITION: " << fPosition << G4endl;
-			// G4cout << "PARTICLE MOMENTUM DIRECTION: " << fMomentum << G4endl;
+//			G4cout << "PARTICLE ENERGY: " << fBeamEnergy << G4endl;
+//			G4cout << "PARTICLE TIME: " << fTime << G4endl;
+//			G4cout << "PARTICLE POSITION: " << fPosition << G4endl;
+//			G4cout << "PARTICLE MOMENTUM DIRECTION: " << fMomentum << G4endl;
 
 			break;
 		}

@@ -34,8 +34,8 @@ EventAction::~EventAction()
 void EventAction::BeginOfEventAction(const G4Event* evt)
 {
 	fEventID = evt->GetEventID();
-	// if((fEventID < 10) || (fEventID < 100 && !(fEventID % 10)) || (fEventID < 1000 && !(fEventID % 100)) || !(fEventID % 1000))
-	// 	G4cout << "[EventAction::BeginOfEventAction] Event " << fEventID << " starting!" << G4endl;
+	if((fEventID < 10) || (fEventID < 100 && !(fEventID % 10)) || (fEventID < 1000 && !(fEventID % 100)) || !(fEventID % 1000))
+		G4cout << "[EventAction::BeginOfEventAction] Event " << fEventID << " starting!" << G4endl;
 	fTimer->Start();
 }
 

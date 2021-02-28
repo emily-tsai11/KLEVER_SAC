@@ -10,11 +10,14 @@
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-#include "G4RootAnalysisManager.hh"
+#include "globals.hh"
 #include <map>
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
+class TFile;
+class TH1D;
+class TH2D;
 class AnalysisMessenger;
 class G4Event;
 class G4String;
@@ -34,9 +37,9 @@ class Analysis
 		void SetTotalNEvents(G4int n) { fTotalNEvents = n; }
 		G4int GetTotalNEvents() { return fTotalNEvents; }
 
-		void OpenFile() { fManager->OpenFile(fFileName); }
-		void Write() { fManager->Write(); }
-		void CloseFile() { fManager->CloseFile(); }
+		void OpenFile();
+		void Write();
+		void CloseFile();
 
 		void FillHistograms(const G4Event* evt);
 
@@ -51,16 +54,22 @@ class Analysis
 
 		static Analysis* fInstance;
 
-		G4RootAnalysisManager* fManager;
-		AnalysisMessenger* fMessenger;
-
 		G4String fFileName;
 		G4int fTotalNEvents;
 
+		TFile* fOut;
+		AnalysisMessenger* fMessenger;
+
+		G4double fSACRows;
+		G4double fSACCols;
+		G4double fSACLayers;
+
 		std::map<G4String, G4int> fP;
-		std::map<G4String, G4int> fH;
+		std::map<G4String, TH1D*> fH1D;
+		std::map<G4String, TH2D*> fH2D;
 
 		void CreateParticleList();
+		void CreateLogBins(int nBins, double min, double max, double* edges);
 		void CreateHistograms();
 };
 

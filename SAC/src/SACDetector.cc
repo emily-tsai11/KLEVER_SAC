@@ -22,7 +22,6 @@
 #include "SACCell.hh"
 #include "SACPMT.hh"
 #include "SACSiPM.hh"
-#include "SACSD.hh"
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 

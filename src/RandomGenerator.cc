@@ -10,7 +10,7 @@
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-RandomGenerator* RandomGenerator::fInstance = 0;
+RandomGenerator* RandomGenerator::fInstance = nullptr;
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
