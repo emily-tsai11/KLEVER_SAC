@@ -1,7 +1,7 @@
 # PbF2 SAC Monte Carlo Geant4 simulation
 
 Based off of https://github.com/dariosol/padme-fw.
-Currently works with Geant4.10.4 on CERN lxplus. 
+Currently works with Geant4.10.5 on CERN lxplus. 
 
 ### Setting up the CERN lxplus environment
 
