@@ -170,7 +170,6 @@ void Analysis::CreateHistograms()
 
 void Analysis::FillHistograms(const G4Event* evt)
 {
-
 	if(fTotalNEvents == -1)
 		G4cout << "[Analysis::FillHistograms] ERROR: TOTAL NUMBER OF EVENTS IS " << fTotalNEvents << "!!!" << G4endl;
 

@@ -7,11 +7,11 @@
 # /Detector/SAC/EnablePMT 1
 # /Detector/UpdateGeometry
 
-/Analysis/FileName SAC_0_0.1GeV_n1000_r1
+/Analysis/FileName SAC_2_0.1GeV_n1000_r1
 
-/PrimaryGeneratorAction/BeamType 0
+/PrimaryGeneratorAction/BeamType 2
 /PrimaryGeneratorAction/BeamEnergy 0.1 GeV
-/run/beamOn 1000
+/run/beamOn 100
 
 # /PrimaryGeneratorAction/BeamType 2
 # /PrimaryGeneratorAction/BeamEnergy 0.1 GeV
