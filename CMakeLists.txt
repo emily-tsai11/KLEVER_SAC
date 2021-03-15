@@ -14,7 +14,7 @@ else()
 endif()
 
 # Find ROOT package
-find_package(ROOT REQUIRED)
+find_package(ROOT CONFIG REQUIRED)
 
 # Set cmake build type to debug
 set(CMAKE_BUILD_TYPE Debug)

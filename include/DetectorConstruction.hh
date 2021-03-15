@@ -64,7 +64,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction
 	    G4double fWorldLengthY;
 	    G4double fWorldLengthZ;
 
-		SACDetector* fSAC;
+		SACDetector* fSACDetector;
 		DetectorConstructionMessenger* fMessenger;
 
 		void DefineMaterials();

@@ -12,6 +12,7 @@
 #include "G4VVisManager.hh"
 #include "G4Circle.hh"
 #include "G4Colour.hh"
+#include "G4ThreeVector.hh"
 #include "G4VisAttributes.hh"
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -20,7 +21,20 @@ G4Allocator<SACHit>* SACHitAllocator;
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-SACHit::SACHit() : G4VHit() {}
+SACHit::SACHit() : G4VHit()
+{
+	fCellID = -1;
+	fTrackID = -1;
+	fParticleName = "";
+	fVolumeName = "";
+	fSDName = "";
+	fCreatorProcessName = "";
+	fEnergyDeposition = -1.0;
+	fTime = -1.0;
+	fTrackLength = -1.0;
+	fPosition = G4ThreeVector(0.0, 0.0, 0.0);
+	fLocalPosition = G4ThreeVector(0.0, 0.0, 0.0);
+}
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -94,12 +108,12 @@ void SACHit::Print()
 	<< "--- Cell ID: " << fCellID
 	<< "\t| Track ID: " << fTrackID
 	<< "\t| Particle: " << fParticleName
-	<< "\t| Volume: " << fVolumeName
-	<< "\t| SD: " << fSDName
-	<< "\t| Creator Process: " << fCreatorProcessName
+	// << "\t| Volume: " << fVolumeName
+	// << "\t| SD: " << fSDName
+	// << "\t| Creator Process: " << fCreatorProcessName
 	<< "\t| Energy Deposited: " << G4BestUnit(fEnergyDeposition, "Energy")
 	// << "\t| Time: " << G4BestUnit(fTime, "Time")
-	<< "\t| Track Length: " << G4BestUnit(fTrackLength, "Length")
+	// << "\t| Track Length: " << G4BestUnit(fTrackLength, "Length")
 	// << "\t| Position: " << G4BestUnit(fPosition, "Length")
 	// << "\t| Local Position: " << G4BestUnit(fLocalPosition, "Length")
 	<< " ---" << G4endl;

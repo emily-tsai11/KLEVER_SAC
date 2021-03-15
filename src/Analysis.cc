@@ -179,7 +179,7 @@ void Analysis::FillHistograms(const G4Event* evt)
 	G4double primaryInitE = primary->GetKineticEnergy();
 
 	// Get hits collection
-	auto* fSACCollection = (SACHitsCollection*) evt->GetHCofThisEvent()->GetHC(0);
+	SACHitsCollection* fSACCollection = (SACHitsCollection*) evt->GetHCofThisEvent()->GetHC(0);
 	G4int nHits = fSACCollection->entries();
 
 	// Hit attributes
@@ -207,6 +207,7 @@ void Analysis::FillHistograms(const G4Event* evt)
 	G4bool isPunchThrough = false, isElastic = false, isInelastic = false;
 	G4String key;
 
+	G4cout << "[Analysis::FillHistograms] NUMBER OF HITS: " << nHits << G4endl;
 	if(nHits == 0) isPunchThrough = true;
 
 	// Filling histograms
@@ -230,7 +231,7 @@ void Analysis::FillHistograms(const G4Event* evt)
 		try { pIndex = fP.at(particleName); }
 		catch(std::out_of_range)
 		{
-//			G4cout << "[Analysis::FillHistograms] Particle not yet added to list --- " << particleName << G4endl;
+			// G4cout << "[Analysis::FillHistograms] Particle not yet added to list --- " << particleName << G4endl;
 			pIndex = fP.at("other");
 			particleName = "other";
 		}

@@ -36,7 +36,7 @@ DetectorConstruction::DetectorConstruction() : G4VUserDetectorConstruction(),
 	fSolidWorld(0), fLogicalWorld(0), fPhysicalWorld(0)
 {
 	fMessenger = new DetectorConstructionMessenger(this);
-	fSAC = new SACDetector(0, 0);
+	fSACDetector = new SACDetector(0, 0);
 
 	fWorldLengthX = 1.0 * m;
 	fWorldLengthY = 1.0 * m;
@@ -47,7 +47,7 @@ DetectorConstruction::DetectorConstruction() : G4VUserDetectorConstruction(),
 
 DetectorConstruction::~DetectorConstruction()
 {
-	delete fSAC;
+	delete fSACDetector;
 	delete fMessenger;
 }
 
@@ -82,9 +82,9 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 	fLogicalWorld->SetVisAttributes(G4VisAttributes(G4Colour::Cyan()));
 
 	// Create SAC detector
-	fSAC->SetMaterial(G4Material::GetMaterial("G4_Galactic"));
-	fSAC->SetMotherVolume(fLogicalWorld);
-	fSAC->CreateGeometry();
+	fSACDetector->SetMaterial(G4Material::GetMaterial("G4_Galactic"));
+	fSACDetector->SetMotherVolume(fLogicalWorld);
+	fSACDetector->CreateGeometry();
 
 	// Return world
 	return fPhysicalWorld;

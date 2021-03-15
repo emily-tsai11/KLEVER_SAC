@@ -60,7 +60,7 @@ SACGeometry::SACGeometry()
 	fSACPosZ = 0.0 * cm; // debug
 
 	// PMT parameters
-	fEnablePMT = 1;
+	fEnablePMT = 0;
 	fPMTDiameter = 8.0 * mm;
 	fPMTThickness = 1.0 * mm;
 	fPMTRound = 2.0 * M_PI * rad;
