@@ -32,25 +32,21 @@ void SACSD::Initialize(G4HCofThisEvent* fHCE)
 	fSACCollection = new SACHitsCollection(SensitiveDetectorName, collectionName[0]);
 	if(fHCID < 0) fHCID = G4SDManager::GetSDMpointer()->GetCollectionID(fSACCollection);
 	fHCE->AddHitsCollection(fHCID, fSACCollection);
-	G4cout << "[SACSD::Initialize] Called SACSD::Initialize!" << G4endl;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 G4bool SACSD::ProcessHits(G4Step* aStep, G4TouchableHistory*)
 {
-	G4cout << "[SACSD::ProcessHits] Called SACSD::ProcessHits!" << G4endl;
 	G4StepPoint* preStepPoint = aStep->GetPreStepPoint();
 	G4TouchableHandle touchable = preStepPoint->GetTouchableHandle();
 	G4Track* track = aStep->GetTrack();
 
 	G4double eDep = aStep->GetTotalEnergyDeposit();
-	G4cout << "[SACSD::ProcessHits] Energy Deposition 1: " << eDep << G4endl;
 	if(eDep == 0.0) return false;
 	G4ThreeVector worldPosPre = preStepPoint->GetPosition();
 	G4ThreeVector localPosPre = touchable->GetHistory()->GetTopTransform().TransformPoint(worldPosPre);
 
-	G4cout << "[SACSD::ProcessHits] Energy Deposition 2: " << eDep << G4endl;
 	SACHit* newHit = new SACHit();
 	newHit->SetCellID(touchable->GetCopyNumber(1)); // Copy number of cell, not crystal
 	newHit->SetTrackID(track->GetTrackID());

@@ -14,17 +14,11 @@ BeamType = args.BeamType
 IncidentE = args.IncidentE
 IncidentEUnit = args.IncidentEUnit
 NEvents = args.NEvents
-RunNum = args.r
-
-# Define helpers
-key = str(IncidentE) + " " + IncidentEUnit
-plist = ["all", "e+", "e-", "gamma", "mu+", "mu-", "neutron", "opticalphoton", "other", "pi+", "pi-", "pi0", "proton", "untracked"]
-dim = ["X", "Y", "Z"]
-NaN = float("NaN")
+RunNum = args.RunNum
 
 # Name of file
 filename = "SAC_" + str(BeamType) + "_" + str(int(IncidentE)) + IncidentEUnit + "_n" + str(NEvents)
-if args.r != None: filename += "_r" + str(RunNum)
+if args.RunNum != None: filename += "_r" + str(RunNum)
 
 # Write macro file
 with open(filename + ".mac", "w") as f:
@@ -39,7 +33,7 @@ with open(filename + ".mac", "w") as f:
 	f.write("/run/initialize\n")
 	f.write("\n")
 	f.write("/PrimaryGeneratorAction/BeamType " + str(BeamType) + "\n")
-	f.write("/PrimaryGeneratorAction/BeamEnergy " + key + "\n")
+	f.write("/PrimaryGeneratorAction/BeamEnergy " + str(IncidentE) + " " + IncidentEUnit + "\n")
 	f.write("\n")
 	f.write("/Analysis/FileName " + filename + "\n")
 	f.write("\n")

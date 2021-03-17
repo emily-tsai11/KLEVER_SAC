@@ -50,7 +50,7 @@ with open(filename + ".condor", "w") as f:
 	f.write("should_transfer_files\t\t= YES\n")
 	f.write("when_to_transfer_output\t\t= ON_EXIT\n")
 	f.write("\n")
-	f.write("environment\t\t\t\t\t= LD_LIBRARY_PATH=/cvmfs/sft.cern.ch/lcg/contrib/gcc/6.3/x86_64-slc6/lib64\n")
+	f.write("environment\t\t\t\t\t= LD_LIBRARY_PATH=/cvmfs/sft.cern.ch/lcg/views/LCG_98/x86_64-centos7-gcc8-opt/lib64\n")
 	f.write("executable\t\t\t\t\t= ../batch.sh\n")
 	f.write("transfer_executable\t\t\t= TRUE\n")
 	f.write("arguments\t\t\t\t\t= KLMC_SAC $(macro).mac\n")

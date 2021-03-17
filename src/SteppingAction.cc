@@ -23,8 +23,7 @@ SteppingAction::~SteppingAction() {}
 
 void SteppingAction::UserSteppingAction(const G4Step* aStep)
 {
-	// if(fVerboseLevel > 5) PrintStep(aStep);
-	PrintStep(aStep);
+	if(fVerboseLevel > 5) PrintStep(aStep);
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
