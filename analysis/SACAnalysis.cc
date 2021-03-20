@@ -15,13 +15,13 @@ static const string SEnergies[] = {
 	"0.1GeV",
 	"0.2GeV",
 	"0.5GeV",
-	"1GeV",
-	"2GeV",
-	"5GeV",
-	"10GeV",
-	"20GeV",
-	"50GeV",
-	"100GeV"
+	"1.0GeV",
+	"2.0GeV",
+	"5.0GeV",
+	"10.0GeV",
+	"20.0GeV",
+	"50.0GeV",
+	"100.0GeV"
 };
 static const double DEnergies[] = { // in GeV
 	0.1,
