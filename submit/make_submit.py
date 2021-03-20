@@ -3,7 +3,7 @@ import os, argparse
 # Define parser
 parser = argparse.ArgumentParser(description = "Variables to generate KLMC_SAC condor submit files with. Job Flavours: (espresso = 20 minutes) --> (microcentury = 1 hour) --> (longlunch = 2 hours) --> (workday = 8 hours) --> (tomorrow = 1 day) --> (testmatch  = 3 days) --> (nextweek = 1 week)")
 parser.add_argument("BeamType", type = int, help = "Beam type -- Sets incident particle")
-parser.add_argument("IncidentE", type = float, help = "Energy of incident particle")
+parser.add_argument("IncidentE", type = str, help = "Energy of incident particle")
 parser.add_argument("IncidentEUnit", type = str, help = "Unit of energy of incident particle")
 parser.add_argument("NEvents", type = int, help = "Number of events")
 parser.add_argument("NRuns", type = int, help = "Number of runs")
@@ -19,7 +19,7 @@ NRuns = args.NRuns
 JobFlav = args.JobFlav
 
 # Filename
-filename = "SAC_" + str(BeamType) + "_" + str(int(IncidentE)) + IncidentEUnit + "_n" + str(NEvents) + "_r" + str(NRuns)
+filename = "SAC_" + str(BeamType) + "_" + IncidentE + IncidentEUnit + "_n" + str(NEvents) + "_r" + str(NRuns)
 print("Filename: " + filename + "!")
 
 # Delete and create new directory
@@ -65,5 +65,5 @@ print("Condor file created!")
 os.mkdir("macros")
 os.chdir("macros")
 for i in range(NRuns):
-	os.system("python ../../../macros/make_macro.py " + str(BeamType) + " " + str(IncidentE) + " " + IncidentEUnit + " " + str(NEvents) + " -r " + str(i))
+	os.system("python ../../../macros/make_macro.py " + str(BeamType) + " " + IncidentE + " " + IncidentEUnit + " " + str(NEvents) + " -r " + str(i))
 print("Macro files created!")

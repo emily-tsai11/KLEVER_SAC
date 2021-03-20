@@ -26,10 +26,10 @@
 /run/initialize
 
 # Gamma
-/Analysis/FileName SAC_0_10GeV_n10_r1
+/Analysis/FileName SAC_0_0.1GeV_n100_r1
 /PrimaryGeneratorAction/BeamType 0
-/PrimaryGeneratorAction/BeamEnergy 10 GeV
-/run/beamOn 10
+/PrimaryGeneratorAction/BeamEnergy 0.1 GeV
+/run/beamOn 100
 
 # KL with Atherton momentum
 # /Analysis/FileName SAC_1_0.1GeV_n10_r1

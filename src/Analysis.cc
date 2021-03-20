@@ -103,9 +103,7 @@ void Analysis::CreateLogBins(const int nBins, double min, double max, double* ed
 void Analysis::CreateHistograms()
 {
 	TH1::SetDefaultSumw2(kTRUE);
-
 	const G4int fN1DBinsX = 200;
-
 	G4String key;
 
 	// <Particle> energy deposition per event / incident energy
@@ -153,19 +151,19 @@ void Analysis::CreateHistograms()
 	// Number of punch-through events / number of events
 	key = "h1PunchThrough_PerEvent";
 	fH1D[key] = new TH1D(key.c_str(),
-		"Number of punch-through events / number of events",
+		"Fraction of punch-through events",
 		1, 0.5, 1.5);
 
 	// Number of elastic collision events / number of events
 	key = "h1Elastic_PerEvent";
 	fH1D[key] = new TH1D(key.c_str(),
-		"Number of elastic collision events / number of events",
+		"Fraction of elastic collision events",
 		1, 0.5, 1.5);
 
 	// Number of inelastic collision events / number of events
 	key = "h1Inelastic_PerEvent";
 	fH1D[key] = new TH1D(key.c_str(),
-		"Number of inelastic collision events / number of events",
+		"Fraction of inelastic collision events",
 		1, 0.5, 1.5);
 }
 
@@ -256,9 +254,9 @@ void Analysis::FillHistograms(const G4Event* evt)
 
 		// 2D <particle> energy deposition per SAC layer (z = <#>) / incident energy
 		key = "h2EDepZ" + std::to_string(z) + "_PerLayer_all";
-		fH2D[key]->Fill(x, y, energyDeposition / primaryInitE);
+		fH2D[key]->Fill(x, y, energyDeposition / primaryInitE / fTotalNEvents);
 		key = "h2EDepZ" + std::to_string(z) + "_PerLayer_" + particleName;
-		fH2D[key]->Fill(x, y, energyDeposition / primaryInitE);
+		fH2D[key]->Fill(x, y, energyDeposition / primaryInitE / fTotalNEvents);
 
 		// Increment multiplicity in the event
 		if(!trackedHits[trackID])
@@ -300,19 +298,19 @@ void Analysis::FillHistograms(const G4Event* evt)
 	{
 		// Number of punch-through events / number of events
 		key = "h1PunchThrough_PerEvent";
-		fH1D[key]->Fill(1.0, 1.0);
+		fH1D[key]->Fill(1.0, 1.0 / fTotalNEvents);
 	}
 	else if(isElastic)
 	{
 		// Number of elastic collision events / number of events
 		key = "h1Elastic_PerEvent";
-		fH1D[key]->Fill(1.0, 1.0);
+		fH1D[key]->Fill(1.0, 1.0 / fTotalNEvents);
 	}
 	else if(isInelastic)
 	{
 		// Number of inelastic collision events / number of events
 		key = "h1Inelastic_PerEvent";
-		fH1D[key]->Fill(1.0, 1.0);
+		fH1D[key]->Fill(1.0, 1.0 / fTotalNEvents);
 	}
 }
 
