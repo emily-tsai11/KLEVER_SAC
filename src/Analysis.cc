@@ -13,6 +13,7 @@
 #include "G4PrimaryParticle.hh"
 
 #include <TFile.h>
+#include <TH1.h>
 #include <TH1D.h>
 #include <TH2D.h>
 
@@ -101,68 +102,70 @@ void Analysis::CreateLogBins(const int nBins, double min, double max, double* ed
 
 void Analysis::CreateHistograms()
 {
+	TH1::SetDefaultSumw2(kTRUE);
+
 	const G4int fN1DBinsX = 200;
 
 	G4String key;
 
-	// Energy deposition per event / incident energy
+	// <Particle> energy deposition per event / incident energy
 	G4double eDepBinEdges[fN1DBinsX + 1];
 	CreateLogBins(fN1DBinsX, 1.0e-6, 1.0, eDepBinEdges);
 	for(auto& iter : fP)
 	{
 		key = "h1EDep_PerEvent_" + iter.first;
 		fH1D[key] = new TH1D(key.c_str(),
-			("fraction of " + iter.first + " energy deposition per event").c_str(),
+			("Fraction of " + iter.first + " energy deposition per event").c_str(),
 			fN1DBinsX, eDepBinEdges);
 	}
 
-	// Energy deposition in SAC layers / incident energy
+	// <Particle> energy deposition per SAC layer / incident energy
 	for(auto& iter : fP)
 	{
 		key = "h1EDep_PerLayer_" + iter.first;
 		fH1D[key] = new TH1D(key.c_str(),
-			("fraction of " + iter.first + " energy deposition per SAC layer").c_str(),
+			("Fraction of " + iter.first + " energy deposition per SAC layer").c_str(),
 			(G4int) fSACLayers, 0.0, fSACLayers);
 	}
 
-	// 2D energy deposition in SAC layer (z = <#>) / incident energy
+	// 2D <particle> energy deposition per SAC layer (z = <#>) / incident energy
 	for(G4int i = 0; i < fSACLayers; i++)
 	{
 		for(auto& iter : fP)
 		{
 			key = "h2EDepZ" + std::to_string(i) + "_PerLayer_" + iter.first;
 			fH2D[key] = new TH2D(key.c_str(),
-				("fraction of " + iter.first + " energy deposition in SAC layer z = " + std::to_string(i)).c_str(),
+				("Fraction of " + iter.first + " energy deposition in SAC layer z = " + std::to_string(i)).c_str(),
 				(G4int) fSACRows, 0.0, fSACRows,
 				(G4int) fSACCols, 0.0, fSACCols);
 		}
 	}
 
-	// Multiplicity per event / incident energy [1/MeV]
+	// <Particle> multiplicity per event / incident energy [1/MeV]
 	for(auto& iter : fP)
 	{
 		key = "h1Mult_PerEvent_" + iter.first;
 		fH1D[key] = new TH1D(key.c_str(),
-			("number of " + iter.first + " per event / incident energy").c_str(),
+			("Number of " + iter.first + " per event / incident energy").c_str(),
 			fN1DBinsX + 20, 0.0, 110.0);
 	}
 
-	// Number of punch-through events
+	// Number of punch-through events / number of events
 	key = "h1PunchThrough_PerEvent";
 	fH1D[key] = new TH1D(key.c_str(),
-		"number of punch-through events / number of events",
+		"Number of punch-through events / number of events",
 		1, 0.5, 1.5);
 
-	// Number of elastic collision events
+	// Number of elastic collision events / number of events
 	key = "h1Elastic_PerEvent";
 	fH1D[key] = new TH1D(key.c_str(),
-		"number of elastic collision events / number of events",
+		"Number of elastic collision events / number of events",
 		1, 0.5, 1.5);
 
-	// Number of inelastic collision events
+	// Number of inelastic collision events / number of events
 	key = "h1Inelastic_PerEvent";
 	fH1D[key] = new TH1D(key.c_str(),
-		"number of inelastic collision events / number of events",
+		"Number of inelastic collision events / number of events",
 		1, 0.5, 1.5);
 }
 
@@ -175,7 +178,7 @@ void Analysis::FillHistograms(const G4Event* evt)
 
 	// Get incident particle name & energy
 	G4PrimaryParticle* primary = evt->GetPrimaryVertex()->GetPrimary();
-	G4String primaryName = primary->GetParticleDefinition()->GetParticleName();
+	// G4String primaryName = primary->GetParticleDefinition()->GetParticleName();
 	G4double primaryInitE = primary->GetKineticEnergy();
 
 	// Get hits collection
@@ -207,7 +210,6 @@ void Analysis::FillHistograms(const G4Event* evt)
 	G4bool isPunchThrough = false, isElastic = false, isInelastic = false;
 	G4String key;
 
-	G4cout << "[Analysis::FillHistograms] NUMBER OF HITS: " << nHits << G4endl;
 	if(nHits == 0) isPunchThrough = true;
 
 	// Filling histograms
@@ -246,17 +248,17 @@ void Analysis::FillHistograms(const G4Event* evt)
 		fEDepPerEvent[pIndex] += energyDeposition;
 
 		// Fill "once per hit" histograms
-		// Energy deposition in SAC layers / incident energy
+		// <Particle> energy deposition per SAC layer / incident energy
 		key = "h1EDep_PerLayer_all";
-		fH1D[key]->Fill(z, energyDeposition);
+		fH1D[key]->Fill(z, energyDeposition / primaryInitE / fTotalNEvents);
 		key = "h1EDep_PerLayer_" + particleName;
-		fH1D[key]->Fill(z, energyDeposition);
+		fH1D[key]->Fill(z, energyDeposition / primaryInitE / fTotalNEvents);
 
-		// 2D energy deposition in SAC layer (z = <#>) / incident energy
+		// 2D <particle> energy deposition per SAC layer (z = <#>) / incident energy
 		key = "h2EDepZ" + std::to_string(z) + "_PerLayer_all";
-		fH2D[key]->Fill(x, y, energyDeposition);
+		fH2D[key]->Fill(x, y, energyDeposition / primaryInitE);
 		key = "h2EDepZ" + std::to_string(z) + "_PerLayer_" + particleName;
-		fH2D[key]->Fill(x, y, energyDeposition);
+		fH2D[key]->Fill(x, y, energyDeposition / primaryInitE);
 
 		// Increment multiplicity in the event
 		if(!trackedHits[trackID])
@@ -285,27 +287,30 @@ void Analysis::FillHistograms(const G4Event* evt)
 	// Fill "once per event" histograms
 	for(auto& iter : fP)
 	{
-		// Energy deposition per event / incident energy
+		// <Particle> energy deposition per event / incident energy
 		key = "h1EDep_PerEvent_" + iter.first;
 		fH1D[key]->Fill(fEDepPerEvent[iter.second] / primaryInitE, 1.0);
 
-		// Multiplicity per event / incident energy
+		// <Particle> multiplicity per event / incident energy [1/MeV]
 		key = "h1Mult_PerEvent_" + iter.first;
 		fH1D[key]->Fill(fMultPerEvent[iter.second] / primaryInitE, 1.0);
 	}
 
 	if(isPunchThrough)
 	{
+		// Number of punch-through events / number of events
 		key = "h1PunchThrough_PerEvent";
 		fH1D[key]->Fill(1.0, 1.0);
 	}
-	if(isElastic)
+	else if(isElastic)
 	{
+		// Number of elastic collision events / number of events
 		key = "h1Elastic_PerEvent";
 		fH1D[key]->Fill(1.0, 1.0);
 	}
-	if(isInelastic)
+	else if(isInelastic)
 	{
+		// Number of inelastic collision events / number of events
 		key = "h1Inelastic_PerEvent";
 		fH1D[key]->Fill(1.0, 1.0);
 	}
@@ -315,123 +320,6 @@ void Analysis::FillHistograms(const G4Event* evt)
 
 void Analysis::Write()
 {
-	TH1D* temp1;
-	TH2D* temp2;
-	G4String key;
-	G4double total, totalError, newContent, newError;
-
-	// Energy deposition per event / incident energy
-	for(auto& iter : fP)
-	{
-		key = "h1EDep_PerEvent_" + iter.first;
-		temp1 = fH1D[key];
-
-		total = temp1->GetEntries() - temp1->GetBinContent(0)
-			- temp1->GetBinContent(temp1->GetNbinsX() + 1);
-
-		for(int i = 1; i <= temp1->GetNbinsX(); i++)
-		{
-			newContent = temp1->GetBinContent(i) / total / temp1->GetBinWidth(i);
-			if(isnan(newContent)) newContent = 0.0;
-
-			newError = temp1->GetBinError(i) / total / temp1->GetBinWidth(i);
-			if(isnan(newError)) newError = 0.0;
-
-			temp1->SetBinContent(i, newContent);
-			temp1->SetBinError(i, newError);
-			temp1->SetEntries(fTotalNEvents);
-		}
-	}
-
-	// Energy deposition in SAC layers / incident energy
-	for(auto& iter : fP)
-	{
-		key = "h1EDep_PerLayer_" + iter.first;
-		temp1 = fH1D[key];
-
-		total = 0.0, totalError = 0.0;
-		for(G4int z = 1; z <= fSACLayers; z++)
-		{
-			total += temp1->GetBinContent(z);
-			totalError += temp1->GetBinError(z) * temp1->GetBinError(z);
-		}
-		totalError = sqrt(totalError);
-
-		for(G4int z = 1; z <= fSACLayers; z++) // bin width = 1
-		{
-			newContent = temp1->GetBinContent(z) / total;
-			if(isnan(newContent)) newContent = 0.0;
-
-			newError = newContent
-				* sqrt((temp1->GetBinError(z) / temp1->GetBinContent(z))
-				* (temp1->GetBinError(z) / temp1->GetBinContent(z))
-				+ (totalError / total)
-				* (totalError / total));
-			if(isnan(newError)) newError = 0.0;
-
-			temp1->SetBinContent(z, newContent);
-			temp1->SetBinError(z, newError);
-		}
-	}
-
-	// 2D energy deposition in SAC layer (z = <#>) / incident energy
-	// Didn't do error propagation here bc it isn't used later
-	for(G4int z = 0; z < fSACLayers; z++)
-	{
-		for (auto &iter : fP)
-		{
-			key = "h2EDepZ" + std::to_string(z) + "_PerLayer_" + iter.first;
-			temp2 = fH2D[key];
-
-			total = 0.0;
-			for(int x = 1; x <= fSACRows; x++)
-				for(int y = 1; y <= fSACCols; y++)
-					total += temp2->GetBinContent(x, y);
-
-			for(int x = 1; x <= fSACRows; x++) // bin width = 1
-			{
-				for(int y = 1; y <= fSACCols; y++)
-				{
-					newContent = temp2->GetBinContent(x, y) / total;
-					if(isnan(newContent)) newContent = 0.0;
-
-					temp2->SetBinContent(x, y, newContent);
-				}
-			}
-		}
-	}
-
-	// Multiplicity per event / incident energy
-	for(auto& iter : fP)
-	{
-		key = "h1Mult_PerEvent_" + iter.first;
-		temp1 = fH1D[key];
-
-		total = 0.0, totalError = 0.0;
-		for(G4int i = 1; i <= temp1->GetNbinsX(); i++)
-		{
-			total += temp1->GetBinContent(i);
-			totalError += temp1->GetBinError(i) * temp1->GetBinError(i);
-		}
-		totalError = sqrt(totalError);
-
-		for(G4int i = 1; i <= temp1->GetNbinsX(); i++)
-		{
-			newContent = temp1->GetBinContent(i) / total / temp1->GetBinWidth(i);
-			if(isnan(newContent)) newContent = 0.0;
-
-			newError = newContent
-				* sqrt((temp1->GetBinError(i) / temp1->GetBinContent(i))
-				* (temp1->GetBinError(i) / temp1->GetBinContent(i))
-				+ (totalError / total)
-				* (totalError / total));
-			if(isnan(newError)) newError = 0.0;
-
-			temp1->SetBinContent(i, newContent);
-			temp1->SetBinError(i, newError);
-		}
-	}
-
 	for(auto& iter : fH1D) iter.second->Write();
 	for(auto& iter : fH2D) iter.second->Write();
 }

@@ -1,22 +1,24 @@
 # Require minimum cmake version
-cmake_minimum_required(VERSION 2.8...3.18)
+cmake_minimum_required(VERSION 3.8...3.20)
 
 # Define project
 project(KLMC_SAC)
 
-# Find Geant4 package, activate all available UI and vis drivers by default
+# Activate all available UI and vis drivers by default
 # Can set WITH_GEANT4_UIVIS to OFF with cmake (-DWITH_GEANT4_UIVIS=OFF)
 option(WITH_GEANT4_UIVIS "Build example with Geant4 UI and Vis drivers" ON)
+
+# Find Geant4 package
 if(WITH_GEANT4_UIVIS)
-	find_package(Geant4 REQUIRED ui_all vis_all)
+	find_package(Geant4 10.6.2 REQUIRED ui_all vis_all)
 else()
-	find_package(Geant4 REQUIRED)
+	find_package(Geant4 10.6.2 REQUIRED)
 endif()
 
 # Find ROOT package
 find_package(ROOT CONFIG REQUIRED)
 
-# Set cmake build type to debug
+# Set CMake build type to debug
 set(CMAKE_BUILD_TYPE Debug)
 
 # Setup Geant4 include directories and compile definitions

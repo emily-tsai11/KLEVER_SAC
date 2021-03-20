@@ -38,9 +38,9 @@ DetectorConstruction::DetectorConstruction() : G4VUserDetectorConstruction(),
 	fMessenger = new DetectorConstructionMessenger(this);
 	fSACDetector = new SACDetector(0, 0);
 
-	fWorldLengthX = 1.0 * m;
-	fWorldLengthY = 1.0 * m;
-	fWorldLengthZ = 1.0 * m;
+	fWorldLengthX = 3.0 * m;
+	fWorldLengthY = 3.0 * m;
+	fWorldLengthZ = 3.0 * m;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

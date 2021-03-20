@@ -14,7 +14,6 @@
 #include "G4Timer.hh"
 
 #include "Analysis.hh"
-#include "SACSD.hh"
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -46,14 +45,6 @@ void EventAction::EndOfEventAction(const G4Event* evt)
 {
 	fTimer->Stop();
 
-	evt->Print();
-
-	G4cout << "EventAction::EndOfEventAction] Primary Particle Track ID: " << evt->GetPrimaryVertex()->GetPrimary()->GetTrackID() << G4endl;
-	G4cout << "EventAction::EndOfEventAction] Primary Particle PDG Code: " << evt->GetPrimaryVertex()->GetPrimary()->GetPDGcode() << G4endl;
-
-	// G4cout << "EventAction::EndOfEventAction] Secondary Particle Track ID: " << evt->GetPrimaryVertex()->GetPrimary()->GetDaughter()->GetTrackID() << G4endl;
-	// G4cout << "EventAction::EndOfEventAction] Secondary Particle PDG Code: " << evt->GetPrimaryVertex()->GetPrimary()->GetDaughter()->GetPDGcode() << G4endl;
-
 	// Draw all trajectories
 	G4TrajectoryContainer* trajectoryContainer = evt->GetTrajectoryContainer();
 	if(G4VVisManager::GetConcreteInstance() && trajectoryContainer)
@@ -67,10 +58,6 @@ void EventAction::EndOfEventAction(const G4Event* evt)
 		}
 	}
 
-	if(trajectoryContainer) G4cout << "[EventAction::EndOfEventAction] " << trajectoryContainer->entries() << " trajectories!!" << G4endl;
-	else G4cout << "[EventAction::EndOfEventAction] No trajectories :'(" << G4endl;
-
-	G4cout << "[EventAction::EndOfEventAction] Number of hits: " << ((SACHitsCollection*) evt->GetHCofThisEvent()->GetHC(0))->entries() << G4endl;
 	Analysis::GetInstance()->FillHistograms(evt);
 
 	// Periodic printing

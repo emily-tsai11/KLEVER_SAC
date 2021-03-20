@@ -1,20 +1,50 @@
+# Test KLMC_SAC
+
+# -------------------------------------------- #
+
+# Set some default verbose
 /control/verbose 1
 /run/verbose 1
 /tracking/verbose 0
 
-/run/initialize
-
-# /Detector/SAC/EnablePMT 1
+# Detector settings
+# /Detector/SAC/CrystalSize 2.0 cm
+# /Detector/SAC/CrystalLength 3.75 cm
+# /Detector/SAC/CrystalCoating 100.0 um
+# /Detector/SAC/CellGap 50.0 um
+# /Detector/SAC/LayerGap 2.0 cm
+# /Detector/SAC/NRows 10
+# /Detector/SAC/NCols 10
+# /Detector/SAC/NLayers 4
+# /Detector/SAC/EnablePMT 0
+# /Detector/SAC/EnableSiPM 0
+# /Detector/SAC/VerboseLevel 0
+# /Detector/SAC/FrontFaceZ 300.0 cm
 # /Detector/UpdateGeometry
 
-/Analysis/FileName SAC_0_0.1GeV_n1_r1
+# Create detectors and initialize run
+/run/initialize
 
+# Gamma
+/Analysis/FileName SAC_0_10GeV_n10_r1
 /PrimaryGeneratorAction/BeamType 0
-/PrimaryGeneratorAction/BeamEnergy 0.1 GeV
-/run/beamOn 100
+/PrimaryGeneratorAction/BeamEnergy 10 GeV
+/run/beamOn 10
 
+# KL with Atherton momentum
+# /Analysis/FileName SAC_1_0.1GeV_n10_r1
+# /PrimaryGeneratorAction/BeamType 1
+# /PrimaryGeneratorAction/BeamEnergy 0.1 GeV
+# /run/beamOn 10
+
+# KL
+# /Analysis/FileName SAC_2_0.1GeV_n10_r1
 # /PrimaryGeneratorAction/BeamType 2
 # /PrimaryGeneratorAction/BeamEnergy 0.1 GeV
 # /run/beamOn 10
 
-# good kaon seed: 531140150
+# Neutron
+# /Analysis/FileName SAC_3_0.1GeV_n10_r1
+# /PrimaryGeneratorAction/BeamType 3
+# /PrimaryGeneratorAction/BeamEnergy 0.1 GeV
+# /run/beamOn 10

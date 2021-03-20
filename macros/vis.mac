@@ -1,13 +1,11 @@
 # Visualize KLMC_SAC
 
-# --------------------------------------------------
+# -------------------------------------------- #
 
-# Sets some default verbose
+# Set some default verbose
 /control/verbose 1
 /run/verbose 1
 /tracking/verbose 0
-
-# --------------------------------------------------
 
 # Detector settings
 # /Detector/SAC/CrystalSize 2.0 cm
@@ -22,16 +20,20 @@
 # /Detector/SAC/EnableSiPM 0
 # /Detector/SAC/VerboseLevel 0
 # /Detector/SAC/FrontFaceZ 300.0 cm
-
-# --------------------------------------------------
+# /Detector/UpdateGeometry
 
 # Create detectors and initialize run
 /run/initialize
 
-# Use this open statement to create an OpenGL view:
+# Use this open statement to create an OpenGL view (comment out below):
 /vis/open OGL 600x600-0+0
 
-# Disable auto refresh and quieten vis messages whilst scene and trajectories are established:
+# Use this to see ASCIITree (comment out above):
+# /vis/open ATree
+# /vis/ASCIITree/verbose 14
+
+# Disable auto refresh and quieten vis messages whilst scene and trajectories
+# are established:
 /vis/viewer/set/autoRefresh false
 /vis/verbose errors
 
@@ -42,11 +44,11 @@
 # Choose viewpoint
 # /vis/viewer/set/viewpointVector 0.0 10.0 0.0
 # Side view
-# /vis/viewer/set/viewpointThetaPhi -90.0 0.0 deg
+/vis/viewer/set/viewpointThetaPhi -90.0 0.0 deg
 # Top view
 # /vis/viewer/set/viewpointThetaPhi 90.0 90.0 deg
 # Front view
-/vis/viewer/set/viewpointThetaPhi 0.0 0.0 deg
+# /vis/viewer/set/viewpointThetaPhi 0.0 0.0 deg
 # Back view
 # /vis/viewer/set/viewpointThetaPhi 180.0 0.0 deg
 
@@ -69,7 +71,8 @@
 /vis/scene/add/eventID # drawn at end of event
 /vis/scene/add/date # date stamp
 
-# Draw smooth trajectories at end of event, showing trajectory points as markers 2 pixels wide:
+# Draw smooth trajectories at end of event, showing trajectory points as markers
+# 2 pixels wide:
 /vis/scene/add/trajectories smooth
 # /vis/modeling/trajectories/create/drawByCharge
 # /vis/modeling/trajectories/drawByCharge-0/default/setDrawStepPts true
@@ -90,7 +93,8 @@
 # /vis/filtering/trajectories/particleFilter-0/add neutron
 # /vis/filtering/trajectories/particleFilter-0/add opticalphoton
 
-# To invert the above, drawing all particles except certain ones, keep the above lines but also add:
+# To invert the above, drawing all particles except certain ones, keep the above
+# lines but also add:
 # /vis/filtering/trajectories/particleFilter-0/invert true
 
 # To select colour by particle ID:
@@ -115,16 +119,6 @@
 /vis/scene/endOfEventAction accumulate 10
 
 /vis/viewer/flush
-
-# Calo picture
-# /vis/viewer/set/viewpointThetaPhi 45.0 45.0
-# /vis/viewer/panTo -1 -0.9
-# /vis/viewer/zoom 4.5
-
-# Monitor picture
-# /vis/viewer/panTo -0.5 0.0
-# /vis/viewer/set/viewpointThetaPhi 0.0 0.0
-# /vis/viewer/zoom 50
 
 # Only show tracks with p > 1MeV
 # /vis/filtering/trajectories/create/attributeFilter
