@@ -10,6 +10,20 @@
 
 // -------------------- Constants -------------------- //
 
+static const string LayerGap = "5mm";
+static const double NRuns[] = { // Each correspoding to an energy
+	4.0,
+	4.0,
+	4.0,
+	4.0,
+	10.0,
+	20.0,
+	40.0,
+	80.0,
+	100.0,
+	250.0
+};
+
 static const int NEnergies = 10;
 static const string SEnergies[] = {
 	"0.1GeV",
@@ -156,10 +170,10 @@ string GetBeamType(int bt)
 {
 	switch(bt)
 	{
-		case 1: return "kaon0L";
-		case 2: return "kaon0L";
-		case 3: return "neutron";
-		default: return "gamma";
+		case 1: return "kaon0L_" + LayerGap;
+		case 2: return "kaon0L_" + LayerGap;
+		case 3: return "neutron_" + LayerGap;
+		default: return "gamma_" + LayerGap;
 	}
 }
 
@@ -215,7 +229,7 @@ void ReadInStackedBarVals(string masterKey)
 		for(int l = 0; l < SACNLayers; l++)
 		{
 			for(int e = 0; e < NEnergies; e++)
-				yStackedVal[e] = MData[key + SEnergies[e]][l];
+				yStackedVal[e] = MData[key + SEnergies[e]][l] / NRuns[e]; // Normalize with # of runs
 			MData[key + std::to_string(l)] = yStackedVal;
 		}
 	}
