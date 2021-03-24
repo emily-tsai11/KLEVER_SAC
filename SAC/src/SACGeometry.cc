@@ -42,7 +42,7 @@ SACGeometry::SACGeometry()
 	fCellGap = 50.0 * um;
 
 	// Size of gap between layers
-	fLayerGap = 50.0 * um;
+	fLayerGap = 5.0 * mm;
 
 	// Number of rows, columns, layers of cells in SAC
 	fSACNRows = 10;
