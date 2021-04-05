@@ -7,10 +7,12 @@
 
 #include <map>
 #include <cmath>
+#include <fstream>
+#include <sstream>
 
 // -------------------- Constants -------------------- //
 
-static const string LayerGap = "5mm";
+static const string LayerGap = "50um";
 static const double NRuns[] = { // Each correspoding to an energy
 	4.0,
 	4.0,
@@ -21,7 +23,7 @@ static const double NRuns[] = { // Each correspoding to an energy
 	40.0,
 	80.0,
 	100.0,
-	250.0
+	200.0
 };
 
 static const int NEnergies = 10;
@@ -155,6 +157,7 @@ static const int StackColors[] = {
 static bool firstPlot = true;
 static bool lastPlot = false;
 
+static string FName;
 static string Beam;
 static int NEvents;
 static const string FOutName = "plots.pdf";
@@ -177,26 +180,95 @@ string GetBeamType(int bt)
 	}
 }
 
-void GetMeanAndStd(string h, vector<double> &m, vector<double> &std)
+void ReadInTxt(string masterKey)
 {
-	TH1D* temp;
-	for(int e = 0; e < NEnergies; e++)
+	string line, word, key;
+	int n_events = 100;
+
+	// Calculate means
+	for(int e = 0; e < 3; e++)
 	{
-		temp = (TH1D*) MFiles[SEnergies[e]]->Get(h.c_str());
-		m[e] = temp->GetMean();
-		std[e] = temp->GetStdDev() / sqrt(NEvents);
+		ifstream input_file("../build/SAC_3_" + SEnergies[e] + "_n"
+			+ std::to_string(n_events) + "_EnergyDeposition.txt");
+
+		vector<double> yValMean(NParticles);
+		while(getline(input_file, line))
+		{
+			stringstream ss(line);
+			for(int p = 0; p < NParticles; p++)
+			{
+				ss >> word;
+				yValMean[p] += std::stod(word) / 100.0;
+			}
+		}
+		key = masterKey + SEnergies[e] + "m" + "temp";
+		MData[key] = yValMean;
+
+		input_file.close();
+	}
+
+	// Calculate stds
+	for(int e = 0; e < 3; e++)
+	{
+		ifstream input_file("../build/SAC_3_" + SEnergies[e] + "_n"
+			+ std::to_string(n_events) + "_EnergyDeposition.txt");
+
+		vector<double> yValStd(NParticles);
+		while(getline(input_file, line))
+		{
+			stringstream ss(line);
+			for(int p = 0; p < NParticles; p++)
+			{
+				ss >> word;
+				string mean_key = masterKey + SEnergies[e] + "m" + "temp";
+				yValStd[p] += (std::stod(word) - MData[mean_key][p])
+					* (std::stod(word) - MData[mean_key][p]);
+			}
+		}
+		for(int p = 0; p < NParticles; p++)
+		{
+			yValStd[p] = sqrt(yValStd[p] / n_events) / 100.0;
+		}
+		key = masterKey + SEnergies[e] + "std" + "temp";
+		MData[key] = yValStd;
+
+		input_file.close();
+	}
+
+	// Rearrange
+	for(int p = 0; p < NParticles; p++)
+	{
+		string mean_key, std_key;
+		vector<double> yValMean(NEnergies);
+		vector<double> yValStd(NEnergies);
+		for(int e = 0; e < 3; e++)
+		{
+			mean_key = masterKey + SEnergies[e] + "m" + "temp";
+			std_key = masterKey + SEnergies[e] + "std" + "temp";
+			yValMean[e] = MData[mean_key][p];
+			yValStd[e] = MData[std_key][p];
+		}
+		key = masterKey + SParticles[p];
+		MData[key + "_m"] = yValMean;
+		MData[key + "_std"] = yValStd;
 	}
 }
 
-void ReadInGraphVals(string masterKey)
+void ReadInMeanAndStd(string masterKey)
 {
+	string key;
+	TH1D* temp;
 	vector<double> yValMean(NEnergies);
 	vector<double> yValStd(NEnergies);
-	string key;
 	for(int p = 0; p < NParticles; p++)
 	{
 		key = masterKey + SParticles[p];
-		GetMeanAndStd(key, yValMean, yValStd);
+		for(int e = 0; e < NEnergies; e++)
+		{
+			temp = (TH1D*) MFiles[SEnergies[e]]->Get(key.c_str());
+			yValMean[e] = temp->GetMean();
+			yValStd[e] = temp->GetStdDev() / sqrt(NEvents);
+		}
 		MData[key + "_m"] = yValMean;
 		MData[key + "_std"] = yValStd;
 	}
@@ -276,6 +348,46 @@ void CalcThresholds(string masterKey)
 	}
 }
 
+void ReadCompare(string masterKey)
+{
+	int nXBins = 200;
+	double increment = 0.5;
+	double halfBin = 0.25;
+	vector<double> xVal(nXBins);
+	vector<double> xStd(nXBins);
+
+	TH1D* temp_all;
+	vector<double> yVal_all(nXBins);
+	vector<double> yStd_all(nXBins);
+
+	TH1D* temp_proton;
+	vector<double> yVal_proton(nXBins);
+	vector<double> yStd_proton(nXBins);
+
+	for(int e = 0; e < NEnergies; e++)
+	{
+		temp_all = (TH1D*) MFiles[SEnergies[e]]->Get((masterKey + "all").c_str());
+		temp_proton = (TH1D*) MFiles[SEnergies[e]]->Get((masterKey + "proton").c_str());
+
+		for(int i = 0; i < nXBins; i++)
+		{
+			xVal[i] = i * increment + halfBin;
+			xStd[i] = 0.0;
+			yVal_all[i] = temp_all->GetBinContent(i + 1);
+			yStd_all[i] = temp_all->GetBinError(i + 1);
+			yVal_proton[i] = temp_proton->GetBinContent(i + 1);
+			yStd_proton[i] = temp_proton->GetBinError(i + 1);
+		}
+
+		MData[SEnergies[e] + "compare_x"] = xVal;
+		MData[SEnergies[e] + "compare_x_std"] = xStd;
+		MData[SEnergies[e] + "compare_y_all"] = yVal_all;
+		MData[SEnergies[e] + "compare_y_std_all"] = yStd_all;
+		MData[SEnergies[e] + "compare_y_proton"] = yVal_proton;
+		MData[SEnergies[e] + "compare_y_std_proton"] = yStd_proton;
+	}
+}
+
 void DrawTGraphErrors(TGraphErrors* g, int p, string n, string t, string x,
 	string y)
 {
@@ -341,7 +453,8 @@ void DrawGraphs(string masterKey, string t, string x, string y)
 	}
 
 	if(key == std::to_string(DThresholds[NThresholds - 1]) + "h1EDep_PerEvent_"
-		+ SParticles[NParticles - 1]) lastPlot = true;
+	+ SParticles[NParticles - 1]) lastPlot = true;
+
 	DrawTMultiGraph(mg, legend, masterKey, t, x, y);
 }
 
@@ -376,6 +489,46 @@ void DrawStackedBar(string masterKey, string t, string x, string y)
 	}
 }
 
+void DrawCompare()
+{
+	TCanvas* c = new TCanvas("mult_all_vs_proton", "mult_all_vs_proton", 4000, 3000);
+	c->Divide(5, 4);
+	int plot_index = 1;
+
+	for(int e = 0; e < NEnergies; e++)
+	{
+		TGraphErrors* g = new TGraphErrors(200,
+			MData[SEnergies[e] + "compare_x"].data(),
+			MData[SEnergies[e] + "compare_y_all"].data(),
+			MData[SEnergies[e] + "compare_x_std"].data(),
+			MData[SEnergies[e] + "compare_y_std_all"].data());
+		g->SetTitle((SEnergies[e] + " total energy deposited").c_str());
+		c->cd(plot_index);
+		g->Draw();
+		plot_index++;
+	}
+
+	for(int e = 0; e < NEnergies; e++)
+	{
+		TGraphErrors* g = new TGraphErrors(200,
+			MData[SEnergies[e] + "compare_x"].data(),
+			MData[SEnergies[e] + "compare_y_proton"].data(),
+			MData[SEnergies[e] + "compare_x_std"].data(),
+			MData[SEnergies[e] + "compare_y_std_proton"].data());
+		g->SetTitle((SEnergies[e] + " proton energy deposited").c_str());
+		c->cd(plot_index);
+		g->Draw();
+		plot_index++;
+	}
+
+	lastPlot = true;
+	string fname = Beam + "/" + Beam + FOutName;
+	if(firstPlot) fname += "(";
+	else if(lastPlot) fname += ")";
+
+	c->Print(fname.c_str());
+}
+
 // -------------------- SAC Analysis -------------------- //
 
 void SACAnalysis(int BeamType, int NEvt)
@@ -384,19 +537,20 @@ void SACAnalysis(int BeamType, int NEvt)
 	Beam = GetBeamType(BeamType);
 	NEvents = NEvt;
 
-	string FName;
+	FName = Beam + "/SAC_" + std::to_string(BeamType) + "_";
+	string temp;
 	for(int e = 0; e < NEnergies; e++)
 	{
-		FName = Beam + "/SAC_" + std::to_string(BeamType) + "_"
-			+ SEnergies[e] + "_n" + std::to_string(NEvents) + ".root";
-		MFiles[SEnergies[e]] = new TFile(FName.c_str());
+		temp = FName + SEnergies[e] + "_n" + std::to_string(NEvents) + ".root";
+		MFiles[SEnergies[e]] = new TFile(temp.c_str());
 	}
 
 	// Read in y values
-	ReadInGraphVals("h1EDep_PerEvent_");
-	ReadInGraphVals("h1Mult_PerEvent_");
+	ReadInTxt("h1EDep_PerEvent_");
+	ReadInMeanAndStd("h1Mult_PerEvent_");
 	ReadInStackedBarVals("h1EDep_PerLayer_");
 	CalcThresholds("h1EDep_PerEvent_");
+	// ReadCompare("h1EDep_PerEvent_");
 
 	// Close input files
 	for(int e = 0; e < NEnergies; e++) MFiles[SEnergies[e]]->Close();
@@ -413,6 +567,7 @@ void SACAnalysis(int BeamType, int NEvt)
 		DrawGraphs(std::to_string(threshold) + "h1EDep_PerEvent_",
 			 (" " + std::to_string(threshold) + " GeV Threshold").c_str(),
 			 "Incident Energy [GeV]", "Fraction");
+	// DrawCompare();
 }
 
 int main(int argc, char** argv)

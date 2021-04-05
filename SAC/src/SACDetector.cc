@@ -117,17 +117,16 @@ void SACDetector::CreateGeometry()
 				}
 
 				// Place the crystals
-				G4ThreeVector fCrystalPos = G4ThreeVector(fCrystalPosX, fCrystalPosY, fCrystalPosZ);
 				new G4PVPlacement(
 					0,
-					fCrystalPos,
+					G4ThreeVector(fCrystalPosX, fCrystalPosY, fCrystalPosZ),
 					fCell->GetCellLogicalVolume(),
 					"SACCell",
 					fSACVolume,
 					false, CellID, false);
-				G4int fPMID = row * fNCols + col;
 
 				// Place the photomultipliers
+				G4int fPMID = row * fNCols + col;
 				if(fEnablePMT && !fEnableSiPM)
 				{
 					new G4PVPlacement(

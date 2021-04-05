@@ -64,6 +64,23 @@ Analysis::~Analysis()
 void Analysis::OpenFile()
 {
 	fOut = new TFile((fFileName + ".root").c_str(), "RECREATE");
+	fTxt.open(fFileName + "_EnergyDeposition.txt");
+}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+void Analysis::Write()
+{
+	for(auto& iter : fH1D) iter.second->Write();
+	for(auto& iter : fH2D) iter.second->Write();
+}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+void Analysis::CloseFile()
+{
+	fOut->Close();
+	fTxt.close();
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -288,45 +305,32 @@ void Analysis::FillHistograms(const G4Event* evt)
 		// <Particle> energy deposition per event / incident energy
 		key = "h1EDep_PerEvent_" + iter.first;
 		fH1D[key]->Fill(fEDepPerEvent[iter.second] / primaryInitE, 1.0);
+		fTxt << fEDepPerEvent[iter.second] / primaryInitE << " ";
 
 		// <Particle> multiplicity per event / incident energy [1/MeV]
 		key = "h1Mult_PerEvent_" + iter.first;
 		fH1D[key]->Fill(fMultPerEvent[iter.second] / primaryInitE, 1.0);
 	}
+	fTxt << std::endl;
 
 	if(isPunchThrough)
 	{
 		// Number of punch-through events / number of events
 		key = "h1PunchThrough_PerEvent";
-		fH1D[key]->Fill(1.0, 1.0 / fTotalNEvents);
+		fH1D[key]->Fill(1.0, 1.0);
 	}
 	else if(isElastic)
 	{
 		// Number of elastic collision events / number of events
 		key = "h1Elastic_PerEvent";
-		fH1D[key]->Fill(1.0, 1.0 / fTotalNEvents);
+		fH1D[key]->Fill(1.0, 1.0);
 	}
 	else if(isInelastic)
 	{
 		// Number of inelastic collision events / number of events
 		key = "h1Inelastic_PerEvent";
-		fH1D[key]->Fill(1.0, 1.0 / fTotalNEvents);
+		fH1D[key]->Fill(1.0, 1.0);
 	}
-}
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
-void Analysis::Write()
-{
-	for(auto& iter : fH1D) iter.second->Write();
-	for(auto& iter : fH2D) iter.second->Write();
-}
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
-void Analysis::CloseFile()
-{
-	fOut->Close();
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

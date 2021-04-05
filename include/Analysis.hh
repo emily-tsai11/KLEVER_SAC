@@ -12,6 +12,7 @@
 
 #include "globals.hh"
 #include <map>
+#include <fstream>
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -53,12 +54,13 @@ class Analysis
 	private:
 
 		static Analysis* fInstance;
+		AnalysisMessenger* fMessenger;
 
 		G4String fFileName;
 		G4int fTotalNEvents;
 
 		TFile* fOut;
-		AnalysisMessenger* fMessenger;
+		std::ofstream fTxt;
 
 		G4double fSACRows;
 		G4double fSACCols;

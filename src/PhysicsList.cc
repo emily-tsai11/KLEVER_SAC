@@ -345,9 +345,9 @@ void PhysicsList::OpticalPhysics()
 		if(particleName == "e+")
 		{
 			// pmanager->AddProcess(new G4MultipleScattering, -1, 1, 1); // DOESN'T WORK BUT IDK HOW TO FIX
-			pmanager->AddProcess(new G4eIonisation, -1, 2, 2);
-			pmanager->AddProcess(new G4eBremsstrahlung, -1, 3, 3);
-			pmanager->AddProcess(new G4eplusAnnihilation, 0, -1, 4);
+			// pmanager->AddProcess(new G4eIonisation, -1, 2, 2);
+			// pmanager->AddProcess(new G4eBremsstrahlung, -1, 3, 3);
+			// pmanager->AddProcess(new G4eplusAnnihilation, 0, -1, 4);
 		}
 		if(fScintillationProcess->IsApplicable(*particle))
 		{
