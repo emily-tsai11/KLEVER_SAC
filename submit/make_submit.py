@@ -32,6 +32,7 @@ os.mkdir("err")
 os.mkdir("log")
 os.mkdir("out")
 os.mkdir("root_files")
+os.mkdir("txt_files")
 
 # Write in file
 with open(filename + ".in", "w") as f:
